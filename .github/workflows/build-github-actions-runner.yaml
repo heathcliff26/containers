@@ -1,0 +1,21 @@
+---
+name: Build github-actions-runner
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/github-actions-runner/Dockerfile"
+      - ".github/workflows/build-github-actions-runner.yaml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: github-actions-runner
+    secrets: inherit
