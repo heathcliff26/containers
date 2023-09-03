@@ -1,0 +1,22 @@
+---
+name: Build cloudflare-dyndns
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/*.php"
+      - ".github/workflows/build-cloudflare-dyndns.yaml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: cloudflare-dyndns
+    secrets: inherit
