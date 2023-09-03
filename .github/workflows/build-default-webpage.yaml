@@ -1,0 +1,23 @@
+---
+name: Build default-webpage
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/default-webpage/Dockerfile"
+      - "apps/default-webpage/*.html"
+      - "apps/default-webpage/**/*.html"
+      - ".github/workflows/build-default-webpage.yaml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: default-webpage
+    secrets: inherit

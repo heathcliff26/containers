@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<style>
+ 		body {
+ 			width: 35em;
+ 			margin: 0 auto;
+        	font-family: Tahoma, Verdana, Arial, sans-serif;
+		}
+	</style>
+	<head>
+		<title id="dynamicTitle">REPLACEME</title>
+	</head>
+	<body>
+		<h1 id="dynamicHeader">Welcome to REPLACEME</h1>
+		<p>There is currently nothing here, and i don't plan on adding anything. But 
+		feel free to visit again.</p>
+	</body>
+	<script language="javascript" type="text/javascript">
+                document.getElementById("dynamicTitle").innerHTML = window.location.hostname;
+                document.getElementById("dynamicHeader").innerHTML = "Welcome to " + window.location.hostname;
+        </script>
+</html>
