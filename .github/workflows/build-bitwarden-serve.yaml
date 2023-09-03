@@ -1,0 +1,45 @@
+---
+name: Build bitwarden-serve
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/bitwarden-serve/Dockerfile"
+      - "apps/bitwarden-serve/*.sh"
+      - ".github/workflows/build-bitwarden-serve.yaml"
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    permissions:
+      contents: read
+    outputs:
+      version: "${{ steps.version.outputs.cli-version }}"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Extract bitwarden-cli version
+        id: version
+        run: |
+          set -ex
+          VERSION_STRING="$(grep "ENV BW_CLI_VERSION=" apps/bitwarden-serve/Dockerfile)"
+          VERSION="$(echo "${VERSION_STRING}" | awk -F'=' '{print $2}' | tr -d '"')"
+          echo "cli-version=${VERSION#cli-}" >> "$GITHUB_OUTPUT"
+
+  build:
+    uses: ./.github/workflows/build.yaml
+    needs: metadata
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: bitwarden-serve
+      tag: "${{ needs.metadata.outputs.version }}"
+    secrets: inherit
