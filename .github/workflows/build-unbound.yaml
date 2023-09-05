@@ -1,0 +1,22 @@
+---
+name: Build unbound
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/unbound/Dockerfile"
+      - "apps/unbound/*.sh"
+      - ".github/workflows/build-unbound.yaml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: unbound
+    secrets: inherit
