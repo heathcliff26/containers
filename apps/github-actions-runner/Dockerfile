@@ -1,10 +1,10 @@
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-jammy@sha256:5e419d42a062f28746e08e00fcddba5f89cc3ce19707ea0ef0bb81147458bc53
 
-# renovate: datasource=github-releases depName=actions/runner
+# renovate: datasource=github-releases depName=actions/runner extractVersion=^v(?<version>.*)$
 ARG RUNNER_VERSION=2.308.0
-# renovate: datasource=github-releases depName=actions/runner-container-hooks
+# renovate: datasource=github-releases depName=actions/runner-container-hooks extractVersion=^v(?<version>.*)$
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.3.2
-# renovate: datasource=github-tags depName=docker/cli
+# renovate: datasource=github-tags depName=docker/cli extractVersion=^v(?<version>.*)$
 ARG DOCKER_VERSION=24.0.5
 
 ARG TARGETPLATFORM
