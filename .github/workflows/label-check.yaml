@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Check for do-not-merge
         id: do-not-merge
-        uses: docker://agilepathway/pull-request-label-checker:v1.5.8
+        uses: docker://agilepathway/pull-request-label-checker:v1.5.4
         with:
           repo_token: ${{ github.token }}
           none_of: do-not-merge
