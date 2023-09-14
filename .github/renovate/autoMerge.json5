@@ -12,7 +12,15 @@
     {
       "description": "Auto merge GitHub Actions",
       "matchManagers": ["github-actions"],
-      "matchDatasources": ["github-tags","docker"],
+      "matchDatasources": ["github-tags"],
+      "automerge": true,
+      "automergeType": "branch",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Auto merge GitHub Actions (Docker)",
+      "matchDatasources": ["docker"],
+      "matchFileNames": [".github/workflows/*.ya?ml"],
       "automerge": true,
       "automergeType": "branch",
       "matchUpdateTypes": ["minor", "patch"]
