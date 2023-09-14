@@ -38,6 +38,16 @@
       "matchStrings": [
         "#\\srenovate:\\sdatasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?( extractVersion=(?<extractVersion>.*?))?\\s(ENV|ARG) .*?_VERSION=(?<currentValue>.*)\\s"
       ]
+    },
+    {
+      "description": "Process docker:// actions for github workflow",
+      "fileMatch": [
+        ".github/workflows/.+\\.ya?ml$",
+      ],
+      "matchStrings": [
+        "uses: docker://(?<depName>.*?):(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "docker",
     }
   ]
 }

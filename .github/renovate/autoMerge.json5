@@ -18,6 +18,14 @@
       "matchUpdateTypes": ["minor", "patch"]
     },
     {
+      "description": "Auto merge GitHub Actions (Docker)",
+      "matchDatasources": ["docker"],
+      "matchFileNames": [".github/workflows/*.yaml", ".github/workflows/*.yml"],
+      "automerge": true,
+      "automergeType": "branch",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
       "description": "Auto merge Bitwarden CLI",
       "matchPackagePatterns": ["bitwarden/clients"],
       "matchUpdateTypes": ["major", "minor", "patch"],
