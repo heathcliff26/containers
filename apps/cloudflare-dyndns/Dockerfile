@@ -1,3 +1,3 @@
-FROM docker.io/library/php:8.2.11-apache-bookworm@sha256:ef38d18fdf5e1fc3fa36f2144fd49a19eecd0916febff562afa44f70390182ba
+FROM docker.io/library/php:8.2.11-apache-bookworm@sha256:d2666e3919a6e9ebf3647f91ee19865011e2792a8b40dcd09e2aae7fd6c918cd
 
 COPY fritzbox_dyndns.php /var/www/html/index.php
