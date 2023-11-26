@@ -40,11 +40,11 @@ jobs:
           token: "${{ steps.generate-token.outputs.token }}"
 
       - name: Validate bot config
-        uses: docker://renovate/renovate:37.68.1-slim
+        uses: docker://renovate/renovate:37.68.3-slim
         with:
           args: renovate-config-validator --strict "${{ env.RENOVATE_BOT_CONFIG_FILE }}"
 
       - name: Validate repository
-        uses: docker://renovate/renovate:37.68.1-slim
+        uses: docker://renovate/renovate:37.68.3-slim
         with:
           args: renovate-config-validator --strict "${{ env.RENOVATE_REPO_CONFIG_FILE }}"
