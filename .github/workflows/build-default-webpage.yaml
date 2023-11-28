@@ -11,6 +11,13 @@ on:
       - "apps/default-webpage/*.html"
       - "apps/default-webpage/**/*.html"
       - ".github/workflows/build-default-webpage.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/default-webpage/Dockerfile"
+      - "apps/default-webpage/*.html"
+      - "apps/default-webpage/**/*.html"
+      - ".github/workflows/build-default-webpage.yaml"
 
 jobs:
   build:
@@ -20,4 +27,5 @@ jobs:
       packages: write
     with:
       app: default-webpage
+      dry-run: ${{ github.event_name == 'pull_request' }}
     secrets: inherit
