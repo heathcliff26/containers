@@ -9,7 +9,6 @@ on:
     paths:
       - "apps/bitwarden-serve/Dockerfile"
       - "apps/bitwarden-serve/*.sh"
-      - ".github/workflows/build-bitwarden-serve.yaml"
   pull_request:
     branches: [main]
     paths:

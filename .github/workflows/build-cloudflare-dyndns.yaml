@@ -9,7 +9,6 @@ on:
     paths:
       - "apps/cloudflare-dyndns/Dockerfile"
       - "apps/cloudflare-dyndns/*.php"
-      - ".github/workflows/build-cloudflare-dyndns.yaml"
   pull_request:
     branches: [main]
     paths:

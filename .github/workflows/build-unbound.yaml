@@ -9,7 +9,6 @@ on:
     paths:
       - "apps/unbound/Dockerfile"
       - "apps/unbound/*.sh"
-      - ".github/workflows/build-unbound.yaml"
   pull_request:
     branches: [main]
     paths:
