@@ -10,7 +10,6 @@ on:
       - "apps/default-webpage/Dockerfile"
       - "apps/default-webpage/*.html"
       - "apps/default-webpage/**/*.html"
-      - ".github/workflows/build-default-webpage.yaml"
   pull_request:
     branches: [main]
     paths:
