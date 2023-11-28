@@ -9,6 +9,11 @@ on:
     paths:
       - "apps/github-actions-runner/Dockerfile"
       - ".github/workflows/build-github-actions-runner.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/github-actions-runner/Dockerfile"
+      - ".github/workflows/build-github-actions-runner.yaml"
 
 jobs:
   build:
@@ -18,4 +23,5 @@ jobs:
       packages: write
     with:
       app: github-actions-runner
+      dry-run: ${{ github.event_name == 'pull_request' }}
     secrets: inherit

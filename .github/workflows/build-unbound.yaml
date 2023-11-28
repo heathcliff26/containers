@@ -10,6 +10,12 @@ on:
       - "apps/unbound/Dockerfile"
       - "apps/unbound/*.sh"
       - ".github/workflows/build-unbound.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/unbound/Dockerfile"
+      - "apps/unbound/*.sh"
+      - ".github/workflows/build-unbound.yaml"
 
 jobs:
   build:
@@ -19,4 +25,5 @@ jobs:
       packages: write
     with:
       app: unbound
+      dry-run: ${{ github.event_name == 'pull_request' }}
     secrets: inherit

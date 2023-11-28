@@ -10,6 +10,12 @@ on:
       - "apps/cloudflare-dyndns/Dockerfile"
       - "apps/cloudflare-dyndns/*.php"
       - ".github/workflows/build-cloudflare-dyndns.yaml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/*.php"
+      - ".github/workflows/build-cloudflare-dyndns.yaml"
 
 jobs:
   build:
@@ -19,4 +25,5 @@ jobs:
       packages: write
     with:
       app: cloudflare-dyndns
+      dry-run: ${{ github.event_name == 'pull_request' }}
     secrets: inherit
