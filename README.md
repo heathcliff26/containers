@@ -5,3 +5,5 @@ This is a monorepo containing all the builds for the container images i use. I c
 ## Build
 
 All the Dockerfiles can be found under `apps/<name>/Dockerfile`. The associated workflow is named `build-<name>.yaml`.
+
+More Details to the individual containers can be found in their respective README.md files.
