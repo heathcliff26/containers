@@ -10,12 +10,14 @@ on:
       - "apps/speedtest-exporter/Dockerfile"
       - "apps/speedtest-exporter/Dockerfile.cli"
       - "apps/speedtest-exporter/*.go"
+      - "apps/speedtest-exporter/**/*.go"
   pull_request:
     branches: [main]
     paths:
       - "apps/speedtest-exporter/Dockerfile"
       - "apps/speedtest-exporter/Dockerfile.cli"
       - "apps/speedtest-exporter/*.go"
+      - "apps/speedtest-exporter/**/*.go"
       - ".github/workflows/build-speedtest-exporter.yaml"
 
 jobs:
