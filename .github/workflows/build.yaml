@@ -14,9 +14,14 @@ on:
         default: "Dockerfile"
         required: false
       tag:
-        description: "Use to override the tag"
+        description: "Use to set tag, default: rolling"
         type: string
         default: "rolling"
+        required: false
+      tags:
+        description: "Use to set multiple tags, alwasy includes tag, defaults to latest if main branch"
+        type: string
+        default: "type=raw,value=latest,enable={{is_default_branch}}"
         required: false
       dry-run:
         description: "Use to disable pushing"
@@ -35,9 +40,14 @@ on:
         default: "Dockerfile"
         required: false
       tag:
-        description: "Use to override the tag"
+        description: "Use to set tag, default: rolling"
         type: string
         default: "rolling"
+        required: false
+      tags:
+        description: "Use to set multiple tags, alwasy includes tag, defaults to latest if main branch"
+        type: string
+        default: "type=raw,value=latest,enable={{is_default_branch}}"
         required: false
       dry-run:
         description: "Use to disable pushing"
@@ -88,7 +98,7 @@ jobs:
             "ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}"
           tags: |
             "${{ inputs.tag }}"
-            type=raw,value=latest,enable={{is_default_branch}}
+            "${{ inputs.tags }}"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
