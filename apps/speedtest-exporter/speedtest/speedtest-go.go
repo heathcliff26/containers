@@ -60,5 +60,5 @@ func (s *Speedtest) Speedtest() *collector.SpeedtestResult {
 		slog.String("IP", user.IP),
 	)
 
-	return collector.NewSpeedtestResult(float64(server.Jitter.Milliseconds()), float64(server.Latency.Milliseconds()), 0, server.DLSpeed, server.ULSpeed, user.Isp, user.IP)
+	return collector.NewSpeedtestResult(float64(server.Jitter.Milliseconds()), float64(server.Latency.Milliseconds()), server.DLSpeed, server.ULSpeed, dataUsed, user.Isp, user.IP)
 }
