@@ -30,6 +30,12 @@ jobs:
           go-version: 'stable'
           cache-dependency-path: apps/speedtest-exporter/go.sum
 
+      - name: debug
+        run: |
+          pwd
+          ls -lha
+          ls -lha containers
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3.7.0
         with:
