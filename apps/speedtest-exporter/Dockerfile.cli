@@ -61,7 +61,7 @@ COPY --from=fetch-stage /speedtest /
 ###############################################################################
 # BEGIN final-stage
 # Create final docker image
-FROM docker.io/library/alpine:3.18.4 AS final-stage
+FROM docker.io/library/alpine:3.18.5 AS final-stage
 
 WORKDIR /
 
