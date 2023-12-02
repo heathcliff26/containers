@@ -1,0 +1,66 @@
+---
+name: Build speedtest-exporter
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/speedtest-exporter/Dockerfile"
+      - "apps/speedtest-exporter/Dockerfile.cli"
+      - "apps/speedtest-exporter/*.go"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/speedtest-exporter/Dockerfile"
+      - "apps/speedtest-exporter/Dockerfile.cli"
+      - "apps/speedtest-exporter/*.go"
+      - ".github/workflows/build-speedtest-exporter.yaml"
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-go@v4.1.0
+        with:
+          go-version: 'stable'
+          cache-dependency-path: apps/speedtest-exporter/go.sum
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3.7.0
+        with:
+          version: latest
+          working-directory: apps/speedtest-exporter
+          args: --config=.golangci.yml
+
+  build:
+    uses: ./.github/workflows/build.yaml
+    needs: golangci
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: speedtest-exporter
+      dockerfile: Dockerfile
+      tag: slim
+      tags: "type=raw,value=latest,enable={{is_default_branch}}"
+      dry-run: ${{ github.event_name == 'pull_request' }}
+    secrets: inherit
+
+  build-cli:
+    uses: ./.github/workflows/build.yaml
+    needs: golangci
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: speedtest-exporter
+      dockerfile: Dockerfile.cli
+      tag: cli
+      tags: ""
+      dry-run: ${{ github.event_name == 'pull_request' }}
+    secrets: inherit

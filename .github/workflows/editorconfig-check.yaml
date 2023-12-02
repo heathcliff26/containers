@@ -17,4 +17,4 @@ jobs:
       - name: Run editorconfig-checker
         uses: docker://mstruebing/editorconfig-checker:2.7.2
         with:
-          args: ec --exclude=".git/*"
+          args: ec --exclude="\.git\/(.*)|(.*)\/?vendor\/(.*)"
