@@ -35,7 +35,7 @@ jobs:
         with:
           version: latest
           working-directory: apps/speedtest-exporter
-          args: --config=apps/speedtest-exporter/.golangci.yml
+          args: --config=containers/apps/speedtest-exporter/.golangci.yml
 
   build:
     uses: ./.github/workflows/build.yaml
@@ -46,8 +46,9 @@ jobs:
     with:
       app: speedtest-exporter
       dockerfile: Dockerfile
-      tag: rolling
-      dry-run: ${{ github.event_name == 'pull_request' }}
+      tag: native
+      #dry-run: ${{ github.event_name == 'pull_request' }}
+      dry-run: true
     secrets: inherit
 
   build-cli:
@@ -60,5 +61,6 @@ jobs:
       app: speedtest-exporter
       dockerfile: Dockerfile.cli
       tag: cli
-      dry-run: ${{ github.event_name == 'pull_request' }}
+      #dry-run: ${{ github.event_name == 'pull_request' }}
+      dry-run: true
     secrets: inherit
