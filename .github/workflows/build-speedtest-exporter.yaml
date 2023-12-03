@@ -38,6 +38,7 @@ jobs:
           version: latest
           working-directory: apps/speedtest-exporter
           args: --config=.golangci.yml
+          skip-cache: true
 
   build:
     uses: ./.github/workflows/build.yaml

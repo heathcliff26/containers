@@ -36,6 +36,7 @@ jobs:
           version: latest
           working-directory: apps/simple-fileserver
           args: --config=.golangci.yml
+          skip-cache: true
 
   build:
     uses: ./.github/workflows/build.yaml
