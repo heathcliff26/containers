@@ -40,7 +40,7 @@ jobs:
           args: --config=.golangci.yml
           skip-cache: true
 
-  build:
+  build-slim:
     uses: ./.github/workflows/build.yaml
     needs: golangci
     permissions:

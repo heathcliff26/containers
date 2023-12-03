@@ -1,4 +1,6 @@
-FROM docker.io/nginxinc/nginx-unprivileged:1.25.3@sha256:a4cb3ee8f71116750ae3dc857031b7c74ec3b21df3d878e1c63204c206553e46
+FROM ghcr.io/heathcliff26/simple-fileserver:latest@sha256:9d166683d08332de966911e62ea423a79a6eb92804d10201daa08e0207949b79
 
-COPY --chown=nginx:nginx --chmod=644 index.html /usr/share/nginx/html/
-COPY --chown=nginx:nginx --chmod=644 kundenumfrage /usr/share/nginx/html/kundenumfrage
+ENV SFILESERVER_NO_INDEX="true"
+
+COPY --chown=1001:1001 --chmod=644 index.html /webroot/
+COPY --chown=1001:1001 --chmod=644 kundenumfrage /webroot/kundenumfrage

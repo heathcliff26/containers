@@ -19,12 +19,30 @@ on:
       - ".github/workflows/build-default-webpage.yaml"
 
 jobs:
-  build:
+  build-tiny:
     uses: ./.github/workflows/build.yaml
     permissions:
       contents: read
       packages: write
     with:
       app: default-webpage
+      dockerfile: Dockerfile
+      tag: slim
+      tags: |
+        rolling"
+        "type=raw,value=latest,enable={{is_default_branch}}
+      dry-run: ${{ github.event_name == 'pull_request' }}
+    secrets: inherit
+
+  build-nginx:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: default-webpage
+      dockerfile: Dockerfile.nginx
+      tag: nginx
+      tags: ""
       dry-run: ${{ github.event_name == 'pull_request' }}
     secrets: inherit
