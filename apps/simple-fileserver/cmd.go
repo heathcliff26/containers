@@ -49,4 +49,5 @@ func parseFlags() {
 	if webroot == "" {
 		log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
 	}
+	log.Printf("Settings: webroot=%s, port=%d, no-index=%t", webroot, port, withoutIndex)
 }
