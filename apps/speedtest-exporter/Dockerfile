@@ -10,7 +10,7 @@ COPY go.mod go.sum *.go ./
 COPY collector ./collector
 COPY speedtest ./speedtest
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /speedtest-exporter
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /speedtest-exporter
 
 #
 # END build-stage
