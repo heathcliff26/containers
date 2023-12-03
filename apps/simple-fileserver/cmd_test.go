@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -98,4 +100,43 @@ func TestCmd(t *testing.T) {
 			assert.Equal(tCase.result.withoutIndex, withoutIndex)
 		})
 	}
+}
+
+func TestCmdWebrootMissing(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		t.Setenv("SFILESERVER_WEBROOT", "")
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	cmd := exec.Command(os.Args[0], "-test.run=TestCmdWebrootMissing")
+	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
+	err := cmd.Run()
+	if err == nil {
+		t.Fatal("Process exited without error")
+	}
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		return
+	}
+	t.Fatalf("process ran with err %v, want exit status 1", err)
+}
+
+func TestCmdMalformedPortEnvVariable(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		t.Setenv("SFILESERVER_PORT", "not a number")
+		t.Setenv("SFILESERVER_WEBROOT", "/foo/bar")
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	cmd := exec.Command(os.Args[0], "-test.run=TestCmdMalformedPortEnvVariable")
+	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
+	err := cmd.Run()
+	if err == nil {
+		t.Fatal("Process exited without error")
+	}
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		return
+	}
+	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
