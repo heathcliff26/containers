@@ -24,7 +24,7 @@ func TestGetFilesystem(t *testing.T) {
 			name:         "withIndex",
 			path:         "foo",
 			noIndex:      false,
-			expectedType: "http.Dir",
+			expectedType: "main.indexedFilesystem",
 		},
 		{
 			name:         "withoutIndex",

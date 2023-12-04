@@ -13,6 +13,7 @@ type expectedResult struct {
 	webroot      string
 	port         int
 	withoutIndex bool
+	debug        bool
 }
 
 type testMatrixCmd struct {
@@ -32,16 +33,18 @@ func TestCmd(t *testing.T) {
 				webroot:      "/foo/bar",
 				port:         defaultPort,
 				withoutIndex: false,
+				debug:        false,
 			},
 		},
 		{
 			Name: "Args",
-			Args: []string{"-webroot", "/foo/bar", "-port", "1234", "-no-index"},
+			Args: []string{"-webroot", "/foo/bar", "-port", "1234", "-no-index", "-debug"},
 			Env:  nil,
 			result: expectedResult{
 				webroot:      "/foo/bar",
 				port:         1234,
 				withoutIndex: true,
+				debug:        true,
 			},
 		},
 		{
@@ -51,25 +54,29 @@ func TestCmd(t *testing.T) {
 				"SFILESERVER_WEBROOT":  "/foo/bar/baz",
 				"SFILESERVER_PORT":     "5678",
 				"SFILESERVER_NO_INDEX": "tRue",
+				"SFILESERVER_DEBUG":    "trUe",
 			},
 			result: expectedResult{
 				webroot:      "/foo/bar/baz",
 				port:         5678,
 				withoutIndex: true,
+				debug:        true,
 			},
 		},
 		{
 			Name: "ArgsOverrideEnv",
-			Args: []string{"-webroot", "/foo", "-port", "1234", "-no-index"},
+			Args: []string{"-webroot", "/foo", "-port", "1234", "-no-index", "-debug"},
 			Env: map[string]string{
 				"SFILESERVER_WEBROOT":  "/foo/bar/baz",
 				"SFILESERVER_PORT":     "5678",
 				"SFILESERVER_NO_INDEX": "false",
+				"SFILESERVER_DEBUG":    "false",
 			},
 			result: expectedResult{
 				webroot:      "/foo",
 				port:         1234,
 				withoutIndex: true,
+				debug:        true,
 			},
 		},
 	}
@@ -80,6 +87,7 @@ func TestCmd(t *testing.T) {
 				webroot = ""
 				port = defaultPort
 				withoutIndex = false
+				debug = false
 			})
 			if tCase.Args != nil {
 				err := flag.CommandLine.Parse(tCase.Args)
@@ -98,6 +106,7 @@ func TestCmd(t *testing.T) {
 			assert.Equal(tCase.result.webroot, webroot)
 			assert.Equal(tCase.result.port, port)
 			assert.Equal(tCase.result.withoutIndex, withoutIndex)
+			assert.Equal(tCase.result.debug, debug)
 		})
 	}
 }

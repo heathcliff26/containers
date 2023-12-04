@@ -10,7 +10,14 @@ var (
 	webroot      string
 	port         int
 	withoutIndex bool
+	debug        bool
 )
+
+func debugf(msg string, args ...any) {
+	if debug {
+		log.Printf("DEBUG "+msg, args...)
+	}
+}
 
 type indexlessFilesystem struct {
 	fs http.FileSystem
@@ -26,6 +33,7 @@ func (ifs indexlessFilesystem) Open(path string) (http.File, error) {
 
 	s, err := f.Stat()
 	if err != nil {
+		log.Printf("ERROR An unexpected error occured serving %s: %v", path, err)
 		return nil, err
 	}
 
@@ -35,11 +43,29 @@ func (ifs indexlessFilesystem) Open(path string) (http.File, error) {
 		if err != nil {
 			closeErr := f.Close()
 			if closeErr != nil {
+				debugf("Error closing file %s: %v", index, err)
 				return nil, closeErr
 			}
-
+			debugf("Directory %s did not contain index.html, err=%v", path, err)
 			return nil, err
 		}
+	}
+
+	return f, nil
+}
+
+type indexedFilesystem struct {
+	fs http.FileSystem
+}
+
+// Simple wrapper around http.Dir.Open to obtain debug information
+func (ifs indexedFilesystem) Open(path string) (http.File, error) {
+	debugf("Received request for %s", path)
+
+	f, err := ifs.fs.Open(path)
+	if err != nil {
+		debugf("Could not open file %s: %v", path, err)
+		return nil, err
 	}
 
 	return f, nil
@@ -51,7 +77,7 @@ func getFilesystem(path string, noIndex bool) http.FileSystem {
 	if noIndex {
 		return indexlessFilesystem{fs}
 	} else {
-		return fs
+		return indexedFilesystem{fs}
 	}
 }
 
@@ -62,7 +88,7 @@ func main() {
 	fileServer := http.FileServer(fs)
 	http.Handle("/", fileServer)
 
-	log.Printf("Serving content from %s\n", webroot)
+	log.Printf("Serving content from %s", webroot)
 
 	log.Printf("Listening on :%d", port)
 	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
