@@ -1,6 +1,6 @@
 module github.com/heathcliff26/containers/apps/speedtest-exporter
 
-go 1.21.4
+go 1.21.5
 
 require (
 	github.com/prometheus/client_golang v1.17.0
