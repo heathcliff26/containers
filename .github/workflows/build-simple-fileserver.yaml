@@ -9,12 +9,16 @@ on:
     paths:
       - "apps/simple-fileserver/Dockerfile"
       - "apps/simple-fileserver/*.go"
+      - "apps/simple-fileserver/go.mod"
+      - "apps/simple-fileserver/go.sum"
       - "apps/simple-fileserver/**/*.go"
   pull_request:
     branches: [main]
     paths:
       - "apps/simple-fileserver/Dockerfile"
       - "apps/simple-fileserver/*.go"
+      - "apps/simple-fileserver/go.mod"
+      - "apps/simple-fileserver/go.sum"
       - "apps/simple-fileserver/**/*.go"
       - ".github/workflows/build-simple-fileserver.yaml"
 
