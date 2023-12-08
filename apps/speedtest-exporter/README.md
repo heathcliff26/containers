@@ -17,6 +17,7 @@ At this point i could have just used that as well, but i was bored and wanted to
     - [Tags](#tags)
   - [Usage](#usage)
   - [Metrics](#metrics)
+  - [Dashboard](#dashboard)
 
 ## Container Images
 
@@ -74,3 +75,12 @@ The following metrics are exported:
 | `speedtest_upload_megabits_per_second`   | Speedtest current Upload Speed in Mbit/s   |
 | `speedtest_data_used_megabytes`          | Data used for speedtest in MB              |
 | `speedtest_up`                           | Indicates if the speedtest was successful  |
+
+## Dashboard
+
+A ready made dashboard for the exporter can be imported from json. The json file can be found [here](dashboard/dashboard.json).
+
+The dashboard is also published on grafana.com with the id [20115](https://grafana.com/grafana/dashboards/20115).
+
+Here is a preview of the dashboard:
+![](images/dashboard.png)
