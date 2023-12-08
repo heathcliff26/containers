@@ -13,6 +13,7 @@ import (
 const (
 	defaultPort             = 8080
 	defaultCacheTime uint64 = 5
+	defaultDuration         = time.Duration(defaultCacheTime * uint64(time.Minute))
 	defaulLogLevel          = slog.LevelInfo
 )
 

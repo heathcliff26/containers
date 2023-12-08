@@ -6,152 +6,161 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func assertLogLevel(t *testing.T, expectedLevel slog.Level) {
-	if logLevel != nil {
-		assert.Equal(t, expectedLevel, logLevel.Level())
-	} else {
-		t.Error("Variable logLevel is not initialized")
-	}
+type expectedResultCmd struct {
+	port           int
+	addr           string
+	cacheTime      uint64
+	cacheDuration  time.Duration
+	speedtestPath  string
+	instance       string
+	verboseLogging bool
+	logLevel       slog.Level
 }
 
-func TestDefaultFlags(t *testing.T) {
-	parseFlags()
-	t.Cleanup(func() {
-		port = defaultPort
-		addr = ""
-		cacheTime = defaultCacheTime
-		cacheDuration = 0
-		speedtestPath = ""
-		instance = ""
-		verboseLogging = false
-		logLevel.Set(defaulLogLevel)
-	})
-
-	defaultAddr := strings.Join([]string{":", strconv.Itoa(defaultPort)}, "")
-
-	assert := assert.New(t)
-
-	assert.Equal(defaultPort, port)
-	assert.Equal(defaultAddr, addr)
-	assert.Equal(defaultCacheTime, cacheTime)
-	assert.NotEmpty(cacheDuration)
-	assert.Equal("", speedtestPath)
-	assert.NotEqual("", instance)
-	assert.Equal(false, verboseLogging)
-	assertLogLevel(t, defaulLogLevel)
+type testCasesCmd struct {
+	Name   string
+	Args   []string
+	Env    map[string]string
+	Result expectedResultCmd
 }
 
-func TestFlags(t *testing.T) {
-	args := []string{
-		"-port", "1234",
-		"-cacheTime", "56",
-		"-speedtest-path", "/foo/bar/speedtest",
-		"-instance", "foo",
-		"-v",
+func TestCmd(t *testing.T) {
+	if logLevel == nil {
+		t.Fatal("Variable logLevel is not initialized")
 	}
-	err := flag.CommandLine.Parse(args)
-	if err != nil {
-		t.Fatalf("Failed to parse test args: %v", err)
+
+	tMatrix := []testCasesCmd{
+		{
+			Name: "Default",
+			Args: nil,
+			Env:  nil,
+			Result: expectedResultCmd{
+				port:           defaultPort,
+				addr:           strings.Join([]string{":", strconv.Itoa(defaultPort)}, ""),
+				cacheTime:      defaultCacheTime,
+				cacheDuration:  defaultDuration,
+				speedtestPath:  "",
+				instance:       "",
+				verboseLogging: false,
+				logLevel:       defaulLogLevel,
+			},
+		},
+		{
+			Name: "Args",
+			Args: []string{
+				"-port", "1234",
+				"-cacheTime", "56",
+				"-speedtest-path", "/foo/bar/speedtest",
+				"-instance", "foo",
+				"-v",
+			},
+			Env: nil,
+			Result: expectedResultCmd{
+				port:           1234,
+				addr:           ":1234",
+				cacheTime:      56,
+				cacheDuration:  time.Duration(56 * time.Minute),
+				speedtestPath:  "/foo/bar/speedtest",
+				instance:       "foo",
+				verboseLogging: true,
+				logLevel:       slog.LevelDebug,
+			},
+		},
+		{
+			Name: "Env",
+			Args: nil,
+			Env: map[string]string{
+				"SPEEDTEST_PORT":       "5678",
+				"SPEEDTEST_CACHE_TIME": "90",
+				"SPEEDTEST_PATH":       "/foo/bar/baz/speedtest",
+				"SPEEDTEST_INSTANCE":   "foobar",
+				"SPEEDTEST_DEBUG":      "TrUe",
+			},
+			Result: expectedResultCmd{
+				port:           5678,
+				addr:           ":5678",
+				cacheTime:      90,
+				cacheDuration:  time.Duration(90 * time.Minute),
+				speedtestPath:  "/foo/bar/baz/speedtest",
+				instance:       "foobar",
+				verboseLogging: true,
+				logLevel:       slog.LevelDebug,
+			},
+		},
+		{
+			Name: "ArgsOverwriteEnv",
+			Args: []string{
+				"-port", "1234",
+				"-cacheTime", "56",
+				"-speedtest-path", "/foo/bar/speedtest",
+				"-instance", "foo",
+				"-v",
+			},
+			Env: map[string]string{
+				"SPEEDTEST_PORT":       "5678",
+				"SPEEDTEST_CACHE_TIME": "90",
+				"SPEEDTEST_PATH":       "/foo/bar/baz/speedtest",
+				"SPEEDTEST_INSTANCE":   "foobar",
+				"SPEEDTEST_DEBUG":      "false",
+			},
+			Result: expectedResultCmd{
+				port:           1234,
+				addr:           ":1234",
+				cacheTime:      56,
+				cacheDuration:  time.Duration(56 * time.Minute),
+				speedtestPath:  "/foo/bar/speedtest",
+				instance:       "foo",
+				verboseLogging: true,
+				logLevel:       slog.LevelDebug,
+			},
+		},
 	}
-	t.Cleanup(func() {
-		port = defaultPort
-		addr = ""
-		cacheTime = defaultCacheTime
-		cacheDuration = 0
-		speedtestPath = ""
-		instance = ""
-		verboseLogging = false
-		logLevel.Set(defaulLogLevel)
-	})
 
-	parseFlags()
+	for _, tCase := range tMatrix {
+		t.Run(tCase.Name, func(t *testing.T) {
+			t.Cleanup(func() {
+				port = defaultPort
+				addr = ""
+				cacheTime = defaultCacheTime
+				cacheDuration = 0
+				speedtestPath = ""
+				instance = ""
+				verboseLogging = false
+				logLevel.Set(defaulLogLevel)
+			})
 
-	assert := assert.New(t)
+			if tCase.Args != nil {
+				err := flag.CommandLine.Parse(tCase.Args)
+				if err != nil {
+					t.Fatalf("Failed to parse test args: %v", err)
+				}
+			}
+			for key, val := range tCase.Env {
+				t.Setenv(key, val)
+			}
 
-	assert.Equal(1234, port)
-	assert.Equal(":1234", addr)
-	assert.Equal(uint64(56), cacheTime)
-	assert.NotEmpty(cacheDuration)
-	assert.Equal("/foo/bar/speedtest", speedtestPath)
-	assert.Equal("foo", instance)
-	assert.Equal(true, verboseLogging)
-	assertLogLevel(t, slog.LevelDebug)
-}
+			parseFlags()
 
-func TestArgsFromEnv(t *testing.T) {
-	t.Setenv("SPEEDTEST_PORT", "5678")
-	t.Setenv("SPEEDTEST_CACHE_TIME", "90")
-	t.Setenv("SPEEDTEST_PATH", "/foo/bar/baz/speedtest")
-	t.Setenv("SPEEDTEST_INSTANCE", "foobar")
-	t.Setenv("SPEEDTEST_DEBUG", "TrUe")
+			assert := assert.New(t)
+			r := tCase.Result
 
-	parseFlags()
-	t.Cleanup(func() {
-		port = defaultPort
-		addr = ""
-		cacheTime = defaultCacheTime
-		cacheDuration = 0
-		speedtestPath = ""
-		instance = ""
-		verboseLogging = false
-		logLevel.Set(defaulLogLevel)
-	})
-
-	assert := assert.New(t)
-
-	assert.Equal(5678, port)
-	assert.Equal(":5678", addr)
-	assert.Equal(uint64(90), cacheTime)
-	assert.NotEmpty(cacheDuration)
-	assert.Equal("/foo/bar/baz/speedtest", speedtestPath)
-	assert.Equal("foobar", instance)
-	assert.Equal(true, verboseLogging)
-	assertLogLevel(t, slog.LevelDebug)
-}
-
-func TestArgsOverwriteEnv(t *testing.T) {
-	t.Setenv("SPEEDTEST_PORT", "5678")
-	t.Setenv("SPEEDTEST_CACHE_TIME", "90")
-	t.Setenv("SPEEDTEST_PATH", "/foo/bar/baz/speedtest")
-	t.Setenv("SPEEDTEST_INSTANCE", "foobar")
-	t.Setenv("SPEEDTEST_DEBUG", "TrUe")
-
-	args := []string{
-		"-port", "1234",
-		"-cacheTime", "56",
-		"-speedtest-path", "/foo/bar/speedtest",
-		"-instance", "foo",
-		"-v",
+			assert.Equal(r.port, port)
+			assert.Equal(r.addr, addr)
+			assert.Equal(r.cacheTime, cacheTime)
+			assert.Equal(r.cacheDuration, cacheDuration)
+			assert.Equal(r.speedtestPath, speedtestPath)
+			if r.instance == "" {
+				assert.NotEqual("", instance)
+			} else {
+				assert.Equal(r.instance, instance)
+			}
+			assert.Equal(r.verboseLogging, verboseLogging)
+			assert.Equal(r.logLevel, logLevel.Level())
+		})
 	}
-	err := flag.CommandLine.Parse(args)
-	if err != nil {
-		t.Fatalf("Failed to parse test args: %v", err)
-	}
-	t.Cleanup(func() {
-		port = defaultPort
-		addr = ""
-		cacheTime = defaultCacheTime
-		cacheDuration = 0
-		speedtestPath = ""
-		instance = ""
-		verboseLogging = false
-		logLevel.Set(defaulLogLevel)
-	})
-
-	parseFlags()
-
-	assert := assert.New(t)
-
-	assert.Equal(1234, port)
-	assert.Equal(":1234", addr)
-	assert.Equal(uint64(56), cacheTime)
-	assert.NotEmpty(cacheDuration)
-	assert.Equal("/foo/bar/speedtest", speedtestPath)
-	assert.Equal("foo", instance)
-	assert.Equal(true, verboseLogging)
-	assertLogLevel(t, slog.LevelDebug)
 }
