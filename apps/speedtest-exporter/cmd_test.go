@@ -24,6 +24,7 @@ func TestDefaultFlags(t *testing.T) {
 		port = defaultPort
 		addr = ""
 		cacheTime = defaultCacheTime
+		cacheDuration = 0
 		speedtestPath = ""
 		instance = ""
 		verboseLogging = false
@@ -37,6 +38,7 @@ func TestDefaultFlags(t *testing.T) {
 	assert.Equal(defaultPort, port)
 	assert.Equal(defaultAddr, addr)
 	assert.Equal(defaultCacheTime, cacheTime)
+	assert.NotEmpty(cacheDuration)
 	assert.Equal("", speedtestPath)
 	assert.NotEqual("", instance)
 	assert.Equal(false, verboseLogging)
@@ -59,6 +61,7 @@ func TestFlags(t *testing.T) {
 		port = defaultPort
 		addr = ""
 		cacheTime = defaultCacheTime
+		cacheDuration = 0
 		speedtestPath = ""
 		instance = ""
 		verboseLogging = false
@@ -71,7 +74,8 @@ func TestFlags(t *testing.T) {
 
 	assert.Equal(1234, port)
 	assert.Equal(":1234", addr)
-	assert.Equal(56, cacheTime)
+	assert.Equal(uint64(56), cacheTime)
+	assert.NotEmpty(cacheDuration)
 	assert.Equal("/foo/bar/speedtest", speedtestPath)
 	assert.Equal("foo", instance)
 	assert.Equal(true, verboseLogging)
@@ -90,6 +94,7 @@ func TestArgsFromEnv(t *testing.T) {
 		port = defaultPort
 		addr = ""
 		cacheTime = defaultCacheTime
+		cacheDuration = 0
 		speedtestPath = ""
 		instance = ""
 		verboseLogging = false
@@ -100,7 +105,8 @@ func TestArgsFromEnv(t *testing.T) {
 
 	assert.Equal(5678, port)
 	assert.Equal(":5678", addr)
-	assert.Equal(90, cacheTime)
+	assert.Equal(uint64(90), cacheTime)
+	assert.NotEmpty(cacheDuration)
 	assert.Equal("/foo/bar/baz/speedtest", speedtestPath)
 	assert.Equal("foobar", instance)
 	assert.Equal(true, verboseLogging)
@@ -129,6 +135,7 @@ func TestArgsOverwriteEnv(t *testing.T) {
 		port = defaultPort
 		addr = ""
 		cacheTime = defaultCacheTime
+		cacheDuration = 0
 		speedtestPath = ""
 		instance = ""
 		verboseLogging = false
@@ -141,7 +148,8 @@ func TestArgsOverwriteEnv(t *testing.T) {
 
 	assert.Equal(1234, port)
 	assert.Equal(":1234", addr)
-	assert.Equal(56, cacheTime)
+	assert.Equal(uint64(56), cacheTime)
+	assert.NotEmpty(cacheDuration)
 	assert.Equal("/foo/bar/speedtest", speedtestPath)
 	assert.Equal("foo", instance)
 	assert.Equal(true, verboseLogging)

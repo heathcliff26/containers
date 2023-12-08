@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/heathcliff26/containers/apps/speedtest-exporter/collector"
 	"github.com/heathcliff26/containers/apps/speedtest-exporter/speedtest"
@@ -48,7 +47,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	collector, err := collector.NewCollector(time.Duration(cacheTime), instance, s)
+	collector, err := collector.NewCollector(cacheDuration, instance, s)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed create collector: %v\n", err)
 		os.Exit(1)
