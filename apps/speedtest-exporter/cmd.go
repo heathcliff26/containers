@@ -53,7 +53,7 @@ func parseEnv() {
 			var err error
 			cacheTime, err = strconv.ParseUint(val, 10, 0)
 			if err != nil {
-				slog.Error("Failed to convert SPEEDTEST_CACHE_TIME to integer", "err", err)
+				slog.Error("Failed to convert SPEEDTEST_CACHE_TIME to uint64", "err", err)
 				os.Exit(1)
 			}
 		}

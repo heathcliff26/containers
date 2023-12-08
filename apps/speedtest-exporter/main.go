@@ -43,7 +43,7 @@ func main() {
 
 	s, err := createSpeedtest(speedtestPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed initialize speedtest-cli: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed initialize speedtest: %v\n", err)
 		os.Exit(1)
 	}
 

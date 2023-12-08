@@ -111,14 +111,8 @@ func TestCmd(t *testing.T) {
 	}
 }
 
-func TestCmdWebrootMissing(t *testing.T) {
-	if os.Getenv("RUN_CRASH_TEST") == "1" {
-		t.Setenv("SFILESERVER_WEBROOT", "")
-		parseFlags()
-		// Should not reach here, ensure exit with 0 if it does
-		os.Exit(0)
-	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestCmdWebrootMissing")
+func execExitTest(t *testing.T, test string) {
+	cmd := exec.Command(os.Args[0], "-test.run="+test)
 	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
 	err := cmd.Run()
 	if err == nil {
@@ -130,6 +124,16 @@ func TestCmdWebrootMissing(t *testing.T) {
 	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
+func TestCmdWebrootMissing(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		t.Setenv("SFILESERVER_WEBROOT", "")
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	execExitTest(t, "TestCmdWebrootMissing")
+}
+
 func TestCmdMalformedPortEnvVariable(t *testing.T) {
 	if os.Getenv("RUN_CRASH_TEST") == "1" {
 		t.Setenv("SFILESERVER_PORT", "not a number")
@@ -138,14 +142,5 @@ func TestCmdMalformedPortEnvVariable(t *testing.T) {
 		// Should not reach here, ensure exit with 0 if it does
 		os.Exit(0)
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestCmdMalformedPortEnvVariable")
-	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
-	err := cmd.Run()
-	if err == nil {
-		t.Fatal("Process exited without error")
-	}
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
-		return
-	}
-	t.Fatalf("process ran with err %v, want exit status 1", err)
+	execExitTest(t, "TestCmdMalformedPortEnvVariable")
 }

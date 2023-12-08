@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"log/slog"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
@@ -163,4 +165,37 @@ func TestCmd(t *testing.T) {
 			assert.Equal(r.logLevel, logLevel.Level())
 		})
 	}
+}
+
+func execExitTest(t *testing.T, test string) {
+	cmd := exec.Command(os.Args[0], "-test.run="+test)
+	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
+	err := cmd.Run()
+	if err == nil {
+		t.Fatal("Process exited without error")
+	}
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		return
+	}
+	t.Fatalf("process ran with err %v, want exit status 1", err)
+}
+
+func TestCmdMalformedPortEnvVariable(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		t.Setenv("SPEEDTEST_PORT", "not a number")
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	execExitTest(t, "TestCmdMalformedPortEnvVariable")
+}
+
+func TestCmdMalformedCacheTimeEnvVariable(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		t.Setenv("SPEEDTEST_CACHE_TIME", "not a number")
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	execExitTest(t, "TestCmdMalformedCacheTimeEnvVariable")
 }
