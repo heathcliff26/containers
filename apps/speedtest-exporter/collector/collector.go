@@ -1,7 +1,6 @@
 package collector
 
 import (
-	"fmt"
 	"log/slog"
 	"sync"
 	"time"
@@ -39,7 +38,7 @@ var speedtestMutex sync.Mutex
 //	speedtest: Instance of speedtest to use for collection metrics
 func NewCollector(cacheTime time.Duration, instance string, speedtest Speedtest) (*Collector, error) {
 	if speedtest == nil {
-		return nil, fmt.Errorf("No valid speedtest provided")
+		return nil, NoSpeedtestError{}
 	}
 	return &Collector{
 		cacheTime: cacheTime,

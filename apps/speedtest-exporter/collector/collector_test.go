@@ -43,7 +43,7 @@ func TestNewCollector(t *testing.T) {
 	assert.Equal(expectedCollector, actualCollector)
 
 	_, err = NewCollector(0, "", nil)
-	assert.ErrorContains(err, "No valid speedtest provided")
+	assert.Equal(NoSpeedtestError{}, err)
 }
 
 func TestSetNextSpeedtestTime(t *testing.T) {

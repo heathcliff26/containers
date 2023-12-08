@@ -75,3 +75,9 @@ func (r *SpeedtestResult) ClientIp() string {
 func (r *SpeedtestResult) Success() bool {
 	return r.success
 }
+
+type NoSpeedtestError struct{}
+
+func (e NoSpeedtestError) Error() string {
+	return "No valid speedtest provided"
+}
