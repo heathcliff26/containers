@@ -1,7 +1,7 @@
 ###############################################################################
 # BEGIN build-stage
 # Compile the binary
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:5b642cfa79009473ae3ee714e82dec7eb64e8eb80fe0a3c09eb112aa79e0c80f AS build-stage
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:ae34fbf671566a533f92e5469f3f3d34e9e6fb14c826db09956454da9a84c9a9 AS build-stage
 
 ARG BUILDPLATFORM
 ARG TARGETARCH
