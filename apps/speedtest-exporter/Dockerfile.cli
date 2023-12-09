@@ -1,7 +1,7 @@
 ###############################################################################
 # BEGIN build-stage
 # Compile the binary
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:bf8f707408dac7cab1574de53f1bdaa1e84e6897286b87e65ff843446af22927 AS build-stage
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:5b642cfa79009473ae3ee714e82dec7eb64e8eb80fe0a3c09eb112aa79e0c80f AS build-stage
 
 ARG BUILDPLATFORM
 ARG TARGETARCH
@@ -33,7 +33,7 @@ RUN go test -v ./...
 ###############################################################################
 # BEGIN fetch-stage
 # Fetch the speedtest-cli binary
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:bf8f707408dac7cab1574de53f1bdaa1e84e6897286b87e65ff843446af22927 AS fetch-stage
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:5b642cfa79009473ae3ee714e82dec7eb64e8eb80fe0a3c09eb112aa79e0c80f AS fetch-stage
 
 ARG BUILDPLATFORM
 ARG TARGETARCH
