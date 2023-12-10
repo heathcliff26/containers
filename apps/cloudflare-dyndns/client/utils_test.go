@@ -1,6 +1,7 @@
 package client
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -74,7 +75,12 @@ func TestGetPublicIP(t *testing.T) {
 
 			assert := assert.New(t)
 
-			assert.Nil(err)
+			if err != nil {
+				if tCase.Name == "IPv6" && strings.Contains(err.Error(), "Get \"https://ipv6.icanhazip.com\": dial tcp") {
+					t.Skip("No IPv6 connectivity")
+				}
+				t.Fatalf("Received unexpedted error: %s", err.Error())
+			}
 			assert.NotEmpty(ip)
 		})
 	}
