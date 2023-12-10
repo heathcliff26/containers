@@ -1,0 +1,23 @@
+# Log level of the application
+logLevel: "info"
+
+# Config for running in server mode
+server:
+  # Port to listen on. Default: 8080
+  port: 8080
+  # List of root domains that are allowed to be updated. Allows all when empty.
+  domains:
+    - example.org
+    - example.net
+
+# Config for running in client mode
+client:
+  # Token for accessing the cloudflare api
+  secret: ""
+  # Indicate if entries should be proxied by cloudflare. Default: true
+  proxy: true
+  # List of domains to update
+  domains:
+    - foo.example.org
+  # Interval in which the client should check for ip changes. Default: 5m
+  interval: "5m"

@@ -1,3 +1,64 @@
-FROM docker.io/library/php:8.3.0-apache-bookworm@sha256:c55d99c94f804ee54177ba00961d2441333b277a67e6a6901341cb251b47f638
+###############################################################################
+# BEGIN build-stage
+# Compile the binary
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.21.5@sha256:58e14a93348a3515c2becc54ebd35302128225169d166b7c6802451ab336c907 AS build-stage
 
-COPY fritzbox_dyndns.php /var/www/html/index.php
+ARG BUILDPLATFORM
+ARG TARGETARCH
+
+WORKDIR /app
+
+COPY vendor ./vendor
+COPY go.mod go.sum *.go ./
+COPY client ./client
+COPY config ./config
+COPY server ./server
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /cloudflare-dyndns
+
+#
+# END build-stage
+###############################################################################
+
+###############################################################################
+# BEGIN test-stage
+# Run the tests in the container
+FROM build-stage AS test-stage
+
+RUN go test -v ./...
+
+#
+# END test-stage
+###############################################################################
+
+###############################################################################
+# BEGIN combine-stage
+# Combine all outputs, to enable single layer copy for the final image
+FROM scratch AS combine-stage
+
+COPY --from=build-stage /cloudflare-dyndns /
+
+COPY --from=build-stage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+#
+# END combine-stage
+###############################################################################
+
+###############################################################################
+# BEGIN final-stage
+# Create final docker image
+FROM scratch AS final-stage
+
+WORKDIR /
+
+COPY --from=combine-stage / /
+
+EXPOSE 8080
+
+USER 1001
+
+ENTRYPOINT ["/cloudflare-dyndns"]
+
+#
+# END final-stage
+###############################################################################
