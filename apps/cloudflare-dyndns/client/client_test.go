@@ -290,3 +290,31 @@ func TestUpdateRecord(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	c := cloudflareClient{}
+
+	assert := assert.New(t)
+
+	// Testing with no IPs
+	err := c.Update()
+	assert.ErrorIs(err, NoIPError{})
+
+	// Testing with no Domains and IPv4 only
+	err = c.SetIPv4("100.100.100.100")
+	assert.Nil(err)
+	err = c.Update()
+	assert.ErrorIs(err, NoDomainError{})
+
+	// Testing with no Domains and dual stack
+	err = c.SetIPv6("fd00::dead")
+	assert.Nil(err)
+	err = c.Update()
+	assert.ErrorIs(err, NoDomainError{})
+
+	// Testing with no Domains and IPv6 only
+	err = c.SetIPv4("")
+	assert.Nil(err)
+	err = c.Update()
+	assert.ErrorIs(err, NoDomainError{})
+}

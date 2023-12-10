@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	DEFAULT_LOG_LEVEL = "info"
-	MODE_CLIENT       = "client"
-	MODE_SERVER       = "server"
+	DEFAULT_LOG_LEVEL   = "info"
+	DEFAULT_SERVER_PORT = 8080
+	MODE_CLIENT         = "client"
+	MODE_SERVER         = "server"
 )
 
 var logLevel *slog.LevelVar
@@ -76,16 +77,21 @@ func (c *Config) validateClient() error {
 	return nil
 }
 
-// Loads config from file, returns error if config is invalid
-func LoadConfig(path string, mode string) (Config, error) {
-	c := Config{
+// Returns a Config with default values set
+func DefaultConfig() Config {
+	return Config{
 		LogLevel: DEFAULT_LOG_LEVEL,
-		Server:   ServerConfig{Port: 8080},
+		Server:   ServerConfig{Port: DEFAULT_SERVER_PORT},
 		Client: ClientConfig{
 			Proxy:    true,
 			Interval: "5m",
 		},
 	}
+}
+
+// Loads config from file, returns error if config is invalid
+func LoadConfig(path string, mode string) (Config, error) {
+	c := DefaultConfig()
 
 	if path == "" && mode == MODE_SERVER {
 		_ = setLogLevel(DEFAULT_LOG_LEVEL)
@@ -132,7 +138,7 @@ func setLogLevel(level string) error {
 	case "error":
 		logLevel.Set(slog.LevelError)
 	default:
-		return &UnknownLogLevelError{level: level}
+		return &UnknownLogLevelError{level}
 	}
 	return nil
 }
