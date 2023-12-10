@@ -37,7 +37,7 @@ FROM scratch AS final-stage
 
 WORKDIR /
 
-COPY --from=build-stage /simple-fileserver /
+COPY --from=test-stage /simple-fileserver /
 
 EXPOSE 8080
 

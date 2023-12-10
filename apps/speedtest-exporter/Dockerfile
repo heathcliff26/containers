@@ -35,9 +35,9 @@ RUN go test -v ./...
 # Combine all outputs, to enable single layer copy for the final image
 FROM scratch AS combine-stage
 
-COPY --from=build-stage /speedtest-exporter /
+COPY --from=test-stage /speedtest-exporter /
 
-COPY --from=build-stage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=test-stage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 #
 # END combine-stage

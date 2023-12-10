@@ -57,7 +57,7 @@ RUN tar -xzf speedtest.tgz -C / speedtest
 # Combine all outputs, to enable single layer copy for the final image
 FROM scratch AS combine-stage
 
-COPY --from=build-stage /speedtest-exporter /
+COPY --from=test-stage /speedtest-exporter /
 
 COPY --from=fetch-stage /speedtest /
 
