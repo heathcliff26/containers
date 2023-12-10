@@ -23,6 +23,7 @@ on:
       - "apps/speedtest-exporter/go.sum"
       - "apps/speedtest-exporter/**/*.go"
       - ".github/workflows/build-speedtest-exporter.yaml"
+      - ".golangci.yml"
 
 jobs:
   golangci:

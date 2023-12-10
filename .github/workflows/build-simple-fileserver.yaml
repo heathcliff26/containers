@@ -21,6 +21,7 @@ on:
       - "apps/simple-fileserver/go.sum"
       - "apps/simple-fileserver/**/*.go"
       - ".github/workflows/build-simple-fileserver.yaml"
+      - ".golangci.yml"
 
 jobs:
   golangci:
