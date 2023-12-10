@@ -1,0 +1,5 @@
+# Fails because of no domains
+client:
+  secret: "testsecret"
+  proxy: true
+  interval: "5m"

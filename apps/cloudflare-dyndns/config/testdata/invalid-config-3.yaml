@@ -1,0 +1,7 @@
+# Fails because of invalid interval format
+client:
+  secret: "testsecret"
+  proxy: true
+  domains:
+    - foo.example.org
+  interval: "not a duration"

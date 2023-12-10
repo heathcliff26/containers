@@ -1,9 +1,9 @@
 package config
 
 type UnknownLogLevelError struct {
-	level string
+	Level string
 }
 
 func (e *UnknownLogLevelError) Error() string {
-	return "Unknown log level " + e.level
+	return "Unknown log level " + e.Level
 }
