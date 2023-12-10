@@ -1,0 +1,31 @@
+---
+name: Build cloudflare-dyndns
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/*.php"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/*.php"
+      - ".github/workflows/build-cloudflare-dyndns-php.yaml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: cloudflare-dyndns
+      dockerfile: Dockerfile.php
+      tag: php
+      tags: ""
+      dry-run: ${{ github.event_name == 'pull_request' }}
+    secrets: inherit

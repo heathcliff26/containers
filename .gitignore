@@ -1,1 +1,7 @@
+# Ignore binaries
+apps/cloudflare-dyndns/bin
+apps/simple-fileserver/bin
 apps/speedtest-exporter/bin
+
+# Ignore files created for testing
+apps/cloudflare-dyndns/test-config.yaml

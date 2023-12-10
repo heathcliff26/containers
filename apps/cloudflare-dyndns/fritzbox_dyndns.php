@@ -170,4 +170,3 @@ function exit_error($error_code, $msg)
     exit();
 }
 ?>
-

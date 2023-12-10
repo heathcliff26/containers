@@ -1,6 +1,7 @@
 go 1.21.5
 
 use (
+	./apps/cloudflare-dyndns
 	./apps/simple-fileserver
 	./apps/speedtest-exporter
 )
