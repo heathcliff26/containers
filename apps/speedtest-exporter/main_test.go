@@ -35,7 +35,7 @@ func TestServerRootHandler(t *testing.T) {
 
 func TestCreateSpeedtest(t *testing.T) {
 	t.Run("SpeedtestCLI", func(t *testing.T) {
-		s, err := createSpeedtest("./main_test.go")
+		s, err := createSpeedtest("./speedtest/testdata/speedtest-cli.sh")
 		if err != nil {
 			t.Fatalf("Failed to create speedtest: %v", err)
 		}
