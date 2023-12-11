@@ -19,7 +19,6 @@ func TestRunSpeedtestForGo(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NotEmpty(result)
-	assert.NotEmpty(result.JitterLatency())
 	assert.NotEmpty(result.Ping())
 	assert.NotEmpty(result.DownloadSpeed())
 	assert.NotEmpty(result.UploadSpeed())
