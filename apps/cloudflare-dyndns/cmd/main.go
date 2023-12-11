@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/client"
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/config"
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/server"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/server"
 )
 
 var (

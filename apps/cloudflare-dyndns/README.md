@@ -47,7 +47,7 @@ Usage of cloudflare-dyndns:
   -config string
         Path to config file, can be empty when running as server
 ```
-An example config can be found [here](#example-config.yaml).
+An example config can be found [here](configs/example-config.yaml).
 
 ## API (Server Mode)
 

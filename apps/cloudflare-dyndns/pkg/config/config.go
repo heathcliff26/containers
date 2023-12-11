@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/client"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
 	"gopkg.in/yaml.v3"
 )
 
