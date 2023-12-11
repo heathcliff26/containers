@@ -22,7 +22,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o
 ###############################################################################
 # BEGIN test-stage
 # Run the tests in the container
-FROM build-stage AS test-stage
+FROM docker.io/library/golang:1.21.5@sha256:ae34fbf671566a533f92e5469f3f3d34e9e6fb14c826db09956454da9a84c9a9 AS test-stage
+
+WORKDIR /app
+
+COPY --from=build-stage /app /app
+# Not needed for testing, but needed for later stage
+COPY --from=build-stage /cloudflare-dyndns /
 
 RUN go test -v ./...
 
