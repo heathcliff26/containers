@@ -7,12 +7,12 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/Dockerfile.php"
       - "apps/cloudflare-dyndns/*.php"
   pull_request:
     branches: [main]
     paths:
-      - "apps/cloudflare-dyndns/Dockerfile"
+      - "apps/cloudflare-dyndns/Dockerfile.php"
       - "apps/cloudflare-dyndns/*.php"
       - ".github/workflows/build-cloudflare-dyndns-php.yaml"
 
