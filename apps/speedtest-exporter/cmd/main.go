@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/collector"
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/speedtest"
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

@@ -3,7 +3,7 @@ package speedtest
 import (
 	"log/slog"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/collector"
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 	"github.com/showwin/speedtest-go/speedtest"
 )
 
