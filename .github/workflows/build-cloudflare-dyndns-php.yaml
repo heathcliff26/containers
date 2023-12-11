@@ -1,5 +1,5 @@
 ---
-name: Build cloudflare-dyndns
+name: Build cloudflare-dyndns-php
 
 on:
   workflow_dispatch:
