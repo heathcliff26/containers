@@ -15,7 +15,7 @@ func TestNewCloudflareClient(t *testing.T) {
 
 	assert := assert.New(t)
 
-	assert.Equal(MissingSecretError{}, err)
+	assert.Equal(ErrMissingSecret{}, err)
 	assert.Nil(c)
 }
 
@@ -298,23 +298,23 @@ func TestUpdate(t *testing.T) {
 
 	// Testing with no IPs
 	err := c.Update()
-	assert.ErrorIs(err, NoIPError{})
+	assert.ErrorIs(err, ErrNoIP{})
 
 	// Testing with no Domains and IPv4 only
 	err = c.SetIPv4("100.100.100.100")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, NoDomainError{})
+	assert.ErrorIs(err, ErrNoDomain{})
 
 	// Testing with no Domains and dual stack
 	err = c.SetIPv6("fd00::dead")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, NoDomainError{})
+	assert.ErrorIs(err, ErrNoDomain{})
 
 	// Testing with no Domains and IPv6 only
 	err = c.SetIPv4("")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, NoDomainError{})
+	assert.ErrorIs(err, ErrNoDomain{})
 }

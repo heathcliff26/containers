@@ -40,10 +40,7 @@ func getPublicIP(version string) (string, error) {
 		return "", err
 	}
 	if res.StatusCode != 200 {
-		return "", &HttpRequestFailedError{
-			StatusCode: res.StatusCode,
-			Body:       res.Body,
-		}
+		return "", &ErrHttpRequestFailed{res.StatusCode, res.Body}
 	}
 
 	b, err := io.ReadAll(res.Body)
@@ -52,7 +49,7 @@ func getPublicIP(version string) (string, error) {
 	}
 	ip := strings.ReplaceAll(string(b), "\n", "")
 	if !validIP(ip) {
-		return "", NewInvalidIPError(ip)
+		return "", &ErrInvalidIP{ip}
 	}
 
 	return ip, nil

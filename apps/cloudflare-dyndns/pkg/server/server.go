@@ -145,12 +145,12 @@ func (s *Server) requestHandler(rw http.ResponseWriter, req *http.Request) {
 	err = c.Update()
 	if err != nil {
 		switch err.(type) {
-		case client.NoIPError:
+		case client.ErrNoIP:
 			slog.Info("Received request with no IP")
 			rw.WriteHeader(http.StatusBadRequest)
 			sendResponse(rw, MESSAGE_INVALID_IP, false)
 			return
-		case client.NoDomainError:
+		case client.ErrNoDomain:
 			slog.Info("Received request with no domains")
 			rw.WriteHeader(http.StatusBadRequest)
 			sendResponse(rw, MESSAGE_MISSING_DOMAIN, false)
