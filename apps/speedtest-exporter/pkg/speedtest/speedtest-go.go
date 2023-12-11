@@ -3,47 +3,46 @@ package speedtest
 import (
 	"log/slog"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 	"github.com/showwin/speedtest-go/speedtest"
 )
 
-type Speedtest struct {
+type SpeedtestGo struct {
 }
 
 // Create instance of Speedtest
-func NewSpeedtest() *Speedtest {
-	return &Speedtest{}
+func NewSpeedtest() *SpeedtestGo {
+	return &SpeedtestGo{}
 }
 
 // Use the speedtest-go api to run a speedtest and parse the result
-func (s *Speedtest) Speedtest() *collector.SpeedtestResult {
+func (s *SpeedtestGo) Speedtest() *SpeedtestResult {
 	var client = speedtest.New()
 
 	serverList, err := client.FetchServers()
 	if err != nil {
 		slog.Error("Could not fetch server list", "error", err)
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 	targets, err := serverList.FindServer([]int{})
 	if err != nil {
 		slog.Error("Failed to find closest server", "error", err)
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 	if len(targets) != 1 {
 		slog.Error("FindServer returned more than one server")
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 	server := targets[0]
 
 	err = server.TestAll()
 	if err != nil {
 		slog.Error("Failed to run speedtest", "error", err)
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 	user, err := client.FetchUserInfo()
 	if err != nil {
 		slog.Error("Failed to fetch client information", "error", err)
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 
 	dataUsed := convertBytesToMB(server.Context.GetTotalDownload()) + convertBytesToMB(server.Context.GetTotalUpload())
@@ -60,5 +59,5 @@ func (s *Speedtest) Speedtest() *collector.SpeedtestResult {
 		slog.String("IP", user.IP),
 	)
 
-	return collector.NewSpeedtestResult(float64(server.Jitter.Milliseconds()), float64(server.Latency.Milliseconds()), server.DLSpeed, server.ULSpeed, dataUsed, user.Isp, user.IP)
+	return NewSpeedtestResult(float64(server.Jitter.Milliseconds()), float64(server.Latency.Milliseconds()), server.DLSpeed, server.ULSpeed, dataUsed, user.Isp, user.IP)
 }

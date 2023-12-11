@@ -30,7 +30,7 @@ func ServerRootHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<html><body><h1>Welcome to speedtest-exporter</h1>Click <a href='/metrics'>here</a> to see metrics.</body></html>")
 }
 
-func createSpeedtest(path string) (collector.Speedtest, error) {
+func createSpeedtest(path string) (speedtest.Speedtest, error) {
 	if path == "" {
 		return speedtest.NewSpeedtest(), nil
 	} else {

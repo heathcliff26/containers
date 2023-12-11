@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +35,7 @@ func TestRunSpeedtestForCLI(t *testing.T) {
 		return exec.Command("bash", "-c", path)
 	}
 
-	expectedResult := collector.NewSpeedtestResult(0.629, 17.148, 931.564032, 49.4518, 1141.3079899999998, "Some ISP", "100.107.156.96")
+	expectedResult := NewSpeedtestResult(0.629, 17.148, 931.564032, 49.4518, 1141.3079899999998, "Some ISP", "100.107.156.96")
 
 	result := s.Speedtest()
 

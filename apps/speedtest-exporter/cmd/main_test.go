@@ -46,6 +46,6 @@ func TestCreateSpeedtest(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to create speedtest: %v", err)
 		}
-		assert.Equal(t, "*speedtest.Speedtest", reflect.TypeOf(s).String())
+		assert.Equal(t, "*speedtest.SpeedtestGo", reflect.TypeOf(s).String())
 	})
 }

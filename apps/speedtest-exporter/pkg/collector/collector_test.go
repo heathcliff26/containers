@@ -4,23 +4,24 @@ import (
 	"testing"
 	"time"
 
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 )
 
-var fakeSpeedtestResultSuccess = NewSpeedtestResult(0.5, 15, 876.53, 12.34, 950.3079, "Foo Corp.", "127.0.0.1")
+var fakeSpeedtestResultSuccess = speedtest.NewSpeedtestResult(0.5, 15, 876.53, 12.34, 950.3079, "Foo Corp.", "127.0.0.1")
 
 type FakeSpeedtest struct {
 	callback func()
 	fail     bool
 }
 
-func (s *FakeSpeedtest) Speedtest() *SpeedtestResult {
+func (s *FakeSpeedtest) Speedtest() *speedtest.SpeedtestResult {
 	if s.callback != nil {
 		s.callback()
 	}
 	if s.fail {
-		return NewFailedSpeedtestResult()
+		return speedtest.NewFailedSpeedtestResult()
 	}
 	return fakeSpeedtestResultSuccess
 }
@@ -43,7 +44,7 @@ func TestNewCollector(t *testing.T) {
 	assert.Equal(expectedCollector, actualCollector)
 
 	_, err = NewCollector(0, "", nil)
-	assert.Equal(NoSpeedtestError{}, err)
+	assert.Equal(ErrNoSpeedtest{}, err)
 }
 
 func TestSetNextSpeedtestTime(t *testing.T) {
@@ -84,7 +85,7 @@ func TestResultFromCache(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not create new Collector: %v", err)
 	}
-	c.lastResult = NewFailedSpeedtestResult()
+	c.lastResult = speedtest.NewFailedSpeedtestResult()
 	c.nextSpeedtest = time.Now().Add(time.Hour)
 
 	result := c.getSpeedtestResult()
@@ -92,7 +93,7 @@ func TestResultFromCache(t *testing.T) {
 	assert := assert.New(t)
 
 	assert.NotNil(result)
-	assert.Equal(NewFailedSpeedtestResult(), result)
+	assert.Equal(speedtest.NewFailedSpeedtestResult(), result)
 	if speedtestRan {
 		t.Error("Speedtest has been called")
 	}
@@ -137,7 +138,7 @@ func TestRunSpeedtestWhenCacheExpired(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not create new Collector: %v", err)
 	}
-	c.lastResult = NewFailedSpeedtestResult()
+	c.lastResult = speedtest.NewFailedSpeedtestResult()
 	c.nextSpeedtest = time.Now().Add(time.Hour * -1)
 
 	result := c.getSpeedtestResult()
@@ -145,7 +146,7 @@ func TestRunSpeedtestWhenCacheExpired(t *testing.T) {
 	assert := assert.New(t)
 
 	assert.NotEmpty(result)
-	assert.NotEqual(NewFailedSpeedtestResult(), result)
+	assert.NotEqual(speedtest.NewFailedSpeedtestResult(), result)
 	assert.Equal(fakeSpeedtestResultSuccess, result)
 	assert.Equal(result, c.lastResult)
 	if !speedtestRan {
@@ -175,7 +176,7 @@ func TestSpeedtestIsNotRunConcurrently(t *testing.T) {
 
 	assert := assert.New(t)
 
-	var result1, result2 *SpeedtestResult
+	var result1, result2 *speedtest.SpeedtestResult
 	go func() {
 		result1 = c.getSpeedtestResult()
 	}()
@@ -200,7 +201,7 @@ func TestCollect(t *testing.T) {
 		ch := make(chan prometheus.Metric, 1)
 		go c.Collect(ch)
 
-		actualLabelValues := []string{c.instance, fakeSpeedtestResultSuccess.clientIp, fakeSpeedtestResultSuccess.clientIsp}
+		actualLabelValues := []string{c.instance, fakeSpeedtestResultSuccess.ClientIp(), fakeSpeedtestResultSuccess.ClientIsp()}
 
 		actualMetric := <-ch
 		expectedMetric := prometheus.MustNewConstMetric(jitterLatencyDesc, prometheus.GaugeValue, fakeSpeedtestResultSuccess.JitterLatency(), actualLabelValues...)

@@ -5,14 +5,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 type Collector struct {
 	cacheTime     time.Duration
 	instance      string
-	speedtest     Speedtest
-	lastResult    *SpeedtestResult
+	speedtest     speedtest.Speedtest
+	lastResult    *speedtest.SpeedtestResult
 	nextSpeedtest time.Time
 }
 
@@ -36,9 +37,9 @@ var speedtestMutex sync.Mutex
 //	cacheTime: Minimum time between speedtest runs
 //	instance: Name of this instance, provided as label on all metrics
 //	speedtest: Instance of speedtest to use for collection metrics
-func NewCollector(cacheTime time.Duration, instance string, speedtest Speedtest) (*Collector, error) {
+func NewCollector(cacheTime time.Duration, instance string, speedtest speedtest.Speedtest) (*Collector, error) {
 	if speedtest == nil {
-		return nil, NoSpeedtestError{}
+		return nil, ErrNoSpeedtest{}
 	}
 	return &Collector{
 		cacheTime: cacheTime,
@@ -60,7 +61,7 @@ func (c *Collector) setNextSpeedtestTime() {
 
 // Concurrency safe function to get the latest result of the speedtest.
 // Will either return the cached result or run a new test.
-func (c *Collector) getSpeedtestResult() *SpeedtestResult {
+func (c *Collector) getSpeedtestResult() *speedtest.SpeedtestResult {
 	if c.lastResult != nil && time.Now().Before(c.nextSpeedtest) {
 		slog.Debug("Cache has not expired, returning cached results")
 		return c.lastResult
