@@ -14,10 +14,14 @@ build:
 
 go-build:
 	make -p bin
-	go build $(GO_BUILD_FLAGS) -o bin/simple-fileserver
+	go build $(GO_BUILD_FLAGS) -o bin/simple-fileserver ./cmd/
+
+go-test:
+	go test -v ./...
 
 .PHONY: \
 	default \
 	build \
 	go-build \
+	go-test \
 	$(NULL)

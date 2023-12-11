@@ -9,9 +9,10 @@ ARG TARGETARCH
 WORKDIR /app
 
 COPY vendor ./vendor
-COPY go.mod go.sum *.go ./
+COPY go.mod go.sum ./
+COPY cmd ./cmd
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /simple-fileserver
+RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /simple-fileserver ./cmd/
 
 #
 # END build-stage
@@ -21,8 +22,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o
 # BEGIN test-stage
 # Run the tests in the container
 FROM build-stage AS test-stage
-
-COPY testdata ./testdata
 
 RUN go test -v ./...
 
