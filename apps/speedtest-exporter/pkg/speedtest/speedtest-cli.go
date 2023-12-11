@@ -6,8 +6,6 @@ import (
 	"errors"
 	"log/slog"
 	"os/exec"
-
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 )
 
 type SpeedtestCLI struct {
@@ -41,7 +39,7 @@ var makeCmd = func(path string) *exec.Cmd {
 }
 
 // Execute the speedtest-cli binary and parse the result
-func (s *SpeedtestCLI) Speedtest() *collector.SpeedtestResult {
+func (s *SpeedtestCLI) Speedtest() *SpeedtestResult {
 	cmd := makeCmd(s.Path())
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -49,14 +47,14 @@ func (s *SpeedtestCLI) Speedtest() *collector.SpeedtestResult {
 	err := cmd.Run()
 	if err != nil {
 		slog.Error("Could not execute speedtest", "error", err, slog.String("stdout", stdout.String()), slog.String("stderr", stderr.String()))
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 
 	var out resultJSON
 	err = json.Unmarshal(stdout.Bytes(), &out)
 	if err != nil {
 		slog.Error("Parsing JSON output from speedtest failed", "error", err, slog.String("output", stdout.String()))
-		return collector.NewFailedSpeedtestResult()
+		return NewFailedSpeedtestResult()
 	}
 
 	downloadMbps := convertBytesToMbits(out.Download.Bandwidth)
@@ -75,5 +73,5 @@ func (s *SpeedtestCLI) Speedtest() *collector.SpeedtestResult {
 		slog.String("IP", out.Interface.ExternalIP),
 	)
 
-	return collector.NewSpeedtestResult(out.Ping.Jitter, out.Ping.Latency, downloadMbps, uploadMbps, dataUsed, out.ISP, out.Interface.ExternalIP)
+	return NewSpeedtestResult(out.Ping.Jitter, out.Ping.Latency, downloadMbps, uploadMbps, dataUsed, out.ISP, out.Interface.ExternalIP)
 }
