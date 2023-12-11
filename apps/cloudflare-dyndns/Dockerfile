@@ -9,12 +9,11 @@ ARG TARGETARCH
 WORKDIR /app
 
 COPY vendor ./vendor
-COPY go.mod go.sum *.go ./
-COPY client ./client
-COPY config ./config
-COPY server ./server
+COPY go.mod go.sum ./
+COPY cmd ./cmd
+COPY pkg ./pkg
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /cloudflare-dyndns
+RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /cloudflare-dyndns ./cmd/
 
 #
 # END build-stage

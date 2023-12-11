@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/client"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
 	"github.com/stretchr/testify/assert"
 )
 

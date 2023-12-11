@@ -14,10 +14,14 @@ build:
 
 go-build:
 	make -p bin
-	go build $(GO_BUILD_FLAGS) -o bin/cloudflare-dyndns
+	go build $(GO_BUILD_FLAGS) -o bin/cloudflare-dyndns ./cmd/
+
+go-test:
+	go test -v ./...
 
 .PHONY: \
 	default \
 	build \
 	go-build \
+	go-test \
 	$(NULL)
