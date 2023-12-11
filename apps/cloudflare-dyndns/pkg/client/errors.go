@@ -6,46 +6,40 @@ import (
 	"io"
 )
 
-type MissingSecretError struct{}
+type ErrMissingSecret struct{}
 
-func (e MissingSecretError) Error() string {
+func (e ErrMissingSecret) Error() string {
 	return "No secret provided for authenticating with the API."
 }
 
-type InvalidIPError struct {
-	ip string
+type ErrInvalidIP struct {
+	IP string
 }
 
-func NewInvalidIPError(ip string) error {
-	return &InvalidIPError{
-		ip: ip,
-	}
+func (e *ErrInvalidIP) Error() string {
+	return fmt.Sprintf("\"%s\" is not a valid ip address", e.IP)
 }
 
-func (e *InvalidIPError) Error() string {
-	return fmt.Sprintf("\"%s\" is not a valid ip address", e.ip)
-}
+type ErrNoIP struct{}
 
-type NoIPError struct{}
-
-func (e NoIPError) Error() string {
+func (e ErrNoIP) Error() string {
 	return "Can't update dyndns entry, no IPs provided"
 }
 
-type NoDomainError struct{}
+type ErrNoDomain struct{}
 
-func (e NoDomainError) Error() string {
+func (e ErrNoDomain) Error() string {
 	return "Can't update dyndns entry, no valid domain provided"
 }
 
 // Shows the actual status code, as well as the response body.
 // Shows the error instead if it can't read the response body.
-type HttpRequestFailedError struct {
+type ErrHttpRequestFailed struct {
 	StatusCode int
 	Body       io.ReadCloser
 }
 
-func (e *HttpRequestFailedError) Error() string {
+func (e *ErrHttpRequestFailed) Error() string {
 	var body string
 	b, err := io.ReadAll(e.Body)
 	if err != nil {
@@ -57,11 +51,11 @@ func (e *HttpRequestFailedError) Error() string {
 }
 
 // Outputs the response received from cloudflare
-type CloudflareOperationFailedError struct {
+type ErrCloudflareOperationFailed struct {
 	result cloudflareResponse
 }
 
-func (e *CloudflareOperationFailedError) Error() string {
+func (e *ErrCloudflareOperationFailed) Error() string {
 	var result string
 	bytes, err := json.Marshal(e.result)
 	if err != nil {

@@ -12,7 +12,7 @@ type testClient struct {
 // Create a new testClient, fails if the token is empty
 func NewTestClient(token string, proxy bool) (DyndnsClient, error) {
 	if token == "" {
-		return nil, MissingSecretError{}
+		return nil, ErrMissingSecret{}
 	}
 	return &testClient{proxy: proxy}, nil
 }
@@ -52,7 +52,7 @@ func (c *testClient) AddDomain(domain string) {
 // Returns an error if string is neither empty nor a valid IP Address
 func (c *testClient) SetIPv4(val string) error {
 	if val != "" && !validIPv4(val) {
-		return NewInvalidIPError(val)
+		return &ErrInvalidIP{val}
 	}
 	c.ipv4 = val
 	return nil
@@ -62,7 +62,7 @@ func (c *testClient) SetIPv4(val string) error {
 // Returns an error if string is neither empty nor a valid IP Address
 func (c *testClient) SetIPv6(val string) error {
 	if val != "" && !validIPv6(val) {
-		return NewInvalidIPError(val)
+		return &ErrInvalidIP{val}
 	}
 	c.ipv6 = val
 	return nil
@@ -71,10 +71,10 @@ func (c *testClient) SetIPv6(val string) error {
 // Stub implementation, does initial check regarding IP and domains
 func (c *testClient) Update() error {
 	if c.ipv4 == "" && c.ipv6 == "" {
-		return NoIPError{}
+		return ErrNoIP{}
 	}
 	if c.domains == nil || len(c.domains) == 0 {
-		return NoDomainError{}
+		return ErrNoDomain{}
 	}
 	return nil
 }

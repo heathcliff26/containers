@@ -54,11 +54,11 @@ type ClientConfig struct {
 // Validate the client part of the config
 func (c *Config) validateClient() error {
 	if c.Client.Secret == "" {
-		return client.MissingSecretError{}
+		return client.ErrMissingSecret{}
 	}
 
 	if c.Client.Domains == nil || len(c.Client.Domains) < 1 {
-		return client.NoDomainError{}
+		return client.ErrNoDomain{}
 	}
 
 	// Interval should be a valid duration
@@ -138,7 +138,7 @@ func setLogLevel(level string) error {
 	case "error":
 		logLevel.Set(slog.LevelError)
 	default:
-		return &UnknownLogLevelError{level}
+		return &ErrUnknownLogLevel{level}
 	}
 	return nil
 }

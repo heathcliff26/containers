@@ -110,12 +110,12 @@ func TestInvalidConfig(t *testing.T) {
 		{
 			Name:  "ClientMissingSecret",
 			Path:  "testdata/invalid-config-1.yaml",
-			Error: "client.MissingSecretError",
+			Error: "client.ErrMissingSecret",
 		},
 		{
 			Name:  "ClientNoDomain",
 			Path:  "testdata/invalid-config-2.yaml",
-			Error: "client.NoDomainError",
+			Error: "client.ErrNoDomain",
 		},
 		{
 			Name:  "ClientWrongInterval",
@@ -149,7 +149,7 @@ func TestSetLogLevel(t *testing.T) {
 		{"INFO", slog.LevelInfo, nil},
 		{"WARN", slog.LevelWarn, nil},
 		{"ERROR", slog.LevelError, nil},
-		{"Unknown", 0, &UnknownLogLevelError{"Unknown"}},
+		{"Unknown", 0, &ErrUnknownLogLevel{"Unknown"}},
 	}
 	t.Cleanup(func() {
 		err := setLogLevel(DEFAULT_LOG_LEVEL)

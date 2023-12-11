@@ -41,7 +41,7 @@ type cloudflareClient struct {
 // Create a new CloudflareClient and test if the token is valid
 func NewCloudflareClient(token string, proxy bool) (DyndnsClient, error) {
 	if token == "" {
-		return nil, MissingSecretError{}
+		return nil, ErrMissingSecret{}
 	}
 	c := &cloudflareClient{
 		endpoint: CLOUDFLARE_API_ENDPOINT,
@@ -90,7 +90,7 @@ func (c *cloudflareClient) AddDomain(domain string) {
 // Returns an error if string is neither empty nor a valid IP Address
 func (c *cloudflareClient) SetIPv4(val string) error {
 	if val != "" && !validIPv4(val) {
-		return NewInvalidIPError(val)
+		return &ErrInvalidIP{val}
 	}
 	c.ipv4 = val
 	return nil
@@ -100,7 +100,7 @@ func (c *cloudflareClient) SetIPv4(val string) error {
 // Returns an error if string is neither empty nor a valid IP Address
 func (c *cloudflareClient) SetIPv6(val string) error {
 	if val != "" && !validIPv6(val) {
-		return NewInvalidIPError(val)
+		return &ErrInvalidIP{val}
 	}
 	c.ipv6 = val
 	return nil
@@ -128,7 +128,7 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 		return cloudflareResponse{}, err
 	}
 	if res.StatusCode != 200 {
-		return cloudflareResponse{}, &HttpRequestFailedError{
+		return cloudflareResponse{}, &ErrHttpRequestFailed{
 			StatusCode: res.StatusCode,
 			Body:       res.Body,
 		}
@@ -140,7 +140,7 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 		return cloudflareResponse{}, err
 	}
 	if !result.Successs {
-		return cloudflareResponse{}, &CloudflareOperationFailedError{result: result}
+		return cloudflareResponse{}, &ErrCloudflareOperationFailed{result: result}
 	}
 	return result, nil
 }
@@ -162,7 +162,7 @@ func (c *cloudflareClient) getZoneId(domain string) (string, error) {
 	if err != nil {
 		return "", err
 	} else if len(zones) < 1 {
-		return "", NoDomainError{}
+		return "", ErrNoDomain{}
 	}
 	return zones[0].Id, nil
 }
@@ -237,10 +237,10 @@ func (c *cloudflareClient) updateRecord(zone string, domain string, recordType s
 // Will return with the first error
 func (c *cloudflareClient) Update() error {
 	if c.ipv4 == "" && c.ipv6 == "" {
-		return NoIPError{}
+		return ErrNoIP{}
 	}
 	if c.domains == nil || len(c.domains) == 0 {
-		return NoDomainError{}
+		return ErrNoDomain{}
 	}
 	for _, domain := range c.domains {
 		zone, err := c.getZoneId(domain)
