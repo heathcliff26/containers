@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/collector"
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 	"github.com/stretchr/testify/assert"
 )
 

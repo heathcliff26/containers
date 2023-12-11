@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"os/exec"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/collector"
+	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
 )
 
 type SpeedtestCLI struct {

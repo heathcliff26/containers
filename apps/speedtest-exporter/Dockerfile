@@ -9,11 +9,11 @@ ARG TARGETARCH
 WORKDIR /app
 
 COPY vendor ./vendor
-COPY go.mod go.sum *.go ./
-COPY collector ./collector
-COPY speedtest ./speedtest
+COPY go.mod go.sum ./
+COPY cmd ./cmd
+COPY pkg ./pkg
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /speedtest-exporter
+RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /speedtest-exporter ./cmd/
 
 #
 # END build-stage
