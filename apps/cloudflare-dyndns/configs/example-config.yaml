@@ -21,3 +21,5 @@ client:
     - foo.example.org
   # Interval in which the client should check for ip changes. Default: 5m
   interval: "5m"
+  # Endpoint to call when using relay mode
+  endpoint: ""

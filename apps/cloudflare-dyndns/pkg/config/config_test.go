@@ -22,6 +22,7 @@ func TestValidConfigs(t *testing.T) {
 			Domains:      []string{"foo.example.org"},
 			Interval:     "5m",
 			IntervalTime: time.Duration(5 * time.Minute),
+			Endpoint:     "dyndns.example.org",
 		},
 	}
 	c2 := Config{
@@ -36,6 +37,7 @@ func TestValidConfigs(t *testing.T) {
 			Domains:      []string{"bar.example.net"},
 			Interval:     "10m",
 			IntervalTime: time.Duration(10 * time.Minute),
+			Endpoint:     "dyndns.example.net",
 		},
 	}
 	tMatrix := []struct {
@@ -72,6 +74,18 @@ func TestValidConfigs(t *testing.T) {
 			Mode:   MODE_CLIENT,
 			Result: c2,
 		},
+		{
+			Name:   "RelayConfig1",
+			Path:   "testdata/valid-config-1.yaml",
+			Mode:   MODE_RELAY,
+			Result: c1,
+		},
+		{
+			Name:   "RelayConfig2",
+			Path:   "testdata/valid-config-2.yaml",
+			Mode:   MODE_RELAY,
+			Result: c2,
+		},
 	}
 
 	for _, tCase := range tMatrix {
@@ -83,8 +97,8 @@ func TestValidConfigs(t *testing.T) {
 			if !assert.Nil(err) {
 				t.Fatalf("Failed to load config: %v", err)
 			}
-			if tCase.Mode != MODE_CLIENT {
-				// The value will only be set when mode is client
+			if tCase.Mode == MODE_SERVER {
+				// The value will not be set when mode is server
 				tCase.Result.Client.IntervalTime = 0
 			}
 			assert.Equal(tCase.Result, c)
@@ -94,8 +108,7 @@ func TestValidConfigs(t *testing.T) {
 
 func TestInvalidConfig(t *testing.T) {
 	tMatrix := []struct {
-		Name, Path string
-		Error      string
+		Name, Path, Mode, Error string
 	}{
 		{
 			Name:  "InvalidPath",
@@ -109,25 +122,55 @@ func TestInvalidConfig(t *testing.T) {
 		},
 		{
 			Name:  "ClientMissingSecret",
+			Mode:  MODE_CLIENT,
 			Path:  "testdata/invalid-config-1.yaml",
-			Error: "client.ErrMissingSecret",
+			Error: "dyndns.ErrMissingSecret",
 		},
 		{
 			Name:  "ClientNoDomain",
+			Mode:  MODE_CLIENT,
 			Path:  "testdata/invalid-config-2.yaml",
-			Error: "client.ErrNoDomain",
+			Error: "dyndns.ErrNoDomain",
 		},
 		{
 			Name:  "ClientWrongInterval",
+			Mode:  MODE_CLIENT,
 			Path:  "testdata/invalid-config-3.yaml",
 			Error: "*errors.errorString",
+		},
+		{
+			Name:  "RelayMissingSecret",
+			Mode:  MODE_RELAY,
+			Path:  "testdata/invalid-config-1.yaml",
+			Error: "dyndns.ErrMissingSecret",
+		},
+		{
+			Name:  "RelayNoDomain",
+			Mode:  MODE_RELAY,
+			Path:  "testdata/invalid-config-2.yaml",
+			Error: "dyndns.ErrNoDomain",
+		},
+		{
+			Name:  "RelayWrongInterval",
+			Mode:  MODE_RELAY,
+			Path:  "testdata/invalid-config-3.yaml",
+			Error: "*errors.errorString",
+		},
+		{
+			Name:  "RelayMissingEndpoint",
+			Mode:  MODE_RELAY,
+			Path:  "testdata/invalid-config-4.yaml",
+			Error: "dyndns.ErrMissingEndpoint",
 		},
 	}
 
 	for _, tCase := range tMatrix {
 		t.Run(tCase.Name, func(t *testing.T) {
-			_, err := LoadConfig(tCase.Path, MODE_CLIENT)
+			_, err := LoadConfig(tCase.Path, tCase.Mode)
 
+			if !assert.Error(t, err) {
+				t.Fatal("Did not receive an error")
+			}
 			if !assert.Equal(t, tCase.Error, reflect.TypeOf(err).String()) {
 				t.Fatalf("Received invalid error: %v", err)
 			}

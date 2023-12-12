@@ -6,16 +6,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
 	"github.com/stretchr/testify/assert"
 )
 
-// Only test missing secret is checked, login needs to be tested separately since
+// Only test missing secret is checked, login is tested separately
 func TestNewCloudflareClient(t *testing.T) {
 	c, err := NewCloudflareClient("", true)
 
 	assert := assert.New(t)
 
-	assert.Equal(ErrMissingSecret{}, err)
+	assert.Equal(dyndns.ErrMissingSecret{}, err)
 	assert.Nil(c)
 }
 
@@ -29,7 +30,7 @@ func TestClouflareAuthentication(t *testing.T) {
 		auth := req.Header.Get("Authorization")
 		res := cloudflareResponse{}
 
-		if res.Successs = assert.Equal("Bearer testtoken", auth); res.Successs {
+		if res.Success = assert.Equal("Bearer testtoken", auth); res.Success {
 			rw.WriteHeader(http.StatusOK)
 		} else {
 			rw.WriteHeader(http.StatusUnauthorized)
@@ -52,56 +53,6 @@ func TestClouflareAuthentication(t *testing.T) {
 	assert.Nil(err)
 }
 
-func TestCloudflareClientGetFunctions(t *testing.T) {
-	domains := []string{"foo.example.org", "bar.example.org"}
-	c := &cloudflareClient{
-		proxy:   true,
-		domains: domains,
-		ipv4:    "100.100.100.100",
-		ipv6:    "fd00::dead",
-	}
-	t.Run("Proxy", func(t *testing.T) {
-		assert.Equal(t, true, c.Proxy())
-	})
-	t.Run("Domains", func(t *testing.T) {
-		assert.Equal(t, domains, c.Domains())
-	})
-	t.Run("IPv4", func(t *testing.T) {
-		assert.Equal(t, "100.100.100.100", c.IPv4())
-	})
-	t.Run("IPv6", func(t *testing.T) {
-		assert.Equal(t, "fd00::dead", c.IPv6())
-	})
-}
-
-func TestCloudflareClientSetFunctions(t *testing.T) {
-	t.Run("SetDomains", func(t *testing.T) {
-		c := &cloudflareClient{}
-		domains := []string{"foo.example.org", "bar.example.org"}
-		c.SetDomains(domains)
-		assert.Equal(t, domains, c.Domains())
-	})
-	t.Run("AddDomain", func(t *testing.T) {
-		c := &cloudflareClient{}
-		c.AddDomain("foo.example.org")
-		assert.Equal(t, []string{"foo.example.org"}, c.Domains())
-		c.AddDomain("bar.example.org")
-		assert.Equal(t, []string{"foo.example.org", "bar.example.org"}, c.Domains())
-	})
-	t.Run("SetIPv4", func(t *testing.T) {
-		c := &cloudflareClient{}
-		err := c.SetIPv4("100.100.100.100")
-		assert.Equal(t, "100.100.100.100", c.IPv4())
-		assert.Nil(t, err)
-	})
-	t.Run("SetIPv6", func(t *testing.T) {
-		c := &cloudflareClient{}
-		err := c.SetIPv6("fd00::dead")
-		assert.Equal(t, "fd00::dead", c.IPv6())
-		assert.Nil(t, err)
-	})
-}
-
 func TestGetZoneId(t *testing.T) {
 	assert := assert.New(t)
 
@@ -110,7 +61,7 @@ func TestGetZoneId(t *testing.T) {
 		assert.Equal("/zones?name=example.org&status=active", req.URL.String())
 		assert.Equal("Bearer testtoken", req.Header.Get("Authorization"))
 
-		res := cloudflareResponse{Successs: true}
+		res := cloudflareResponse{Success: true}
 
 		result := []cloudflareZone{{Id: "44a6dc905d4ff61b"}}
 		b, err := json.Marshal(result)
@@ -162,7 +113,7 @@ func TestGetRecords(t *testing.T) {
 		assert.Equal("/zones/6384bd8687814061/dns_records?name=foo.example.org", req.URL.String())
 		assert.Equal("Bearer testtoken", req.Header.Get("Authorization"))
 
-		res := cloudflareResponse{Successs: true}
+		res := cloudflareResponse{Success: true}
 
 		b, err := json.Marshal(records)
 		if err != nil {
@@ -259,7 +210,7 @@ func TestUpdateRecord(t *testing.T) {
 					assert.Equal("/zones/"+zone+"/dns_records", req.URL.String())
 				}
 
-				res := cloudflareResponse{Successs: true}
+				res := cloudflareResponse{Success: true}
 
 				b, err := json.Marshal(res)
 				if err != nil {
@@ -274,13 +225,13 @@ func TestUpdateRecord(t *testing.T) {
 			c := &cloudflareClient{
 				endpoint: server.URL + "/",
 				token:    "testtoken",
-				proxy:    tCase.Proxy,
+				data:     dyndns.NewClientData(tCase.Proxy),
 			}
 			if tCase.Record.Type == "A" {
-				err := c.SetIPv4(tCase.Record.Content)
+				err := c.Data().SetIPv4(tCase.Record.Content)
 				assert.Nil(err)
 			} else {
-				err := c.SetIPv6(tCase.Record.Content)
+				err := c.Data().SetIPv6(tCase.Record.Content)
 				assert.Nil(err)
 			}
 			err := c.updateRecord(zone, domain, tCase.Record.Type, tCase.Record.Id)
@@ -292,29 +243,29 @@ func TestUpdateRecord(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	c := cloudflareClient{}
+	c := cloudflareClient{data: dyndns.NewClientData(false)}
 
 	assert := assert.New(t)
 
 	// Testing with no IPs
 	err := c.Update()
-	assert.ErrorIs(err, ErrNoIP{})
+	assert.ErrorIs(err, dyndns.ErrNoIP{})
 
 	// Testing with no Domains and IPv4 only
-	err = c.SetIPv4("100.100.100.100")
+	err = c.Data().SetIPv4("100.100.100.100")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, ErrNoDomain{})
+	assert.ErrorIs(err, dyndns.ErrNoDomain{})
 
 	// Testing with no Domains and dual stack
-	err = c.SetIPv6("fd00::dead")
+	err = c.Data().SetIPv6("fd00::dead")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, ErrNoDomain{})
+	assert.ErrorIs(err, dyndns.ErrNoDomain{})
 
 	// Testing with no Domains and IPv6 only
-	err = c.SetIPv4("")
+	err = c.Data().SetIPv4("")
 	assert.Nil(err)
 	err = c.Update()
-	assert.ErrorIs(err, ErrNoDomain{})
+	assert.ErrorIs(err, dyndns.ErrNoDomain{})
 }

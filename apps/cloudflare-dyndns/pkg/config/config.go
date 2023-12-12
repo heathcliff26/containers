@@ -7,15 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
 	"gopkg.in/yaml.v3"
 )
 
 const (
 	DEFAULT_LOG_LEVEL   = "info"
 	DEFAULT_SERVER_PORT = 8080
-	MODE_CLIENT         = "client"
 	MODE_SERVER         = "server"
+	MODE_CLIENT         = "client"
+	MODE_RELAY          = "relay"
 )
 
 var logLevel *slog.LevelVar
@@ -49,16 +50,17 @@ type ClientConfig struct {
 	Domains      []string      `yaml:"domains"`
 	Interval     string        `yaml:"interval,omitempty"`
 	IntervalTime time.Duration `yaml:"-"`
+	Endpoint     string        `yaml:"endpoint,omitempty"`
 }
 
 // Validate the client part of the config
 func (c *Config) validateClient() error {
 	if c.Client.Secret == "" {
-		return client.ErrMissingSecret{}
+		return dyndns.ErrMissingSecret{}
 	}
 
 	if c.Client.Domains == nil || len(c.Client.Domains) < 1 {
-		return client.ErrNoDomain{}
+		return dyndns.ErrNoDomain{}
 	}
 
 	// Interval should be a valid duration
@@ -66,6 +68,9 @@ func (c *Config) validateClient() error {
 	c.Client.IntervalTime, err = time.ParseDuration(c.Client.Interval)
 	if err != nil {
 		return err
+	}
+	if c.Client.IntervalTime < time.Duration(2*time.Minute) {
+		slog.Warn("Interval is smaller than 2 Minutes, be wary of possible rate limits", slog.Duration("interval", c.Client.IntervalTime))
 	}
 
 	slog.Info("Loaded client config",
@@ -116,11 +121,14 @@ func LoadConfig(path string, mode string) (Config, error) {
 		return Config{}, err
 	}
 
-	if mode == MODE_CLIENT {
+	if mode == MODE_CLIENT || mode == MODE_RELAY {
 		err = c.validateClient()
 		if err != nil {
 			return Config{}, err
 		}
+	}
+	if mode == MODE_RELAY && c.Client.Endpoint == "" {
+		return Config{}, dyndns.ErrMissingEndpoint{}
 	}
 
 	return c, nil

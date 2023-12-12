@@ -5,7 +5,7 @@ import "encoding/json"
 type cloudflareResponse struct {
 	Errors   []cloudflareMessages `json:"errors"`
 	Messages []cloudflareMessages `json:"messages"`
-	Successs bool                 `json:"success"`
+	Success  bool                 `json:"success"`
 	Result   json.RawMessage      `json:"result"`
 }
 

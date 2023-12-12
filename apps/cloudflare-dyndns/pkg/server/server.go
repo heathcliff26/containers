@@ -11,12 +11,13 @@ import (
 
 	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
 	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
 )
 
 type Server struct {
 	Addr         string
 	Domains      []string
-	createClient func(string, bool) (client.DyndnsClient, error)
+	createClient func(string, bool) (dyndns.Client, error)
 }
 
 type RequestParams struct {
@@ -125,32 +126,32 @@ func (s *Server) requestHandler(rw http.ResponseWriter, req *http.Request) {
 		sendResponse(rw, MESSAGE_UNAUTHORIZED, false)
 		return
 	}
-	err = c.SetIPv4(params.IPv4)
+	err = c.Data().SetIPv4(params.IPv4)
 	if err != nil {
 		slog.Info("Failed to set IPv4 for client", "err", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		sendResponse(rw, MESSAGE_INVALID_IP, false)
 		return
 	}
-	err = c.SetIPv6(params.IPv6)
+	err = c.Data().SetIPv6(params.IPv6)
 	if err != nil {
 		slog.Info("Failed to set IPv6 for client", "err", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		sendResponse(rw, MESSAGE_INVALID_IP, false)
 		return
 	}
-	c.SetDomains(params.Domains)
+	c.Data().SetDomains(params.Domains)
 
 	// Update records
 	err = c.Update()
 	if err != nil {
 		switch err.(type) {
-		case client.ErrNoIP:
+		case dyndns.ErrNoIP:
 			slog.Info("Received request with no IP")
 			rw.WriteHeader(http.StatusBadRequest)
 			sendResponse(rw, MESSAGE_INVALID_IP, false)
 			return
-		case client.ErrNoDomain:
+		case dyndns.ErrNoDomain:
 			slog.Info("Received request with no domains")
 			rw.WriteHeader(http.StatusBadRequest)
 			sendResponse(rw, MESSAGE_MISSING_DOMAIN, false)

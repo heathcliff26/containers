@@ -3,3 +3,4 @@ client:
   secret: "testsecret"
   proxy: true
   interval: "5m"
+  endpoint: "https://dyndns.example.org"
