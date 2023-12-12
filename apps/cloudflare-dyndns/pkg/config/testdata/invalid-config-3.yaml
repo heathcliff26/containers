@@ -5,3 +5,4 @@ client:
   domains:
     - foo.example.org
   interval: "not a duration"
+  endpoint: "https://dyndns.example.org"

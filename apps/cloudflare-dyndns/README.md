@@ -37,15 +37,17 @@ There are different flavors of the image:
 
 ## Usage
 
-The binary can be run either as a server or as a standalone client with `-client`
+The binary can be run either as a server, a standalone client or in relay mode where it will call a server.
+
+The main use case for relay mode would be when you want to restrict your cloudflare API key to a static IP.
 
 Output of `cloudflare-dyndns -h`
 ```
 Usage of cloudflare-dyndns:
-  -client
-        Run in client mode
   -config string
-        Path to config file, can be empty when running as server
+        Path to config file, can be empty when running in mode server
+  -mode string
+        Set what mode to run, options are "server", "client" and "relay" (default "server")
 ```
 An example config can be found [here](configs/example-config.yaml).
 

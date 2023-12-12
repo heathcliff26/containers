@@ -1,7 +1,6 @@
-package client
+package dyndns
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -10,6 +9,12 @@ type ErrMissingSecret struct{}
 
 func (e ErrMissingSecret) Error() string {
 	return "No secret provided for authenticating with the API."
+}
+
+type ErrMissingEndpoint struct{}
+
+func (e ErrMissingEndpoint) Error() string {
+	return "No endpoint provided"
 }
 
 type ErrInvalidIP struct {
@@ -51,17 +56,17 @@ func (e *ErrHttpRequestFailed) Error() string {
 }
 
 // Outputs the response received from cloudflare
-type ErrCloudflareOperationFailed struct {
-	result cloudflareResponse
+type ErrOperationFailed struct {
+	Result io.ReadCloser
 }
 
-func (e *ErrCloudflareOperationFailed) Error() string {
+func (e *ErrOperationFailed) Error() string {
 	var result string
-	bytes, err := json.Marshal(e.result)
+	bytes, err := io.ReadAll(e.Result)
 	if err != nil {
 		result = err.Error()
 	} else {
 		result = string(bytes)
 	}
-	return "Cloudflare api call returned without success, response: " + result
+	return "Remote api call returned without success, response: " + result
 }

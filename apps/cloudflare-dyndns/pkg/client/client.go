@@ -6,47 +6,31 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
+
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
 )
 
 const CLOUDFLARE_API_ENDPOINT = "https://api.cloudflare.com/client/v4/"
 
-type DyndnsClient interface {
-	Proxy() bool
-	Domains() []string
-	IPv4() string
-	IPv6() string
-	SetDomains([]string)
-	AddDomain(string)
-	SetIPv4(string) error
-	SetIPv6(string) error
-	Update() error
-	Run(time.Duration)
-}
-
-// Implements DyndnsClient
+// Implements dyndns.Client
 type cloudflareClient struct {
 	// API is only here as a variable to enable local testing without relying on the cloudflare API
 	endpoint string
 	token    string
-	proxy    bool
-	domains  []string
-	ipv4     string
-	ipv6     string
+	data     *dyndns.ClientData
 }
 
 // Create a new CloudflareClient and test if the token is valid
-func NewCloudflareClient(token string, proxy bool) (DyndnsClient, error) {
+func NewCloudflareClient(token string, proxy bool) (dyndns.Client, error) {
 	if token == "" {
-		return nil, ErrMissingSecret{}
+		return nil, dyndns.ErrMissingSecret{}
 	}
+
 	c := &cloudflareClient{
 		endpoint: CLOUDFLARE_API_ENDPOINT,
 		token:    token,
-		proxy:    proxy,
+		data:     dyndns.NewClientData(proxy),
 	}
 	_, err := c.cloudflare(http.MethodGet, "zones", nil)
 	if err != nil {
@@ -55,55 +39,9 @@ func NewCloudflareClient(token string, proxy bool) (DyndnsClient, error) {
 	return c, nil
 }
 
-// Check if DNS entries will be set to proxied
-func (c *cloudflareClient) Proxy() bool {
-	return c.proxy
-}
-
-func (c *cloudflareClient) Domains() []string {
-	return c.domains
-}
-
-func (c *cloudflareClient) IPv4() string {
-	return c.ipv4
-}
-
-func (c *cloudflareClient) IPv6() string {
-	return c.ipv6
-}
-
-// Set domains to update, overrides previous domains
-func (c *cloudflareClient) SetDomains(domains []string) {
-	c.domains = domains
-}
-
-// Add a domain to the list of domains
-func (c *cloudflareClient) AddDomain(domain string) {
-	if c.domains == nil {
-		c.domains = []string{domain}
-	} else {
-		c.domains = append(c.domains, domain)
-	}
-}
-
-// Set IPv4 Address to use for creating entries
-// Returns an error if string is neither empty nor a valid IP Address
-func (c *cloudflareClient) SetIPv4(val string) error {
-	if val != "" && !validIPv4(val) {
-		return &ErrInvalidIP{val}
-	}
-	c.ipv4 = val
-	return nil
-}
-
-// Set IPv6 Address to use for creating entries
-// Returns an error if string is neither empty nor a valid IP Address
-func (c *cloudflareClient) SetIPv6(val string) error {
-	if val != "" && !validIPv6(val) {
-		return &ErrInvalidIP{val}
-	}
-	c.ipv6 = val
-	return nil
+// Give Access to ClientData
+func (c *cloudflareClient) Data() *dyndns.ClientData {
+	return c.data
 }
 
 // Sent request to cloudflare api
@@ -128,10 +66,7 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 		return cloudflareResponse{}, err
 	}
 	if res.StatusCode != 200 {
-		return cloudflareResponse{}, &ErrHttpRequestFailed{
-			StatusCode: res.StatusCode,
-			Body:       res.Body,
-		}
+		return cloudflareResponse{}, &dyndns.ErrHttpRequestFailed{StatusCode: res.StatusCode, Body: res.Body}
 	}
 
 	var result cloudflareResponse
@@ -139,8 +74,8 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 	if err != nil {
 		return cloudflareResponse{}, err
 	}
-	if !result.Successs {
-		return cloudflareResponse{}, &ErrCloudflareOperationFailed{result: result}
+	if !result.Success {
+		return cloudflareResponse{}, &dyndns.ErrOperationFailed{Result: res.Body}
 	}
 	return result, nil
 }
@@ -162,7 +97,7 @@ func (c *cloudflareClient) getZoneId(domain string) (string, error) {
 	if err != nil {
 		return "", err
 	} else if len(zones) < 1 {
-		return "", ErrNoDomain{}
+		return "", dyndns.ErrNoDomain{}
 	}
 	return zones[0].Id, nil
 }
@@ -200,15 +135,15 @@ func (c *cloudflareClient) updateRecord(zone string, domain string, recordType s
 	}
 	var ip string
 	if recordType == "A" {
-		ip = c.IPv4()
+		ip = c.Data().IPv4()
 	} else if recordType == "AAAA" {
-		ip = c.IPv6()
+		ip = c.Data().IPv6()
 	}
 
 	record := cloudflareRecord{
 		Content: ip,
 		Name:    domain,
-		Proxied: c.Proxy(),
+		Proxied: c.Data().Proxy(),
 		Type:    recordType,
 		TTL:     1,
 	}
@@ -236,13 +171,13 @@ func (c *cloudflareClient) updateRecord(zone string, domain string, recordType s
 // Update all domains, needs at least one of IPv4/IPv6 set.
 // Will return with the first error
 func (c *cloudflareClient) Update() error {
-	if c.ipv4 == "" && c.ipv6 == "" {
-		return ErrNoIP{}
+	if c.Data().IPv4() == "" && c.Data().IPv6() == "" {
+		return dyndns.ErrNoIP{}
 	}
-	if c.domains == nil || len(c.domains) == 0 {
-		return ErrNoDomain{}
+	if c.Data().Domains() == nil || len(c.Data().Domains()) == 0 {
+		return dyndns.ErrNoDomain{}
 	}
-	for _, domain := range c.domains {
+	for _, domain := range c.Data().Domains() {
 		zone, err := c.getZoneId(domain)
 		if err != nil {
 			return err
@@ -265,12 +200,12 @@ func (c *cloudflareClient) Update() error {
 			switch record.Type {
 			case "A":
 				v4 = true
-				if record.Content == c.IPv4() {
+				if record.Content == c.Data().IPv4() {
 					continue
 				}
 			case "AAAA":
 				v6 = true
-				if record.Content == c.IPv6() {
+				if record.Content == c.Data().IPv6() {
 					continue
 				}
 			default:
@@ -283,14 +218,14 @@ func (c *cloudflareClient) Update() error {
 		}
 
 		// Create A record if necessary
-		if !v4 && c.IPv4() != "" {
+		if !v4 && c.Data().IPv4() != "" {
 			err = c.updateRecord(zone, domain, "A", "")
 			if err != nil {
 				return err
 			}
 		}
 		// Create AAAA record if necessary
-		if !v6 && c.IPv6() != "" {
+		if !v6 && c.Data().IPv6() != "" {
 			err = c.updateRecord(zone, domain, "AAAA", "")
 			if err != nil {
 				return err
@@ -298,64 +233,4 @@ func (c *cloudflareClient) Update() error {
 		}
 	}
 	return nil
-}
-
-// Fetch the public IP(s) and run Update() periodically.
-// Is executed as blocking and for forever.
-// Will not continue run of the loop if an error occurs.
-// Exits gracefully on SIGTERM
-func (c *cloudflareClient) Run(interval time.Duration) {
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-
-	for {
-		ipv4, err := getPublicIPv4()
-		if err != nil {
-			slog.Error("Failed to get IPv4", "err", err)
-		}
-		ipv6, err := getPublicIPv6()
-		if err != nil {
-			slog.Error("Failed to get IPv6", "err", err)
-		}
-
-		changed := ipv4 != c.IPv4() || ipv6 != c.IPv6()
-		if changed && ipv4 != c.IPv4() {
-			err = c.SetIPv4(ipv4)
-			if err != nil {
-				slog.Error("Failed to get public IPv4", "err", err)
-				changed = false
-			}
-		}
-		if changed && ipv6 != c.IPv6() {
-			err = c.SetIPv6(ipv6)
-			if err != nil {
-				slog.Error("Failed to get public IPv6", "err", err)
-				changed = false
-			}
-		}
-		if changed {
-			slog.Info("Deteced changed IP",
-				slog.String("ipv4", c.IPv4()),
-				slog.String("ipv6", c.IPv6()),
-			)
-			err = c.Update()
-			if err != nil {
-				slog.Error("Failed to Update records", "err", err)
-			}
-		} else {
-			slog.Debug("No changed detected")
-		}
-		var elapsedTime time.Duration = 0
-		for elapsedTime < interval {
-			timer := time.NewTimer(1 * time.Second)
-			select {
-			case <-timer.C:
-				elapsedTime += time.Duration(1 * time.Second)
-			case <-quit:
-				timer.Stop()
-				slog.Info("Received SIGTERM, shutting down client")
-				return
-			}
-		}
-	}
 }

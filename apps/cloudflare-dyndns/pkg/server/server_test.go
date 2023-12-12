@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
+	"github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -54,7 +54,7 @@ func TestVerifyAllowedDomains(t *testing.T) {
 func TestRequestHandler(t *testing.T) {
 	s := Server{
 		Domains:      []string{"example.org"},
-		createClient: client.NewTestClient,
+		createClient: dyndns.NewTestClient,
 	}
 
 	tMatrix := []struct {

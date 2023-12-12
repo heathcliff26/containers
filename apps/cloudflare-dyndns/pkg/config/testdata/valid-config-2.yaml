@@ -20,3 +20,5 @@ client:
     - bar.example.net
   # Interval in which the client should check for ip changes. Default: 5m
   interval: "10m"
+  # Endpoint to call when using relay mode
+  endpoint: "dyndns.example.net"
