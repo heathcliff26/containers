@@ -13,7 +13,7 @@ type testClient struct {
 // Create a new testClient, fails if the token is empty
 func NewTestClient(token string, proxy bool) (Client, error) {
 	if token == "" {
-		return nil, ErrMissingSecret{}
+		return nil, ErrMissingToken{}
 	}
 	return &testClient{
 		data:       NewClientData(proxy),

@@ -16,7 +16,7 @@ func TestNewRelayClient(t *testing.T) {
 
 	assert := assert.New(t)
 
-	assert.Equal(dyndns.ErrMissingSecret{}, err)
+	assert.Equal(dyndns.ErrMissingToken{}, err)
 	assert.Nil(c)
 
 	c, err = NewRelay("testtoken", true, "")

@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Only test missing secret is checked, login is tested separately
+// Only test missing token is checked, login is tested separately
 func TestNewCloudflareClient(t *testing.T) {
 	c, err := NewCloudflareClient("", true)
 
 	assert := assert.New(t)
 
-	assert.Equal(dyndns.ErrMissingSecret{}, err)
+	assert.Equal(dyndns.ErrMissingToken{}, err)
 	assert.Nil(c)
 }
 

@@ -17,7 +17,7 @@ func TestValidConfigs(t *testing.T) {
 			Domains: []string{"example.org", "example.net"},
 		},
 		Client: ClientConfig{
-			Secret:       "test-token-1",
+			Token:        "test-token-1",
 			Proxy:        true,
 			Domains:      []string{"foo.example.org"},
 			Interval:     "5m",
@@ -32,7 +32,7 @@ func TestValidConfigs(t *testing.T) {
 			Domains: []string{"example.com"},
 		},
 		Client: ClientConfig{
-			Secret:       "test-token-2",
+			Token:        "test-token-2",
 			Proxy:        false,
 			Domains:      []string{"bar.example.net"},
 			Interval:     "10m",
@@ -121,10 +121,10 @@ func TestInvalidConfig(t *testing.T) {
 			Error: "*yaml.TypeError",
 		},
 		{
-			Name:  "ClientMissingSecret",
+			Name:  "ClientMissingToken",
 			Mode:  MODE_CLIENT,
 			Path:  "testdata/invalid-config-1.yaml",
-			Error: "dyndns.ErrMissingSecret",
+			Error: "dyndns.ErrMissingToken",
 		},
 		{
 			Name:  "ClientNoDomain",
@@ -145,10 +145,10 @@ func TestInvalidConfig(t *testing.T) {
 			Error: "*config.ErrInvalidInterval",
 		},
 		{
-			Name:  "RelayMissingSecret",
+			Name:  "RelayMissingToken",
 			Mode:  MODE_RELAY,
 			Path:  "testdata/invalid-config-1.yaml",
-			Error: "dyndns.ErrMissingSecret",
+			Error: "dyndns.ErrMissingToken",
 		},
 		{
 			Name:  "RelayNoDomain",

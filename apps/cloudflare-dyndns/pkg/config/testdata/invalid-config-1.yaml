@@ -1,6 +1,6 @@
 # Fails because of no token
 client:
-  secret: ""
+  token: ""
   proxy: true
   domains:
     - foo.example.org

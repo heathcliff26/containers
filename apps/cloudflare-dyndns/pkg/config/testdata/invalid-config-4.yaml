@@ -1,6 +1,6 @@
 # Fails in relay mode because of missing endpoint
 client:
-  secret: "testsecret"
+  token: "testtoken"
   proxy: true
   domains:
     - foo.example.org
