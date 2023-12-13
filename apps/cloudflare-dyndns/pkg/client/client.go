@@ -24,7 +24,7 @@ type cloudflareClient struct {
 // Create a new CloudflareClient and test if the token is valid
 func NewCloudflareClient(token string, proxy bool) (dyndns.Client, error) {
 	if token == "" {
-		return nil, dyndns.ErrMissingSecret{}
+		return nil, dyndns.ErrMissingToken{}
 	}
 
 	c := &cloudflareClient{

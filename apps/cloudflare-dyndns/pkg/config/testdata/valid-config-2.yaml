@@ -12,7 +12,7 @@ server:
 # Config for running in client mode
 client:
   # Token for accessing the cloudflare api
-  secret: "test-token-2"
+  token: "test-token-2"
   # Indicate if entries should be proxied by cloudflare. Default: true
   proxy: false
   # List of domains to update

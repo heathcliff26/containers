@@ -45,7 +45,7 @@ type ServerConfig struct {
 
 // Yaml configuration for dyndns client
 type ClientConfig struct {
-	Secret       string        `yaml:"secret"`
+	Token        string        `yaml:"token"`
 	Proxy        bool          `yaml:"proxy,omitempty"`
 	Domains      []string      `yaml:"domains"`
 	Interval     string        `yaml:"interval,omitempty"`
@@ -55,8 +55,8 @@ type ClientConfig struct {
 
 // Validate the client part of the config
 func (c *Config) validateClient() error {
-	if c.Client.Secret == "" {
-		return dyndns.ErrMissingSecret{}
+	if c.Client.Token == "" {
+		return dyndns.ErrMissingToken{}
 	}
 
 	if c.Client.Domains == nil || len(c.Client.Domains) < 1 {

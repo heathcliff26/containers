@@ -41,14 +41,14 @@ func main() {
 			os.Exit(1)
 		}
 	case config.MODE_CLIENT:
-		c, err := client.NewCloudflareClient(cfg.Client.Secret, cfg.Client.Proxy)
+		c, err := client.NewCloudflareClient(cfg.Client.Token, cfg.Client.Proxy)
 		if err != nil {
 			slog.Error("Could not create new client", "err", err)
 			os.Exit(1)
 		}
 		runClient(c, cfg.Client)
 	case config.MODE_RELAY:
-		r, err := relay.NewRelay(cfg.Client.Secret, cfg.Client.Proxy, cfg.Client.Endpoint)
+		r, err := relay.NewRelay(cfg.Client.Token, cfg.Client.Proxy, cfg.Client.Endpoint)
 		if err != nil {
 			slog.Error("Could not create new client", "err", err)
 			os.Exit(1)

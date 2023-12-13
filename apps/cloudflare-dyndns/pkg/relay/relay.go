@@ -19,7 +19,7 @@ type relay struct {
 // Create a new Relay
 func NewRelay(token string, proxy bool, endpoint string) (dyndns.Client, error) {
 	if token == "" {
-		return nil, dyndns.ErrMissingSecret{}
+		return nil, dyndns.ErrMissingToken{}
 	}
 	if endpoint == "" {
 		return nil, dyndns.ErrMissingEndpoint{}

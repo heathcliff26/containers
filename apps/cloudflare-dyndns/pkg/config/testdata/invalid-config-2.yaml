@@ -1,6 +1,6 @@
 # Fails because of no domains
 client:
-  secret: "testsecret"
+  token: "testtoken"
   proxy: true
   interval: "5m"
   endpoint: "https://dyndns.example.org"

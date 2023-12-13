@@ -5,10 +5,10 @@ import (
 	"io"
 )
 
-type ErrMissingSecret struct{}
+type ErrMissingToken struct{}
 
-func (e ErrMissingSecret) Error() string {
-	return "No secret provided for authenticating with the API."
+func (e ErrMissingToken) Error() string {
+	return "No token provided for authenticating with the API."
 }
 
 type ErrMissingEndpoint struct{}
