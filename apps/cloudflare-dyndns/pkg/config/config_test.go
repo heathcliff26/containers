@@ -3,6 +3,7 @@ package config
 import (
 	"log/slog"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
@@ -90,7 +91,7 @@ func TestValidConfigs(t *testing.T) {
 
 	for _, tCase := range tMatrix {
 		t.Run(tCase.Name, func(t *testing.T) {
-			c, err := LoadConfig(tCase.Path, tCase.Mode)
+			c, err := LoadConfig(tCase.Path, tCase.Mode, false)
 
 			assert := assert.New(t)
 
@@ -178,7 +179,7 @@ func TestInvalidConfig(t *testing.T) {
 
 	for _, tCase := range tMatrix {
 		t.Run(tCase.Name, func(t *testing.T) {
-			_, err := LoadConfig(tCase.Path, tCase.Mode)
+			_, err := LoadConfig(tCase.Path, tCase.Mode, false)
 
 			if !assert.Error(t, err) {
 				t.Fatal("Did not receive an error")
@@ -186,6 +187,56 @@ func TestInvalidConfig(t *testing.T) {
 			if !assert.Equal(t, tCase.Error, reflect.TypeOf(err).String()) {
 				t.Fatalf("Received invalid error: %v", err)
 			}
+		})
+	}
+}
+
+func TestEnvSubstitution(t *testing.T) {
+	c := Config{
+		LogLevel: "debug",
+		Server: ServerConfig{
+			Port:    2080,
+			Domains: []string{"example.org", "example.net"},
+		},
+		Client: ClientConfig{
+			Token:        "token-from-env",
+			Proxy:        true,
+			Domains:      []string{"foo.example.org"},
+			Interval:     "15m",
+			IntervalTime: time.Duration(15 * time.Minute),
+			Endpoint:     "dyndns.example.org",
+		},
+	}
+	t.Setenv("DYNDNS_TEST_LOG_LEVEL", c.LogLevel)
+	t.Setenv("DYNDNS_TEST_SERVER_PORT", strconv.Itoa(c.Server.Port))
+	t.Setenv("DYNDNS_TEST_SERVER_DOMAIN1", c.Server.Domains[0])
+	t.Setenv("DYNDNS_TEST_SERVER_DOMAIN2", c.Server.Domains[1])
+	t.Setenv("DYNDNS_TEST_CLIENT_TOKEN", c.Client.Token)
+	t.Setenv("DYNDNS_TEST_CLIENT_PROXY", strconv.FormatBool(c.Client.Proxy))
+	t.Setenv("DYNDNS_TEST_CLIENT_DOMAIN", c.Client.Domains[0])
+	t.Setenv("DYNDNS_TEST_CLIENT_INTERVAL", c.Client.Interval)
+	t.Setenv("DYNDNS_TEST_CLIENT_ENDPOINT", c.Client.Endpoint)
+
+	modes := []string{MODE_SERVER, MODE_CLIENT, MODE_RELAY}
+
+	for _, mode := range modes {
+		t.Run(mode, func(t *testing.T) {
+			res, err := LoadConfig("testdata/env-config.yaml", mode, true)
+
+			// Create copy for testcase
+			expectedRes := c
+
+			if mode == MODE_SERVER {
+				// The value will not be set when mode is server
+				expectedRes.Client.IntervalTime = 0
+			}
+
+			assert := assert.New(t)
+
+			if !assert.Nil(err) {
+				t.Fatalf("Could not load config: %v", err)
+			}
+			assert.Equal(expectedRes, res)
 		})
 	}
 }

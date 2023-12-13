@@ -15,18 +15,20 @@ import (
 var (
 	mode       string
 	configPath string
+	env        bool
 )
 
 // Initialize the needed flags for cli options
 func init() {
 	flag.StringVar(&mode, "mode", config.MODE_SERVER, "Set what mode to run, options are \""+config.MODE_SERVER+"\", \""+config.MODE_CLIENT+"\" and \""+config.MODE_RELAY+"\"")
 	flag.StringVar(&configPath, "config", "", "Path to config file, can be empty when running in mode "+config.MODE_SERVER)
+	flag.BoolVar(&env, "env", false, "Used together with -config, when set will expand enviroment variables in config")
 }
 
 func main() {
 	flag.Parse()
 
-	cfg, err := config.LoadConfig(configPath, mode)
+	cfg, err := config.LoadConfig(configPath, mode, env)
 	if err != nil {
 		slog.Error("Could not load configuration", slog.String("path", configPath), slog.String("err", err.Error()))
 		os.Exit(1)
