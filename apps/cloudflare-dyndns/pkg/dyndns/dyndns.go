@@ -80,6 +80,18 @@ func (d *ClientData) SetIPv6(val string) error {
 	return nil
 }
 
+// Checks if data contains at least one IP and one domain
+// Returns error otherwise
+func (d *ClientData) CheckData() error {
+	if d.IPv4() == "" && d.IPv6() == "" {
+		return ErrNoIP{}
+	}
+	if d.Domains() == nil || len(d.Domains()) == 0 {
+		return ErrNoDomain{}
+	}
+	return nil
+}
+
 // Fetch public IPs and run Update() if changed or last update has not succeeded
 func runUpdate(c Client, updated *bool) {
 	ipv4, err := GetPublicIPv4()

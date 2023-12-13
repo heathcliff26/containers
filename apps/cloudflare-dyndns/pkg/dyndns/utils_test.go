@@ -1,7 +1,6 @@
 package dyndns
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -52,14 +51,14 @@ func TestGetPublicIP(t *testing.T) {
 
 	for _, tCase := range tMatrix {
 		t.Run(tCase.Name, func(t *testing.T) {
+			if tCase.Name == "IPv6" && !HasIPv6Support() {
+				t.Skip("No IPv6 Support")
+			}
 			ip, err := tCase.f()
 
 			assert := assert.New(t)
 
 			if err != nil {
-				if tCase.Name == "IPv6" && strings.Contains(err.Error(), "Get \"https://ipv6.icanhazip.com\": dial tcp") {
-					t.Skip("No IPv6 connectivity")
-				}
 				t.Fatalf("Received unexpedted error: %s", err.Error())
 			}
 			assert.NotEmpty(ip)

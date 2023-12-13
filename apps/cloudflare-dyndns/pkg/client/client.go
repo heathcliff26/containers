@@ -171,11 +171,9 @@ func (c *cloudflareClient) updateRecord(zone string, domain string, recordType s
 // Update all domains, needs at least one of IPv4/IPv6 set.
 // Will return with the first error
 func (c *cloudflareClient) Update() error {
-	if c.Data().IPv4() == "" && c.Data().IPv6() == "" {
-		return dyndns.ErrNoIP{}
-	}
-	if c.Data().Domains() == nil || len(c.Data().Domains()) == 0 {
-		return dyndns.ErrNoDomain{}
+	err := c.Data().CheckData()
+	if err != nil {
+		return err
 	}
 	for _, domain := range c.Data().Domains() {
 		zone, err := c.getZoneId(domain)

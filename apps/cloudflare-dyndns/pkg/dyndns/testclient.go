@@ -28,11 +28,9 @@ func (c *testClient) Data() *ClientData {
 
 // Stub implementation, does initial check regarding IP and domains
 func (c *testClient) Update() error {
-	if c.Data().IPv4() == "" && c.Data().IPv6() == "" {
-		return ErrNoIP{}
-	}
-	if c.Data().Domains() == nil || len(c.Data().Domains()) == 0 {
-		return ErrNoDomain{}
+	err := c.Data().CheckData()
+	if err != nil {
+		return err
 	}
 	if c.FailUpdate {
 		return fmt.Errorf("I'm instructed to throw an error")

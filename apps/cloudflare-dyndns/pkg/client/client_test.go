@@ -241,31 +241,3 @@ func TestUpdateRecord(t *testing.T) {
 		})
 	}
 }
-
-func TestUpdate(t *testing.T) {
-	c := cloudflareClient{data: dyndns.NewClientData(false)}
-
-	assert := assert.New(t)
-
-	// Testing with no IPs
-	err := c.Update()
-	assert.ErrorIs(err, dyndns.ErrNoIP{})
-
-	// Testing with no Domains and IPv4 only
-	err = c.Data().SetIPv4("100.100.100.100")
-	assert.Nil(err)
-	err = c.Update()
-	assert.ErrorIs(err, dyndns.ErrNoDomain{})
-
-	// Testing with no Domains and dual stack
-	err = c.Data().SetIPv6("fd00::dead")
-	assert.Nil(err)
-	err = c.Update()
-	assert.ErrorIs(err, dyndns.ErrNoDomain{})
-
-	// Testing with no Domains and IPv6 only
-	err = c.Data().SetIPv4("")
-	assert.Nil(err)
-	err = c.Update()
-	assert.ErrorIs(err, dyndns.ErrNoDomain{})
-}
