@@ -95,7 +95,12 @@ func DefaultConfig() Config {
 }
 
 // Loads config from file, returns error if config is invalid
-func LoadConfig(path string, mode string) (Config, error) {
+// Arguments:
+//
+//	path: Path to config file
+//	mode: Mode used, determines how the config will be validated and which values will be processed
+//	env: Determines if enviroment variables in the file will be expanded before decoding
+func LoadConfig(path string, mode string, env bool) (Config, error) {
 	c := DefaultConfig()
 
 	if path == "" && mode == MODE_SERVER {
@@ -103,15 +108,16 @@ func LoadConfig(path string, mode string) (Config, error) {
 		return c, nil
 	}
 
-	f, err := os.Open(path)
+	f, err := os.ReadFile(path)
 	if err != nil {
 		return Config{}, err
 	}
-	defer f.Close()
 
-	d := yaml.NewDecoder(f)
+	if env {
+		f = []byte(os.ExpandEnv(string(f)))
+	}
 
-	err = d.Decode(&c)
+	err = yaml.Unmarshal(f, &c)
 	if err != nil {
 		return Config{}, err
 	}

@@ -46,6 +46,8 @@ Output of `cloudflare-dyndns -h`
 Usage of cloudflare-dyndns:
   -config string
         Path to config file, can be empty when running in mode server
+  -env
+        Used together with -config, when set will expand enviroment variables in config
   -mode string
         Set what mode to run, options are "server", "client" and "relay" (default "server")
 ```
