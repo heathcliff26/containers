@@ -69,8 +69,8 @@ func (c *Config) validateClient() error {
 	if err != nil {
 		return err
 	}
-	if c.Client.IntervalTime < time.Duration(2*time.Minute) {
-		slog.Warn("Interval is smaller than 2 Minutes, be wary of possible rate limits", slog.Duration("interval", c.Client.IntervalTime))
+	if c.Client.IntervalTime < time.Duration(30*time.Second) {
+		return &ErrInvalidInterval{c.Client.IntervalTime}
 	}
 
 	slog.Info("Loaded client config",

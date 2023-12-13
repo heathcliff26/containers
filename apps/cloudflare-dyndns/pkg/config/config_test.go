@@ -139,6 +139,12 @@ func TestInvalidConfig(t *testing.T) {
 			Error: "*errors.errorString",
 		},
 		{
+			Name:  "ClientInvalidInterval",
+			Mode:  MODE_CLIENT,
+			Path:  "testdata/invalid-config-5.yaml",
+			Error: "*config.ErrInvalidInterval",
+		},
+		{
 			Name:  "RelayMissingSecret",
 			Mode:  MODE_RELAY,
 			Path:  "testdata/invalid-config-1.yaml",
@@ -161,6 +167,12 @@ func TestInvalidConfig(t *testing.T) {
 			Mode:  MODE_RELAY,
 			Path:  "testdata/invalid-config-4.yaml",
 			Error: "dyndns.ErrMissingEndpoint",
+		},
+		{
+			Name:  "RelayInvalidInterval",
+			Mode:  MODE_RELAY,
+			Path:  "testdata/invalid-config-5.yaml",
+			Error: "*config.ErrInvalidInterval",
 		},
 	}
 
