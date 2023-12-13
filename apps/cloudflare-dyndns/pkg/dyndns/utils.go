@@ -22,6 +22,16 @@ func ValidIPv6(ip string) bool {
 	return validIP(ip) && strings.Contains(ip, ":")
 }
 
+// Check if host has an IPv6 interface
+func HasIPv6Support() bool {
+	conn, err := net.Dial("udp", "[2606:4700:4700::1111]:80")
+	if err != nil {
+		return false
+	}
+	conn.Close()
+	return true
+}
+
 // Use icanhazip.com to get the public ip
 func getPublicIP(version string) (string, error) {
 	res, err := http.Get("https://" + version + ".icanhazip.com")
@@ -51,5 +61,8 @@ func GetPublicIPv4() (string, error) {
 
 // Equal to getPublicIP("ipv6")
 func GetPublicIPv6() (string, error) {
+	if !HasIPv6Support() {
+		return "", nil
+	}
 	return getPublicIP("ipv6")
 }

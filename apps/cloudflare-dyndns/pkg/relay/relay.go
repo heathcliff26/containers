@@ -41,6 +41,10 @@ func (r *relay) Data() *dyndns.ClientData {
 }
 
 func (r *relay) Update() error {
+	err := r.Data().CheckData()
+	if err != nil {
+		return err
+	}
 	params := server.RequestParams{
 		Token:   r.token,
 		Domains: r.Data().Domains(),

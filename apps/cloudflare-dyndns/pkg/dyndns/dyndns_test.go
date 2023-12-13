@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRelayGetFunctions(t *testing.T) {
+func TestClientDataGetFunctions(t *testing.T) {
 	domains := []string{"foo.example.org", "bad.example.org"}
 	d := &ClientData{
 		proxy:   true,
@@ -28,7 +28,7 @@ func TestRelayGetFunctions(t *testing.T) {
 	})
 }
 
-func TestRelaySetFunctions(t *testing.T) {
+func TestClientDataSetFunctions(t *testing.T) {
 	t.Run("SetProxy", func(t *testing.T) {
 		d := &ClientData{}
 		proxy := true
@@ -60,6 +60,34 @@ func TestRelaySetFunctions(t *testing.T) {
 		assert.Equal(t, "fd00::dead", d.IPv6())
 		assert.Nil(t, err)
 	})
+}
+
+func TestClientDataCheckUpdate(t *testing.T) {
+	d := NewClientData(false)
+
+	assert := assert.New(t)
+
+	// Testing with no IPs
+	err := d.CheckData()
+	assert.ErrorIs(err, ErrNoIP{})
+
+	// Testing with no Domains and IPv4 only
+	err = d.SetIPv4("100.100.100.100")
+	assert.Nil(err)
+	err = d.CheckData()
+	assert.ErrorIs(err, ErrNoDomain{})
+
+	// Testing with no Domains and dual stack
+	err = d.SetIPv6("fd00::dead")
+	assert.Nil(err)
+	err = d.CheckData()
+	assert.ErrorIs(err, ErrNoDomain{})
+
+	// Testing with no Domains and IPv6 only
+	err = d.SetIPv4("")
+	assert.Nil(err)
+	err = d.CheckData()
+	assert.ErrorIs(err, ErrNoDomain{})
 }
 
 func TestRunUpdate(t *testing.T) {
