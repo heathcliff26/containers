@@ -61,3 +61,41 @@ func TestRelaySetFunctions(t *testing.T) {
 		assert.Nil(t, err)
 	})
 }
+
+func TestRunUpdate(t *testing.T) {
+	c := &testClient{
+		data:       NewClientData(true),
+		FailUpdate: false,
+	}
+	c.Data().SetDomains([]string{"foo.example.org"})
+	var updated = false
+
+	assert := assert.New(t)
+
+	assert.Equal(0, c.UpdateCount, "No updates have been run yet")
+	runUpdate(c, &updated)
+	assert.Equal(1, c.UpdateCount, "Counter should have increased to 1")
+	assert.Equal(true, updated, "updated should now be true")
+
+	runUpdate(c, &updated)
+	assert.Equal(1, c.UpdateCount, "Counter should stay at 1")
+	assert.Equal(true, updated, "updated should still be true")
+
+	// Reset client for second test
+	err1 := c.Data().SetIPv4("")
+	err2 := c.Data().SetIPv6("")
+	c.FailUpdate = true
+	if err1 != nil || err2 != nil {
+		t.Fatalf("Unexpected error updating IPs, err1=%v, err2=%v", err1, err2)
+	}
+
+	runUpdate(c, &updated)
+	assert.Equal(1, c.UpdateCount, "Counter should stay at 1")
+	assert.Equal(false, updated, "updated should now be false")
+
+	// Third run should run again
+	c.FailUpdate = false
+	runUpdate(c, &updated)
+	assert.Equal(2, c.UpdateCount, "Counter should have increased to 2")
+	assert.Equal(true, updated, "updated should now be true again")
+}

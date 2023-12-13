@@ -1,12 +1,13 @@
 package dyndns
 
-import (
-	"time"
-)
+import "fmt"
 
 // This is a stub implementation of Client, it is only meant to be used for testing
 type testClient struct {
 	data *ClientData
+	// Variables used to control and check Update during tests
+	UpdateCount int
+	FailUpdate  bool
 }
 
 // Create a new testClient, fails if the token is empty
@@ -15,7 +16,8 @@ func NewTestClient(token string, proxy bool) (Client, error) {
 		return nil, ErrMissingSecret{}
 	}
 	return &testClient{
-		data: NewClientData(proxy),
+		data:       NewClientData(proxy),
+		FailUpdate: false,
 	}, nil
 }
 
@@ -32,8 +34,10 @@ func (c *testClient) Update() error {
 	if c.Data().Domains() == nil || len(c.Data().Domains()) == 0 {
 		return ErrNoDomain{}
 	}
+	if c.FailUpdate {
+		return fmt.Errorf("I'm instructed to throw an error")
+	}
+	c.UpdateCount++
+
 	return nil
 }
-
-// Stub implementation, not useful for testing
-func (c *testClient) Run(_ time.Duration) {}

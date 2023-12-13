@@ -80,6 +80,51 @@ func (d *ClientData) SetIPv6(val string) error {
 	return nil
 }
 
+// Fetch public IPs and run Update() if changed or last update has not succeeded
+func runUpdate(c Client, updated *bool) {
+	ipv4, err := GetPublicIPv4()
+	if err != nil {
+		slog.Error("Failed to get public IPv4", "err", err)
+	}
+	ipv6, err := GetPublicIPv6()
+	if err != nil {
+		slog.Error("Failed to get public IPv6", "err", err)
+	}
+
+	changed := ipv4 != c.Data().IPv4() || ipv6 != c.Data().IPv6()
+	if changed && ipv4 != c.Data().IPv4() {
+		err = c.Data().SetIPv4(ipv4)
+		if err != nil {
+			slog.Error("Failed to get public IPv4", "err", err)
+			changed = false
+		}
+	}
+	if changed && ipv6 != c.Data().IPv6() {
+		err = c.Data().SetIPv6(ipv6)
+		if err != nil {
+			slog.Error("Failed to get public IPv6", "err", err)
+			changed = false
+		}
+	}
+
+	if changed || !*updated {
+		*updated = false
+		slog.Info("Deteced changed IP",
+			slog.String("ipv4", c.Data().IPv4()),
+			slog.String("ipv6", c.Data().IPv6()),
+		)
+		err = c.Update()
+		if err != nil {
+			slog.Error("Failed to Update() records", "err", err)
+		} else {
+			slog.Info("Updated records", slog.String("IPv4", c.Data().IPv4()), slog.String("IPv6", c.Data().IPv6()))
+			*updated = true
+		}
+	} else {
+		slog.Debug("No changed detected")
+	}
+}
+
 // Fetch the public IP(s) and run Update() periodically.
 // Is executed as blocking and for forever.
 // Will not continue run of the loop if an error occurs.
@@ -90,47 +135,7 @@ func Run(c Client, interval time.Duration) {
 
 	var updated bool
 	for {
-		ipv4, err := GetPublicIPv4()
-		if err != nil {
-			slog.Error("Failed to get public IPv4", "err", err)
-		}
-		ipv6, err := GetPublicIPv6()
-		if err != nil {
-			slog.Error("Failed to get public IPv6", "err", err)
-		}
-
-		changed := ipv4 != c.Data().IPv4() || ipv6 != c.Data().IPv6()
-		if changed && ipv4 != c.Data().IPv4() {
-			err = c.Data().SetIPv4(ipv4)
-			if err != nil {
-				slog.Error("Failed to get public IPv4", "err", err)
-				changed = false
-			}
-		}
-		if changed && ipv6 != c.Data().IPv6() {
-			err = c.Data().SetIPv6(ipv6)
-			if err != nil {
-				slog.Error("Failed to get public IPv6", "err", err)
-				changed = false
-			}
-		}
-
-		if changed || !updated {
-			updated = false
-			slog.Info("Deteced changed IP",
-				slog.String("ipv4", c.Data().IPv4()),
-				slog.String("ipv6", c.Data().IPv6()),
-			)
-			err = c.Update()
-			if err != nil {
-				slog.Error("Failed to Update() records", "err", err)
-			} else {
-				slog.Info("Updated records", slog.String("IPv4", c.Data().IPv4()), slog.String("IPv6", c.Data().IPv6()))
-				updated = true
-			}
-		} else {
-			slog.Debug("No changed detected")
-		}
+		runUpdate(c, &updated)
 
 		var elapsedTime time.Duration = 0
 		for elapsedTime < interval {
