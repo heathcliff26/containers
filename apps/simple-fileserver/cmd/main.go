@@ -9,6 +9,8 @@ import (
 var (
 	webroot      string
 	port         int
+	sslCert      string
+	sslKey       string
 	withoutIndex bool
 	debug        bool
 )
@@ -90,8 +92,14 @@ func main() {
 
 	log.Printf("Serving content from %s", webroot)
 
-	log.Printf("Listening on :%d", port)
-	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	var err error
+	if sslCert == "" && sslKey == "" {
+		log.Printf("Listening on :%d", port)
+		err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	} else {
+		log.Printf("Listening with ssl on :%d", port)
+		err = http.ListenAndServeTLS(":"+strconv.Itoa(port), sslCert, sslKey, nil)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}

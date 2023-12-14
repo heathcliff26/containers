@@ -13,6 +13,8 @@ const defaultPort = 8080
 func init() {
 	flag.StringVar(&webroot, "webroot", "", "SFILESERVER_WEBROOT: Required, root directory to serve files from")
 	flag.IntVar(&port, "port", defaultPort, "SFILESERVER_PORT: Specify port for the fileserver to listen on")
+	flag.StringVar(&sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
+	flag.StringVar(&sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
 	flag.BoolVar(&withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
 	flag.BoolVar(&debug, "debug", false, "SFILESERVER_DEBUG: Enable debug output")
 }
@@ -23,12 +25,16 @@ func envBool(target *bool, name string) {
 	}
 }
 
+func envString(target *string, name string) {
+	if val, ok := os.LookupEnv(name); ok {
+		*target = val
+	}
+}
+
 // Parse Options not provided by the CLI Arguments from ENV
 func parseEnv() {
 	if webroot == "" {
-		if val, ok := os.LookupEnv("SFILESERVER_WEBROOT"); ok {
-			webroot = val
-		}
+		envString(&webroot, "SFILESERVER_WEBROOT")
 	}
 
 	if port == defaultPort {
@@ -39,6 +45,14 @@ func parseEnv() {
 				log.Fatalf("Could not parse SFILESERVER_PORT: %v", err)
 			}
 		}
+	}
+
+	if sslCert == "" {
+		envString(&sslCert, "SFILESERVER_CERT")
+	}
+
+	if sslKey == "" {
+		envString(&sslKey, "SFILESERVER_KEY")
 	}
 
 	if !withoutIndex {
@@ -58,5 +72,8 @@ func parseFlags() {
 	if webroot == "" {
 		log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
 	}
-	log.Printf("Settings: webroot=%s, port=%d, no-index=%t, debug=%t", webroot, port, withoutIndex, debug)
+	if (sslCert != "" && sslKey == "") || (sslCert == "" && sslKey != "") {
+		log.Fatal("When using ssl need both -cert and -key to be set")
+	}
+	log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, debug=%t", webroot, port, sslCert, sslKey, withoutIndex, debug)
 }
