@@ -17,6 +17,7 @@ import (
 type Server struct {
 	Addr         string
 	Domains      []string
+	SSL          config.SSLConfig
 	createClient func(string, bool) (dyndns.Client, error)
 }
 
@@ -46,6 +47,7 @@ func NewServer(c config.ServerConfig) *Server {
 	return &Server{
 		Addr:         ":" + strconv.Itoa(c.Port),
 		Domains:      c.Domains,
+		SSL:          c.SSL,
 		createClient: client.NewCloudflareClient,
 	}
 }
@@ -180,7 +182,13 @@ func (s *Server) requestHandler(rw http.ResponseWriter, req *http.Request) {
 // Starts the server and exits with error if that fails
 func (s *Server) Run() error {
 	http.HandleFunc("/", s.requestHandler)
-	err := http.ListenAndServe(s.Addr, nil)
+
+	var err error
+	if s.SSL.Enabled {
+		err = http.ListenAndServeTLS(s.Addr, s.SSL.Cert, s.SSL.Key, nil)
+	} else {
+		err = http.ListenAndServe(s.Addr, nil)
+	}
 	// This just means the server was closed after running
 	if errors.Is(err, http.ErrServerClosed) {
 		slog.Info("Server closed, exiting")

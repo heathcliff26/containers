@@ -9,6 +9,13 @@ server:
   domains:
     - example.org
     - example.net
+  # SSL config, default is no ssl
+  ssl:
+    enabled: false
+    # SSL certificate, needs to contain the whole chain
+    cert: ""
+    # SSL private key
+    key: ""
 
 # Config for running in client mode
 client:

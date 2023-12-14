@@ -39,8 +39,15 @@ type Config struct {
 
 // Yaml configuration for dyndns server
 type ServerConfig struct {
-	Port    int      `yaml:"port"`
-	Domains []string `yaml:"domains,omitempty"`
+	Port    int       `yaml:"port"`
+	Domains []string  `yaml:"domains,omitempty"`
+	SSL     SSLConfig `yaml:"ssl,omitempty"`
+}
+
+type SSLConfig struct {
+	Enabled bool   `yaml:"enabled,omitempty"`
+	Cert    string `yaml:"cert,omitempty"`
+	Key     string `yaml:"key,omitempty"`
 }
 
 // Yaml configuration for dyndns client
@@ -51,6 +58,21 @@ type ClientConfig struct {
 	Interval     string        `yaml:"interval,omitempty"`
 	IntervalTime time.Duration `yaml:"-"`
 	Endpoint     string        `yaml:"endpoint,omitempty"`
+}
+
+// Validate the server part of the config
+func (c *Config) validateServer() error {
+	if c.Server.SSL.Enabled && (c.Server.SSL.Cert == "" || c.Server.SSL.Key == "") {
+		return ErrIncompleteSSLConfig{}
+	}
+	slog.Info("Loaded server config",
+		slog.Int("port", c.Server.Port),
+		slog.String("domains", fmt.Sprintf("%v", c.Server.Domains)),
+		slog.Bool("ssl.enabled", c.Server.SSL.Enabled),
+		slog.String("ssl.cert", c.Server.SSL.Cert),
+		slog.String("ssl.key", c.Server.SSL.Key),
+	)
+	return nil
 }
 
 // Validate the client part of the config
@@ -77,6 +99,7 @@ func (c *Config) validateClient() error {
 		slog.Bool("proxy", c.Client.Proxy),
 		slog.String("domains", fmt.Sprintf("%v", c.Client.Domains)),
 		slog.String("interval", c.Client.Interval),
+		slog.String("endpoint", c.Client.Endpoint),
 	)
 
 	return nil
@@ -127,12 +150,16 @@ func LoadConfig(path string, mode string, env bool) (Config, error) {
 		return Config{}, err
 	}
 
-	if mode == MODE_CLIENT || mode == MODE_RELAY {
+	switch mode {
+	case MODE_SERVER:
+		err = c.validateServer()
+	case MODE_CLIENT, MODE_RELAY:
 		err = c.validateClient()
-		if err != nil {
-			return Config{}, err
-		}
 	}
+	if err != nil {
+		return Config{}, err
+	}
+
 	if mode == MODE_RELAY && c.Client.Endpoint == "" {
 		return Config{}, dyndns.ErrMissingEndpoint{}
 	}

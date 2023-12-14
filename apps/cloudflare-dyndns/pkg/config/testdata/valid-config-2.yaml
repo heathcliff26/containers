@@ -1,24 +1,14 @@
-# Log level of the application
 logLevel: "debug"
 
-# Config for running in server mode
 server:
-  # Port to listen on. Default: 8080
   port: 80
-  # List of root domains that are allowed to be updated. Allows all when empty.
   domains:
     - example.com
 
-# Config for running in client mode
 client:
-  # Token for accessing the cloudflare api
   token: "test-token-2"
-  # Indicate if entries should be proxied by cloudflare. Default: true
   proxy: false
-  # List of domains to update
   domains:
     - bar.example.net
-  # Interval in which the client should check for ip changes. Default: 5m
   interval: "10m"
-  # Endpoint to call when using relay mode
   endpoint: "dyndns.example.net"

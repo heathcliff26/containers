@@ -41,6 +41,13 @@ func TestValidConfigs(t *testing.T) {
 			Endpoint:     "dyndns.example.net",
 		},
 	}
+	ssl := DefaultConfig()
+	ssl.Server.Port = 443
+	ssl.Server.SSL = SSLConfig{
+		Enabled: true,
+		Cert:    "server.crt",
+		Key:     "server.key",
+	}
 	tMatrix := []struct {
 		Name, Path, Mode string
 		Result           Config
@@ -86,6 +93,12 @@ func TestValidConfigs(t *testing.T) {
 			Path:   "testdata/valid-config-2.yaml",
 			Mode:   MODE_RELAY,
 			Result: c2,
+		},
+		{
+			Name:   "ServerConfigSSL",
+			Path:   "testdata/valid-config-ssl.yaml",
+			Mode:   MODE_SERVER,
+			Result: ssl,
 		},
 	}
 
@@ -174,6 +187,18 @@ func TestInvalidConfig(t *testing.T) {
 			Mode:  MODE_RELAY,
 			Path:  "testdata/invalid-config-5.yaml",
 			Error: "*config.ErrInvalidInterval",
+		},
+		{
+			Name:  "ServerIncompleteSSLConfig1",
+			Mode:  MODE_SERVER,
+			Path:  "testdata/invalid-config-ssl-1.yaml",
+			Error: "config.ErrIncompleteSSLConfig",
+		},
+		{
+			Name:  "ServerIncompleteSSLConfig2",
+			Mode:  MODE_SERVER,
+			Path:  "testdata/invalid-config-ssl-2.yaml",
+			Error: "config.ErrIncompleteSSLConfig",
 		},
 	}
 
