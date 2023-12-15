@@ -41,11 +41,17 @@ func TestVerifyAllowedDomains(t *testing.T) {
 			Whitelist: []string{"example.org"},
 			Ok:        false,
 		},
+		{
+			Name:      "PartialMatch",
+			Domains:   []string{"foo.example.org", "bar.notexample.org", "notexample.org"},
+			Whitelist: []string{"example.org"},
+			Ok:        false,
+		},
 	}
 
 	for _, tCase := range tMatrix {
 		t.Run(tCase.Name, func(t *testing.T) {
-			s := Server{Domains: tCase.Whitelist}
+			s := Server{Domains: newDomainMap(tCase.Whitelist)}
 			assert.Equal(t, tCase.Ok, s.verifyAllowedDomains(tCase.Domains))
 		})
 	}
@@ -53,7 +59,7 @@ func TestVerifyAllowedDomains(t *testing.T) {
 
 func TestRequestHandler(t *testing.T) {
 	s := Server{
-		Domains:      []string{"example.org"},
+		Domains:      newDomainMap([]string{"example.org"}),
 		createClient: dyndns.NewTestClient,
 	}
 

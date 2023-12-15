@@ -16,7 +16,7 @@ import (
 
 type Server struct {
 	Addr         string
-	Domains      []string
+	Domains      map[string]bool
 	SSL          config.SSLConfig
 	createClient func(string, bool) (dyndns.Client, error)
 }
@@ -46,26 +46,42 @@ const (
 func NewServer(c config.ServerConfig) *Server {
 	return &Server{
 		Addr:         ":" + strconv.Itoa(c.Port),
-		Domains:      c.Domains,
+		Domains:      newDomainMap(c.Domains),
 		SSL:          c.SSL,
 		createClient: client.NewCloudflareClient,
 	}
 }
 
+func newDomainMap(domains []string) map[string]bool {
+	m := make(map[string]bool, len(domains))
+	for _, d := range domains {
+		m[d] = true
+	}
+	return m
+}
+
 // Ensures that all domains listed here are
 func (s *Server) verifyAllowedDomains(domains []string) bool {
-	if s.Domains == nil || len(s.Domains) < 1 {
+	if len(s.Domains) == 0 {
 		return true
 	}
+
 	for _, domain := range domains {
-		allowed := false
-		for _, allowedDomain := range s.Domains {
-			if strings.HasSuffix(domain, allowedDomain) {
-				allowed = true
+		forbidden := true
+		d := strings.Split(domain, ".")
+		domain = ""
+		for i := len(d) - 1; i >= 0; i-- {
+			if domain == "" {
+				domain = d[i]
+			} else {
+				domain = d[i] + "." + domain
+			}
+			if s.Domains[domain] {
+				forbidden = false
 				break
 			}
 		}
-		if !allowed {
+		if forbidden {
 			return false
 		}
 	}
