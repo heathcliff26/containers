@@ -9,12 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLogLevelVarInitialized(t *testing.T) {
-	if logLevel == nil {
-		t.Fatal("Variable logLevel is nil")
-	}
-}
-
 func TestServerRootHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {

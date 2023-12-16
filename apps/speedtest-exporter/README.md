@@ -8,6 +8,8 @@ I created this project because i saw [Jeff Geerling's](https://github.com/geerli
 When looking into it, he uses a [python based speedtest-exporter](https://github.com/MiguelNdeCarvalho/speedtest-exporter).
 At this point i could have just used that as well, but i was bored and wanted to program something. Hence this project.
 
+One important functionality is that this projects implements prometheus remote_write, so it can push the metrics directly to e.g. grafana cloud.
+
 ## Table of Contents
 
 - [speedtest-exporter](#speedtest-exporter)
@@ -42,26 +44,12 @@ There are different flavors of the image:
 Output of `speedtest-exporter -h`
 ```
 Usage of speedtest-exporter:
-  -cacheTime int
-        Time in minutes to cache speedtest output (default 5)
-  -instance string
-        Label added to all metrics for identification, defaults to hostname
-  -port int
-        Port for the webserver, default 8080 (default 8080)
-  -speedtest-path string
-        Specify speedtest executable to use, defaults to internal implementation
-  -v    Enable verbose output
+  -config string
+        Optional: Path to config file
+  -env
+        Used together with -config, when set will expand enviroment variables in config
 ```
-
-Alternatively these values can be configured using enviroment variables:
-
-| Flag              | Enviroment Variable    |
-| ----------------- | ---------------------- |
-| `-cacheTime`      | `SPEEDTEST_CACHE_TIME` |
-| `-instance`       | `SPEEDTEST_INSTANCE`   |
-| `-port`           | `SPEEDTEST_PORT`       |
-| `-speedtest-path` | `SPEEDTEST_PATH`       |
-| `-v`              | `SPEEDTEST_DEBUG`      |
+An example configuration can be found [here](configs/example-config.yaml).
 
 ## Metrics
 

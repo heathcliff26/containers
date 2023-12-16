@@ -11,21 +11,19 @@ import (
 
 type Collector struct {
 	cacheTime     time.Duration
-	instance      string
 	speedtest     speedtest.Speedtest
 	lastResult    *speedtest.SpeedtestResult
 	nextSpeedtest time.Time
 }
 
 var (
-	variableLabels    = []string{"instance", "ip", "isp"}
-	constLabels       = prometheus.Labels{"job": "integrations/speedtest"}
-	jitterLatencyDesc = prometheus.NewDesc("speedtest_jitter_latency_milliseconds", "Speedtest current Jitter in ms", variableLabels, constLabels)
-	pingDesc          = prometheus.NewDesc("speedtest_ping_latency_milliseconds", "Speedtest current Ping in ms", variableLabels, constLabels)
-	downloadSpeedDesc = prometheus.NewDesc("speedtest_download_megabits_per_second", "Speedtest current Download Speed in Mbit/s", variableLabels, constLabels)
-	uploadSpeedDesc   = prometheus.NewDesc("speedtest_upload_megabits_per_second", "Speedtest current Upload Speed in Mbit/s", variableLabels, constLabels)
-	dataUsedDesc      = prometheus.NewDesc("speedtest_data_used_megabytes", "Data used for speedtest in MB", variableLabels, constLabels)
-	upDesc            = prometheus.NewDesc("speedtest_up", "Indicates if the speedtest was successful", []string{"instance"}, constLabels)
+	variableLabels    = []string{"ip", "isp"}
+	jitterLatencyDesc = prometheus.NewDesc("speedtest_jitter_latency_milliseconds", "Speedtest current Jitter in ms", variableLabels, nil)
+	pingDesc          = prometheus.NewDesc("speedtest_ping_latency_milliseconds", "Speedtest current Ping in ms", variableLabels, nil)
+	downloadSpeedDesc = prometheus.NewDesc("speedtest_download_megabits_per_second", "Speedtest current Download Speed in Mbit/s", variableLabels, nil)
+	uploadSpeedDesc   = prometheus.NewDesc("speedtest_upload_megabits_per_second", "Speedtest current Upload Speed in Mbit/s", variableLabels, nil)
+	dataUsedDesc      = prometheus.NewDesc("speedtest_data_used_megabytes", "Data used for speedtest in MB", variableLabels, nil)
+	upDesc            = prometheus.NewDesc("speedtest_up", "Indicates if the speedtest was successful", nil, nil)
 )
 
 // Used to prevent concurrent runs of Speedtest's
@@ -37,13 +35,12 @@ var speedtestMutex sync.Mutex
 //	cacheTime: Minimum time between speedtest runs
 //	instance: Name of this instance, provided as label on all metrics
 //	speedtest: Instance of speedtest to use for collection metrics
-func NewCollector(cacheTime time.Duration, instance string, speedtest speedtest.Speedtest) (*Collector, error) {
+func NewCollector(cacheTime time.Duration, speedtest speedtest.Speedtest) (*Collector, error) {
 	if speedtest == nil {
 		return nil, ErrNoSpeedtest{}
 	}
 	return &Collector{
 		cacheTime: cacheTime,
-		instance:  instance,
 		speedtest: speedtest,
 	}, nil
 }
@@ -88,13 +85,13 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	var up float64
 	if result.Success() {
 		up = 1
-		labelValues := []string{c.instance, result.ClientIp(), result.ClientIsp()}
+		labelValues := []string{result.ClientIp(), result.ClientIsp()}
 		ch <- prometheus.MustNewConstMetric(jitterLatencyDesc, prometheus.GaugeValue, result.JitterLatency(), labelValues...)
 		ch <- prometheus.MustNewConstMetric(pingDesc, prometheus.GaugeValue, result.Ping(), labelValues...)
 		ch <- prometheus.MustNewConstMetric(downloadSpeedDesc, prometheus.GaugeValue, result.DownloadSpeed(), labelValues...)
 		ch <- prometheus.MustNewConstMetric(uploadSpeedDesc, prometheus.GaugeValue, result.UploadSpeed(), labelValues...)
 		ch <- prometheus.MustNewConstMetric(dataUsedDesc, prometheus.GaugeValue, result.DataUsed(), labelValues...)
 	}
-	ch <- prometheus.MustNewConstMetric(upDesc, prometheus.GaugeValue, up, c.instance)
+	ch <- prometheus.MustNewConstMetric(upDesc, prometheus.GaugeValue, up)
 	slog.Debug("Finished collection of speedtest metrics")
 }
