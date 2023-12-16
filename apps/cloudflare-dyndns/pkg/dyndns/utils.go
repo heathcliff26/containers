@@ -39,7 +39,7 @@ func getPublicIP(version string) (string, error) {
 		return "", err
 	}
 	if res.StatusCode != 200 {
-		return "", &ErrHttpRequestFailed{res.StatusCode, res.Body}
+		return "", NewErrHttpRequestFailed(res.StatusCode, res.Body)
 	}
 
 	b, err := io.ReadAll(res.Body)

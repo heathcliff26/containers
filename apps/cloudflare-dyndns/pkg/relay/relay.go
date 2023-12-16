@@ -70,11 +70,9 @@ func (r *relay) Update() error {
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		return &dyndns.ErrHttpRequestFailed{
-			StatusCode: res.StatusCode,
-			Body:       res.Body,
-		}
+		return dyndns.NewErrHttpRequestFailed(res.StatusCode, res.Body)
 	}
 
 	var result server.Response

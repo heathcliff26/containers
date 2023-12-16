@@ -65,8 +65,9 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 	if err != nil {
 		return cloudflareResponse{}, err
 	}
+	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		return cloudflareResponse{}, &dyndns.ErrHttpRequestFailed{StatusCode: res.StatusCode, Body: res.Body}
+		return cloudflareResponse{}, dyndns.NewErrHttpRequestFailed(res.StatusCode, res.Body)
 	}
 
 	var result cloudflareResponse

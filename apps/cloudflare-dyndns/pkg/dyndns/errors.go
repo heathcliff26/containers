@@ -41,18 +41,25 @@ func (e ErrNoDomain) Error() string {
 // Shows the error instead if it can't read the response body.
 type ErrHttpRequestFailed struct {
 	StatusCode int
-	Body       io.ReadCloser
+	Body       string
 }
 
-func (e *ErrHttpRequestFailed) Error() string {
+func NewErrHttpRequestFailed(status int, resBody io.ReadCloser) *ErrHttpRequestFailed {
 	var body string
-	b, err := io.ReadAll(e.Body)
+	b, err := io.ReadAll(resBody)
 	if err != nil {
 		body = err.Error()
 	} else {
 		body = string(b)
 	}
-	return fmt.Sprintf("HTTP Request returned with Status Code %d, expected 200. Response body: %s", e.StatusCode, body)
+	return &ErrHttpRequestFailed{
+		StatusCode: status,
+		Body:       body,
+	}
+}
+
+func (e *ErrHttpRequestFailed) Error() string {
+	return fmt.Sprintf("HTTP Request returned with Status Code %d, expected 200. Response body: %s", e.StatusCode, e.Body)
 }
 
 // Outputs the response received from cloudflare
