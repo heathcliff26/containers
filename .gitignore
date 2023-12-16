@@ -4,4 +4,4 @@ apps/simple-fileserver/bin
 apps/speedtest-exporter/bin
 
 # Ignore files created for testing
-apps/cloudflare-dyndns/test-config.yaml
+apps/*/test-config.yaml
