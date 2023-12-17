@@ -12,11 +12,13 @@ import (
 )
 
 const (
-	DEFAULT_LOG_LEVEL   = "info"
-	DEFAULT_SERVER_PORT = 8080
-	MODE_SERVER         = "server"
-	MODE_CLIENT         = "client"
-	MODE_RELAY          = "relay"
+	DEFAULT_LOG_LEVEL       = "info"
+	DEFAULT_SERVER_PORT     = 8080
+	DEFAULT_CLIENT_INTERVAL = time.Duration(5 * time.Minute)
+
+	MODE_SERVER = "server"
+	MODE_CLIENT = "client"
+	MODE_RELAY  = "relay"
 )
 
 var logLevel *slog.LevelVar
@@ -52,12 +54,11 @@ type SSLConfig struct {
 
 // Yaml configuration for dyndns client
 type ClientConfig struct {
-	Token        string        `yaml:"token"`
-	Proxy        bool          `yaml:"proxy,omitempty"`
-	Domains      []string      `yaml:"domains"`
-	Interval     string        `yaml:"interval,omitempty"`
-	IntervalTime time.Duration `yaml:"-"`
-	Endpoint     string        `yaml:"endpoint,omitempty"`
+	Token    string        `yaml:"token"`
+	Proxy    bool          `yaml:"proxy,omitempty"`
+	Domains  []string      `yaml:"domains"`
+	Interval time.Duration `yaml:"interval,omitempty"`
+	Endpoint string        `yaml:"endpoint,omitempty"`
 }
 
 // Validate the server part of the config
@@ -85,20 +86,14 @@ func (c *Config) validateClient() error {
 		return dyndns.ErrNoDomain{}
 	}
 
-	// Interval should be a valid duration
-	var err error
-	c.Client.IntervalTime, err = time.ParseDuration(c.Client.Interval)
-	if err != nil {
-		return err
-	}
-	if c.Client.IntervalTime < time.Duration(30*time.Second) {
-		return &ErrInvalidInterval{c.Client.IntervalTime}
+	if c.Client.Interval < time.Duration(30*time.Second) {
+		return &ErrInvalidInterval{c.Client.Interval}
 	}
 
 	slog.Info("Loaded client config",
 		slog.Bool("proxy", c.Client.Proxy),
 		slog.String("domains", fmt.Sprintf("%v", c.Client.Domains)),
-		slog.String("interval", c.Client.Interval),
+		slog.String("interval", c.Client.Interval.String()),
 		slog.String("endpoint", c.Client.Endpoint),
 	)
 
@@ -112,7 +107,7 @@ func DefaultConfig() Config {
 		Server:   ServerConfig{Port: DEFAULT_SERVER_PORT},
 		Client: ClientConfig{
 			Proxy:    true,
-			Interval: "5m",
+			Interval: DEFAULT_CLIENT_INTERVAL,
 		},
 	}
 }

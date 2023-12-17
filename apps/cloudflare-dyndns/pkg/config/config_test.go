@@ -18,12 +18,11 @@ func TestValidConfigs(t *testing.T) {
 			Domains: []string{"example.org", "example.net"},
 		},
 		Client: ClientConfig{
-			Token:        "test-token-1",
-			Proxy:        true,
-			Domains:      []string{"foo.example.org"},
-			Interval:     "5m",
-			IntervalTime: time.Duration(5 * time.Minute),
-			Endpoint:     "dyndns.example.org",
+			Token:    "test-token-1",
+			Proxy:    true,
+			Domains:  []string{"foo.example.org"},
+			Interval: time.Duration(5 * time.Minute),
+			Endpoint: "dyndns.example.org",
 		},
 	}
 	c2 := Config{
@@ -33,12 +32,11 @@ func TestValidConfigs(t *testing.T) {
 			Domains: []string{"example.com"},
 		},
 		Client: ClientConfig{
-			Token:        "test-token-2",
-			Proxy:        false,
-			Domains:      []string{"bar.example.net"},
-			Interval:     "10m",
-			IntervalTime: time.Duration(10 * time.Minute),
-			Endpoint:     "dyndns.example.net",
+			Token:    "test-token-2",
+			Proxy:    false,
+			Domains:  []string{"bar.example.net"},
+			Interval: time.Duration(10 * time.Minute),
+			Endpoint: "dyndns.example.net",
 		},
 	}
 	ssl := DefaultConfig()
@@ -111,10 +109,6 @@ func TestValidConfigs(t *testing.T) {
 			if !assert.Nil(err) {
 				t.Fatalf("Failed to load config: %v", err)
 			}
-			if tCase.Mode == MODE_SERVER {
-				// The value will not be set when mode is server
-				tCase.Result.Client.IntervalTime = 0
-			}
 			assert.Equal(tCase.Result, c)
 		})
 	}
@@ -150,7 +144,7 @@ func TestInvalidConfig(t *testing.T) {
 			Name:  "ClientWrongInterval",
 			Mode:  MODE_CLIENT,
 			Path:  "testdata/invalid-config-3.yaml",
-			Error: "*errors.errorString",
+			Error: "*yaml.TypeError",
 		},
 		{
 			Name:  "ClientInvalidInterval",
@@ -174,7 +168,7 @@ func TestInvalidConfig(t *testing.T) {
 			Name:  "RelayWrongInterval",
 			Mode:  MODE_RELAY,
 			Path:  "testdata/invalid-config-3.yaml",
-			Error: "*errors.errorString",
+			Error: "*yaml.TypeError",
 		},
 		{
 			Name:  "RelayMissingEndpoint",
@@ -224,12 +218,11 @@ func TestEnvSubstitution(t *testing.T) {
 			Domains: []string{"example.org", "example.net"},
 		},
 		Client: ClientConfig{
-			Token:        "token-from-env",
-			Proxy:        true,
-			Domains:      []string{"foo.example.org"},
-			Interval:     "15m",
-			IntervalTime: time.Duration(15 * time.Minute),
-			Endpoint:     "dyndns.example.org",
+			Token:    "token-from-env",
+			Proxy:    true,
+			Domains:  []string{"foo.example.org"},
+			Interval: time.Duration(15 * time.Minute),
+			Endpoint: "dyndns.example.org",
 		},
 	}
 	t.Setenv("DYNDNS_TEST_LOG_LEVEL", c.LogLevel)
@@ -239,7 +232,7 @@ func TestEnvSubstitution(t *testing.T) {
 	t.Setenv("DYNDNS_TEST_CLIENT_TOKEN", c.Client.Token)
 	t.Setenv("DYNDNS_TEST_CLIENT_PROXY", strconv.FormatBool(c.Client.Proxy))
 	t.Setenv("DYNDNS_TEST_CLIENT_DOMAIN", c.Client.Domains[0])
-	t.Setenv("DYNDNS_TEST_CLIENT_INTERVAL", c.Client.Interval)
+	t.Setenv("DYNDNS_TEST_CLIENT_INTERVAL", c.Client.Interval.String())
 	t.Setenv("DYNDNS_TEST_CLIENT_ENDPOINT", c.Client.Endpoint)
 
 	modes := []string{MODE_SERVER, MODE_CLIENT, MODE_RELAY}
@@ -248,20 +241,12 @@ func TestEnvSubstitution(t *testing.T) {
 		t.Run(mode, func(t *testing.T) {
 			res, err := LoadConfig("testdata/env-config.yaml", mode, true)
 
-			// Create copy for testcase
-			expectedRes := c
-
-			if mode == MODE_SERVER {
-				// The value will not be set when mode is server
-				expectedRes.Client.IntervalTime = 0
-			}
-
 			assert := assert.New(t)
 
 			if !assert.Nil(err) {
 				t.Fatalf("Could not load config: %v", err)
 			}
-			assert.Equal(expectedRes, res)
+			assert.Equal(c, res)
 		})
 	}
 }

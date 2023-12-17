@@ -64,5 +64,5 @@ func main() {
 
 func runClient(c dyndns.Client, cfg config.ClientConfig) {
 	c.Data().SetDomains(cfg.Domains)
-	dyndns.Run(c, cfg.IntervalTime)
+	dyndns.Run(c, cfg.Interval)
 }
