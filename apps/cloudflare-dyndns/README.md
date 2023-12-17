@@ -30,10 +30,10 @@ The client package can also be used as a golang API, should you want to build yo
 
 There are different flavors of the image:
 
-| Tag(s)           | Describtion                                                                                                                                                                  |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **latest, slim** | Contains only the golang binary                                                                                                                                              |
-| **php**          | Contains the original php script from [Fritz!Box DynDNS Script for Cloudflare](https://github.com/1rfsNet/Fritz-Box-Cloudflare-DynDNS) and is based on `php:apache-bookworm` |
+| Tag(s)           | Describtion                                                                                                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **latest, slim** | Contains only the golang binary                                                                                                                                                          |
+| **php**          | Deprecated: Contains the original php script from [Fritz!Box DynDNS Script for Cloudflare](https://github.com/1rfsNet/Fritz-Box-Cloudflare-DynDNS) and is based on `php:apache-bookworm` |
 
 ## Usage
 
