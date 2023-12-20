@@ -1,4 +1,4 @@
-FROM ghcr.io/heathcliff26/simple-fileserver:latest@sha256:0055827c76557f28219058aa0d3ca5248c6fdab49ed196a19e8791058a1bd5e4
+FROM ghcr.io/heathcliff26/simple-fileserver:latest@sha256:fe5d652ea4404d01fb967cfeb5e701924840f4fd749aee7b5c1dc354f0013318
 
 ENV SFILESERVER_NO_INDEX="true"
 
