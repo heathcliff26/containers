@@ -13,7 +13,6 @@ build:
 	podman build -t $(REPOSITORY)/$(CONTAINER_NAME):$(TAG) .
 
 go-build:
-	make -p bin
 	go build $(GO_BUILD_FLAGS) -o bin/simple-fileserver ./cmd/
 
 go-test:

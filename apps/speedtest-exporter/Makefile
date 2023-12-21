@@ -18,7 +18,6 @@ build-cli:
 	podman build -f Dockerfile.cli -t $(REPOSITORY)/$(CONTAINER_NAME):$(CLI_TAG) .
 
 go-build:
-	make -p bin
 	go build $(GO_BUILD_FLAGS) -o bin/speedtest-exporter ./cmd/
 
 go-test:
