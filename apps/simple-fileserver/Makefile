@@ -3,7 +3,6 @@ SHELL := bash
 REPOSITORY ?= localhost
 CONTAINER_NAME ?= simple-fileserver
 TAG ?= latest
-CLI_TAG ?= cli
 
 GO_BUILD_FLAGS ?= -ldflags="-w -s"
 

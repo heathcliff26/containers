@@ -3,7 +3,6 @@ SHELL := bash
 REPOSITORY ?= localhost
 CONTAINER_NAME ?= cloudflare-dyndns
 TAG ?= latest
-CLI_TAG ?= cli
 
 GO_BUILD_FLAGS ?= -ldflags="-w -s"
 
