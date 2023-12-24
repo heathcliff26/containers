@@ -76,7 +76,7 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
 		return cloudflareResponse{}, err
 	}
 	if !result.Success {
-		return cloudflareResponse{}, &dyndns.ErrOperationFailed{Result: res.Body}
+		return cloudflareResponse{}, dyndns.NewErrOperationFailed(res.Body)
 	}
 	return result, nil
 }

@@ -81,7 +81,7 @@ func (r *relay) Update() error {
 		return err
 	}
 	if !result.Success {
-		return &dyndns.ErrOperationFailed{Result: res.Body}
+		return dyndns.NewErrOperationFailed(res.Body)
 	}
 	return nil
 }

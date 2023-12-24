@@ -64,16 +64,22 @@ func (e *ErrHttpRequestFailed) Error() string {
 
 // Outputs the response received from cloudflare
 type ErrOperationFailed struct {
-	Result io.ReadCloser
+	Result string
 }
 
-func (e *ErrOperationFailed) Error() string {
+func NewErrOperationFailed(res io.ReadCloser) *ErrOperationFailed {
 	var result string
-	bytes, err := io.ReadAll(e.Result)
+	b, err := io.ReadAll(res)
 	if err != nil {
 		result = err.Error()
 	} else {
-		result = string(bytes)
+		result = string(b)
 	}
-	return "Remote api call returned without success, response: " + result
+	return &ErrOperationFailed{
+		Result: result,
+	}
+}
+
+func (e *ErrOperationFailed) Error() string {
+	return "Remote api call returned without success, response: " + e.Result
 }
