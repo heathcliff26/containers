@@ -35,9 +35,9 @@ github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:45.17,47.2
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:47.23,50.5 2 0
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:51.4,52.19 2 1
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:56.2,56.15 1 1
-github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:64.67,68.16 3 0
-github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:68.16,71.3 2 0
-github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:73.2,73.15 1 0
+github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:64.67,68.16 3 1
+github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:68.16,71.3 2 1
+github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:73.2,73.15 1 1
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:77.63,79.13 2 1
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:79.13,81.3 1 1
 github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go:81.8,83.3 1 1

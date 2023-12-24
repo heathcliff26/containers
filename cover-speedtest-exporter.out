@@ -113,10 +113,10 @@ github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:16.44,18.2 1 0
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:22.39,24.2 1 0
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:28.44,30.2 1 0
-github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:37.87,40.16 3 0
+github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:37.87,40.16 3 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:40.16,42.3 1 0
-github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:42.8,44.3 1 0
-github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:45.2,48.3 1 0
+github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:42.8,44.3 1 1
+github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:45.2,48.3 1 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:51.47,53.2 1 0
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:57.51,59.2 1 0
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go:65.47,67.2 1 0

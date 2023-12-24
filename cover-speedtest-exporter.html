@@ -67,7 +67,7 @@
 				
 				<option value="file5">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/client.go (70.0%)</option>
 				
-				<option value="file6">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go (0.0%)</option>
+				<option value="file6">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go (38.5%)</option>
 				
 				<option value="file7">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/mock-speedtest.go (0.0%)</option>
 				
@@ -706,15 +706,15 @@ type ErrRemoteWriteFailed struct {
         Body       string
 }
 
-func NewErrRemoteWriteFailed(status int, resBody io.ReadCloser) *ErrRemoteWriteFailed <span class="cov0" title="0">{
+func NewErrRemoteWriteFailed(status int, resBody io.ReadCloser) *ErrRemoteWriteFailed <span class="cov8" title="1">{
         var body string
         b, err := io.ReadAll(resBody)
         if err != nil </span><span class="cov0" title="0">{
                 body = err.Error()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 body = string(b)
         }</span>
-        <span class="cov0" title="0">return &amp;ErrRemoteWriteFailed{
+        <span class="cov8" title="1">return &amp;ErrRemoteWriteFailed{
                 StatusCode: status,
                 Body:       body,
         }</span>

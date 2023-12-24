@@ -57,7 +57,7 @@
 				
 				<option value="file0">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/cmd.go (100.0%)</option>
 				
-				<option value="file1">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go (41.9%)</option>
+				<option value="file1">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go (55.8%)</option>
 				
 				</select>
 			</div>
@@ -215,16 +215,16 @@ type indexedFilesystem struct {
 }
 
 // Simple wrapper around http.Dir.Open to obtain debug information
-func (ifs indexedFilesystem) Open(path string) (http.File, error) <span class="cov0" title="0">{
+func (ifs indexedFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
         debugf("Received request for %s", path)
 
         f, err := ifs.fs.Open(path)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 debugf("Could not open file %s: %v", path, err)
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return f, nil</span>
+        <span class="cov8" title="1">return f, nil</span>
 }
 
 // Return a filesystem with or without index enabled

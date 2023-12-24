@@ -63,11 +63,11 @@
 				
 				<option value="file3">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config/errors.go (0.0%)</option>
 				
-				<option value="file4">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/dyndns.go (62.9%)</option>
+				<option value="file4">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/dyndns.go (60.9%)</option>
 				
-				<option value="file5">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/errors.go (0.0%)</option>
+				<option value="file5">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/errors.go (52.6%)</option>
 				
-				<option value="file6">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/testclient.go (63.6%)</option>
+				<option value="file6">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/testclient.go (90.9%)</option>
 				
 				<option value="file7">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/utils.go (70.8%)</option>
 				
@@ -167,7 +167,7 @@ func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader)
                 return cloudflareResponse{}, err
         }</span>
         <span class="cov8" title="1">if !result.Success </span><span class="cov0" title="0">{
-                return cloudflareResponse{}, &amp;dyndns.ErrOperationFailed{Result: res.Body}
+                return cloudflareResponse{}, dyndns.NewErrOperationFailed(res.Body)
         }</span>
         <span class="cov8" title="1">return result, nil</span>
 }
@@ -649,26 +649,28 @@ func (d *ClientData) CheckData() error <span class="cov8" title="1">{
 func runUpdate(c Client, updated *bool) <span class="cov8" title="1">{
         ipv4, err := GetPublicIPv4()
         if err != nil </span><span class="cov0" title="0">{
-                slog.Error("Failed to get public IPv4", "err", err)
+                slog.Error("Failed to get public IPv4, abort update", "err", err)
+                return
         }</span>
         <span class="cov8" title="1">ipv6, err := GetPublicIPv6()
         if err != nil </span><span class="cov0" title="0">{
-                slog.Error("Failed to get public IPv6", "err", err)
+                slog.Error("Failed to get public IPv6, abort update", "err", err)
+                return
         }</span>
 
         <span class="cov8" title="1">changed := ipv4 != c.Data().IPv4() || ipv6 != c.Data().IPv6()
         if changed &amp;&amp; ipv4 != c.Data().IPv4() </span><span class="cov8" title="1">{
                 err = c.Data().SetIPv4(ipv4)
                 if err != nil </span><span class="cov0" title="0">{
-                        slog.Error("Failed to get public IPv4", "err", err)
-                        changed = false
+                        slog.Error("Failed to set new IPv4, abort update", "err", err)
+                        return
                 }</span>
         }
         <span class="cov8" title="1">if changed &amp;&amp; ipv6 != c.Data().IPv6() </span><span class="cov0" title="0">{
                 err = c.Data().SetIPv6(ipv6)
                 if err != nil </span><span class="cov0" title="0">{
-                        slog.Error("Failed to get public IPv6", "err", err)
-                        changed = false
+                        slog.Error("Failed to set new IPv6, abort update", "err", err)
+                        return
                 }</span>
         }
 
@@ -764,15 +766,15 @@ type ErrHttpRequestFailed struct {
         Body       string
 }
 
-func NewErrHttpRequestFailed(status int, resBody io.ReadCloser) *ErrHttpRequestFailed <span class="cov0" title="0">{
+func NewErrHttpRequestFailed(status int, resBody io.ReadCloser) *ErrHttpRequestFailed <span class="cov8" title="1">{
         var body string
         b, err := io.ReadAll(resBody)
         if err != nil </span><span class="cov0" title="0">{
                 body = err.Error()
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 body = string(b)
         }</span>
-        <span class="cov0" title="0">return &amp;ErrHttpRequestFailed{
+        <span class="cov8" title="1">return &amp;ErrHttpRequestFailed{
                 StatusCode: status,
                 Body:       body,
         }</span>
@@ -784,19 +786,25 @@ func (e *ErrHttpRequestFailed) Error() string <span class="cov0" title="0">{
 
 // Outputs the response received from cloudflare
 type ErrOperationFailed struct {
-        Result io.ReadCloser
+        Result string
+}
+
+func NewErrOperationFailed(res io.ReadCloser) *ErrOperationFailed <span class="cov8" title="1">{
+        var result string
+        b, err := io.ReadAll(res)
+        if err != nil </span><span class="cov0" title="0">{
+                result = err.Error()
+        }</span> else<span class="cov8" title="1"> {
+                result = string(b)
+        }</span>
+        <span class="cov8" title="1">return &amp;ErrOperationFailed{
+                Result: result,
+        }</span>
 }
 
 func (e *ErrOperationFailed) Error() string <span class="cov0" title="0">{
-        var result string
-        bytes, err := io.ReadAll(e.Result)
-        if err != nil </span><span class="cov0" title="0">{
-                result = err.Error()
-        }</span> else<span class="cov0" title="0"> {
-                result = string(bytes)
-        }</span>
-        <span class="cov0" title="0">return "Remote api call returned without success, response: " + result</span>
-}
+        return "Remote api call returned without success, response: " + e.Result
+}</span>
 </pre>
 		
 		<pre class="file" id="file6" style="display: none">package dyndns
@@ -812,11 +820,11 @@ type testClient struct {
 }
 
 // Create a new testClient, fails if the token is empty
-func NewTestClient(token string, proxy bool) (Client, error) <span class="cov0" title="0">{
-        if token == "" </span><span class="cov0" title="0">{
+func NewTestClient(token string, proxy bool) (Client, error) <span class="cov8" title="1">{
+        if token == "" </span><span class="cov8" title="1">{
                 return nil, ErrMissingToken{}
         }</span>
-        <span class="cov0" title="0">return &amp;testClient{
+        <span class="cov8" title="1">return &amp;testClient{
                 data:       NewClientData(proxy),
                 FailUpdate: false,
         }, nil</span>
@@ -995,7 +1003,7 @@ func (r *relay) Update() error <span class="cov8" title="1">{
                 return err
         }</span>
         <span class="cov8" title="1">if !result.Success </span><span class="cov0" title="0">{
-                return &amp;dyndns.ErrOperationFailed{Result: res.Body}
+                return dyndns.NewErrOperationFailed(res.Body)
         }</span>
         <span class="cov8" title="1">return nil</span>
 }
