@@ -96,26 +96,28 @@ func (d *ClientData) CheckData() error {
 func runUpdate(c Client, updated *bool) {
 	ipv4, err := GetPublicIPv4()
 	if err != nil {
-		slog.Error("Failed to get public IPv4", "err", err)
+		slog.Error("Failed to get public IPv4, abort update", "err", err)
+		return
 	}
 	ipv6, err := GetPublicIPv6()
 	if err != nil {
-		slog.Error("Failed to get public IPv6", "err", err)
+		slog.Error("Failed to get public IPv6, abort update", "err", err)
+		return
 	}
 
 	changed := ipv4 != c.Data().IPv4() || ipv6 != c.Data().IPv6()
 	if changed && ipv4 != c.Data().IPv4() {
 		err = c.Data().SetIPv4(ipv4)
 		if err != nil {
-			slog.Error("Failed to get public IPv4", "err", err)
-			changed = false
+			slog.Error("Failed to set new IPv4, abort update", "err", err)
+			return
 		}
 	}
 	if changed && ipv6 != c.Data().IPv6() {
 		err = c.Data().SetIPv6(ipv6)
 		if err != nil {
-			slog.Error("Failed to get public IPv6", "err", err)
-			changed = false
+			slog.Error("Failed to set new IPv6, abort update", "err", err)
+			return
 		}
 	}
 
