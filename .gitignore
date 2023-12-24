@@ -5,3 +5,6 @@ apps/speedtest-exporter/bin
 
 # Ignore files created for testing
 apps/*/test-config.yaml
+
+# Generated go-test coverage reports
+coverprofiles/
