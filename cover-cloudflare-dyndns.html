@@ -63,13 +63,13 @@
 				
 				<option value="file3">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config/errors.go (0.0%)</option>
 				
-				<option value="file4">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/dyndns.go (66.1%)</option>
+				<option value="file4">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/dyndns.go (62.9%)</option>
 				
 				<option value="file5">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/errors.go (0.0%)</option>
 				
 				<option value="file6">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/testclient.go (63.6%)</option>
 				
-				<option value="file7">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/utils.go (75.0%)</option>
+				<option value="file7">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/utils.go (70.8%)</option>
 				
 				<option value="file8">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/relay/relay.go (75.0%)</option>
 				
@@ -664,7 +664,7 @@ func runUpdate(c Client, updated *bool) <span class="cov8" title="1">{
                         changed = false
                 }</span>
         }
-        <span class="cov8" title="1">if changed &amp;&amp; ipv6 != c.Data().IPv6() </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">if changed &amp;&amp; ipv6 != c.Data().IPv6() </span><span class="cov0" title="0">{
                 err = c.Data().SetIPv6(ipv6)
                 if err != nil </span><span class="cov0" title="0">{
                         slog.Error("Failed to get public IPv6", "err", err)
@@ -869,10 +869,10 @@ func ValidIPv6(ip string) bool <span class="cov8" title="1">{
 // Check if host has an IPv6 interface
 func HasIPv6Support() bool <span class="cov8" title="1">{
         conn, err := net.Dial("udp", "[2606:4700:4700::1111]:80")
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return false
         }</span>
-        <span class="cov8" title="1">conn.Close()
+        <span class="cov0" title="0">conn.Close()
         return true</span>
 }
 
@@ -905,10 +905,10 @@ func GetPublicIPv4() (string, error) <span class="cov8" title="1">{
 
 // Equal to getPublicIP("ipv6")
 func GetPublicIPv6() (string, error) <span class="cov8" title="1">{
-        if !HasIPv6Support() </span><span class="cov0" title="0">{
+        if !HasIPv6Support() </span><span class="cov8" title="1">{
                 return "", nil
         }</span>
-        <span class="cov8" title="1">return getPublicIP("ipv6")</span>
+        <span class="cov0" title="0">return getPublicIP("ipv6")</span>
 }
 </pre>
 		
