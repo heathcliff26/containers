@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>cmd: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/cmd.go (100.0%)</option>
+				
+				<option value="file1">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go (41.9%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "flag"
+        "log"
+        "os"
+        "strconv"
+        "strings"
+)
+
+const defaultPort = 8080
+
+func init() <span class="cov8" title="1">{
+        flag.StringVar(&amp;webroot, "webroot", "", "SFILESERVER_WEBROOT: Required, root directory to serve files from")
+        flag.IntVar(&amp;port, "port", defaultPort, "SFILESERVER_PORT: Specify port for the fileserver to listen on")
+        flag.StringVar(&amp;sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
+        flag.StringVar(&amp;sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
+        flag.BoolVar(&amp;withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
+        flag.BoolVar(&amp;debug, "debug", false, "SFILESERVER_DEBUG: Enable debug output")
+}</span>
+
+func envBool(target *bool, name string) <span class="cov8" title="1">{
+        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
+                *target = strings.ToLower(val) == "true" || val == "1"
+        }</span>
+}
+
+func envString(target *string, name string) <span class="cov8" title="1">{
+        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
+                *target = val
+        }</span>
+}
+
+// Parse Options not provided by the CLI Arguments from ENV
+func parseEnv() <span class="cov8" title="1">{
+        if webroot == "" </span><span class="cov8" title="1">{
+                envString(&amp;webroot, "SFILESERVER_WEBROOT")
+        }</span>
+
+        <span class="cov8" title="1">if port == defaultPort </span><span class="cov8" title="1">{
+                if val, ok := os.LookupEnv("SFILESERVER_PORT"); ok </span><span class="cov8" title="1">{
+                        var err error
+                        port, err = strconv.Atoi(val)
+                        if err != nil </span><span class="cov8" title="1">{
+                                log.Fatalf("Could not parse SFILESERVER_PORT: %v", err)
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">if sslCert == "" </span><span class="cov8" title="1">{
+                envString(&amp;sslCert, "SFILESERVER_CERT")
+        }</span>
+
+        <span class="cov8" title="1">if sslKey == "" </span><span class="cov8" title="1">{
+                envString(&amp;sslKey, "SFILESERVER_KEY")
+        }</span>
+
+        <span class="cov8" title="1">if !withoutIndex </span><span class="cov8" title="1">{
+                envBool(&amp;withoutIndex, "SFILESERVER_NO_INDEX")
+        }</span>
+
+        <span class="cov8" title="1">if !debug </span><span class="cov8" title="1">{
+                envBool(&amp;debug, "SFILESERVER_DEBUG")
+        }</span>
+}
+
+// Parse CLI Arguments and check the input.
+func parseFlags() <span class="cov8" title="1">{
+        flag.Parse()
+        parseEnv()
+
+        if webroot == "" </span><span class="cov8" title="1">{
+                log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+        }</span>
+        <span class="cov8" title="1">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov8" title="1">{
+                log.Fatal("When using ssl need both -cert and -key to be set")
+        }</span>
+        <span class="cov8" title="1">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, debug=%t", webroot, port, sslCert, sslKey, withoutIndex, debug)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "log"
+        "net/http"
+        "strconv"
+)
+
+var (
+        webroot      string
+        port         int
+        sslCert      string
+        sslKey       string
+        withoutIndex bool
+        debug        bool
+)
+
+func debugf(msg string, args ...any) <span class="cov8" title="1">{
+        if debug </span><span class="cov0" title="0">{
+                log.Printf("DEBUG "+msg, args...)
+        }</span>
+}
+
+type indexlessFilesystem struct {
+        fs http.FileSystem
+}
+
+// Implement Open() function of interface
+// Only returns without error when the path is either a file or a directory containing an index.html file
+func (ifs indexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
+        f, err := ifs.fs.Open(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">s, err := f.Stat()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Printf("ERROR An unexpected error occured serving %s: %v", path, err)
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">if s.IsDir() </span><span class="cov8" title="1">{
+                index := path + "/index.html"
+                _, err := ifs.fs.Open(index)
+                if err != nil </span><span class="cov8" title="1">{
+                        closeErr := f.Close()
+                        if closeErr != nil </span><span class="cov0" title="0">{
+                                debugf("Error closing file %s: %v", index, err)
+                                return nil, closeErr
+                        }</span>
+                        <span class="cov8" title="1">debugf("Directory %s did not contain index.html, err=%v", path, err)
+                        return nil, err</span>
+                }
+        }
+
+        <span class="cov8" title="1">return f, nil</span>
+}
+
+type indexedFilesystem struct {
+        fs http.FileSystem
+}
+
+// Simple wrapper around http.Dir.Open to obtain debug information
+func (ifs indexedFilesystem) Open(path string) (http.File, error) <span class="cov0" title="0">{
+        debugf("Received request for %s", path)
+
+        f, err := ifs.fs.Open(path)
+        if err != nil </span><span class="cov0" title="0">{
+                debugf("Could not open file %s: %v", path, err)
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return f, nil</span>
+}
+
+// Return a filesystem with or without index enabled
+func getFilesystem(path string, noIndex bool) http.FileSystem <span class="cov8" title="1">{
+        fs := http.Dir(path)
+        if noIndex </span><span class="cov8" title="1">{
+                return indexlessFilesystem{fs}
+        }</span> else<span class="cov8" title="1"> {
+                return indexedFilesystem{fs}
+        }</span>
+}
+
+func main() <span class="cov0" title="0">{
+        parseFlags()
+
+        fs := getFilesystem(webroot, withoutIndex)
+        fileServer := http.FileServer(fs)
+        http.Handle("/", fileServer)
+
+        log.Printf("Serving content from %s", webroot)
+
+        var err error
+        if sslCert == "" &amp;&amp; sslKey == "" </span><span class="cov0" title="0">{
+                log.Printf("Listening on :%d", port)
+                err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
+        }</span> else<span class="cov0" title="0"> {
+                log.Printf("Listening with ssl on :%d", port)
+                err = http.ListenAndServeTLS(":"+strconv.Itoa(port), sslCert, sslKey, nil)
+        }</span>
+        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

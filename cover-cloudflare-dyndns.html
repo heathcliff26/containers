@@ -1,0 +1,1319 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>client: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client/client.go (52.4%)</option>
+				
+				<option value="file1">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client/utils.go (100.0%)</option>
+				
+				<option value="file2">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config/config.go (97.9%)</option>
+				
+				<option value="file3">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config/errors.go (0.0%)</option>
+				
+				<option value="file4">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/dyndns.go (66.1%)</option>
+				
+				<option value="file5">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/errors.go (0.0%)</option>
+				
+				<option value="file6">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/testclient.go (63.6%)</option>
+				
+				<option value="file7">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns/utils.go (75.0%)</option>
+				
+				<option value="file8">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/relay/relay.go (75.0%)</option>
+				
+				<option value="file9">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/server/server.go (85.7%)</option>
+				
+				<option value="file10">github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/server/utils.go (83.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package client
+
+import (
+        "bytes"
+        "encoding/json"
+        "io"
+        "log/slog"
+        "net/http"
+        "time"
+
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
+)
+
+const CLOUDFLARE_API_ENDPOINT = "https://api.cloudflare.com/client/v4/"
+
+// Implements dyndns.Client
+type cloudflareClient struct {
+        // API is only here as a variable to enable local testing without relying on the cloudflare API
+        endpoint string
+        token    string
+        data     *dyndns.ClientData
+}
+
+// Create a new CloudflareClient and test if the token is valid
+func NewCloudflareClient(token string, proxy bool) (dyndns.Client, error) <span class="cov8" title="1">{
+        if token == "" </span><span class="cov8" title="1">{
+                return nil, dyndns.ErrMissingToken{}
+        }</span>
+
+        <span class="cov0" title="0">c := &amp;cloudflareClient{
+                endpoint: CLOUDFLARE_API_ENDPOINT,
+                token:    token,
+                data:     dyndns.NewClientData(proxy),
+        }
+        _, err := c.cloudflare(http.MethodGet, "zones", nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">return c, nil</span>
+}
+
+// Give Access to ClientData
+func (c *cloudflareClient) Data() *dyndns.ClientData <span class="cov8" title="1">{
+        return c.data
+}</span>
+
+// Sent request to cloudflare api
+func (c *cloudflareClient) cloudflare(method string, url string, body io.Reader) (cloudflareResponse, error) <span class="cov8" title="1">{
+        url = c.endpoint + url
+        slog.Debug("New request to cloudflare api", slog.String("url", url), slog.String("method", method))
+
+        req, err := http.NewRequest(method, url, body)
+        if err != nil </span><span class="cov0" title="0">{
+                return cloudflareResponse{}, err
+        }</span>
+        <span class="cov8" title="1">req.Header.Set("Authorization", "Bearer "+c.token)
+        if method == http.MethodPost || method == http.MethodPut </span><span class="cov8" title="1">{
+                req.Header.Set("Content-Type", "application/json")
+        }</span>
+
+        <span class="cov8" title="1">client := http.Client{
+                Timeout: 10 * time.Second,
+        }
+        res, err := client.Do(req)
+        if err != nil </span><span class="cov0" title="0">{
+                return cloudflareResponse{}, err
+        }</span>
+        <span class="cov8" title="1">defer res.Body.Close()
+        if res.StatusCode != 200 </span><span class="cov0" title="0">{
+                return cloudflareResponse{}, dyndns.NewErrHttpRequestFailed(res.StatusCode, res.Body)
+        }</span>
+
+        <span class="cov8" title="1">var result cloudflareResponse
+        err = json.NewDecoder(res.Body).Decode(&amp;result)
+        if err != nil </span><span class="cov0" title="0">{
+                return cloudflareResponse{}, err
+        }</span>
+        <span class="cov8" title="1">if !result.Success </span><span class="cov0" title="0">{
+                return cloudflareResponse{}, &amp;dyndns.ErrOperationFailed{Result: res.Body}
+        }</span>
+        <span class="cov8" title="1">return result, nil</span>
+}
+
+// Retrieve the zone id of a given domain from cloudflare.
+// Expects to receive at least 1 zone.
+func (c *cloudflareClient) getZoneId(domain string) (string, error) <span class="cov8" title="1">{
+        zone := getBaseDomain(domain)
+        url := "zones?name=" + zone + "&amp;status=active"
+
+        slog.Info("Fetching zone id", slog.String("zone", zone))
+        res, err := c.cloudflare(http.MethodGet, url, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">var zones []cloudflareZone
+        err = json.Unmarshal(res.Result, &amp;zones)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span> else<span class="cov8" title="1"> if len(zones) &lt; 1 </span><span class="cov0" title="0">{
+                return "", dyndns.ErrNoDomain{}
+        }</span>
+        <span class="cov8" title="1">return zones[0].Id, nil</span>
+}
+
+// Retrieve all records for a given zone.
+func (c *cloudflareClient) getRecords(zone string, domain string) ([]cloudflareRecord, error) <span class="cov8" title="1">{
+        url := "zones/" + zone + "/dns_records?name=" + domain
+
+        slog.Info("Fetching records",
+                slog.String("zone", zone),
+                slog.String("domain", domain),
+        )
+        res, err := c.cloudflare(http.MethodGet, url, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">var records []cloudflareRecord
+        err = json.Unmarshal(res.Result, &amp;records)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return records, nil</span>
+}
+
+// Update the record in cloudflare.
+// Sets the TTL to 1, which means automatic.
+// Acceptable inputs for recordType are "A" and "AAAA".
+func (c *cloudflareClient) updateRecord(zone string, domain string, recordType string, recordId string) error <span class="cov8" title="1">{
+        url := "zones/" + zone + "/dns_records"
+        method := http.MethodPost
+        if recordId != "" </span><span class="cov8" title="1">{
+                method = http.MethodPut
+                url = url + "/" + recordId
+        }</span>
+        <span class="cov8" title="1">var ip string
+        if recordType == "A" </span><span class="cov8" title="1">{
+                ip = c.Data().IPv4()
+        }</span> else<span class="cov8" title="1"> if recordType == "AAAA" </span><span class="cov8" title="1">{
+                ip = c.Data().IPv6()
+        }</span>
+
+        <span class="cov8" title="1">record := cloudflareRecord{
+                Content: ip,
+                Name:    domain,
+                Proxied: c.Data().Proxy(),
+                Type:    recordType,
+                TTL:     1,
+        }
+
+        body, err := json.Marshal(record)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">slog.Info("Updating record",
+                slog.String("zone", zone),
+                slog.String("domain", domain),
+                slog.String("type", recordType),
+                slog.String("recordId", recordId),
+                slog.Bool("proxied", record.Proxied),
+                slog.String("content", record.Content),
+        )
+        _, err = c.cloudflare(method, url, bytes.NewReader(body))
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// Update all domains, needs at least one of IPv4/IPv6 set.
+// Will return with the first error
+func (c *cloudflareClient) Update() error <span class="cov0" title="0">{
+        err := c.Data().CheckData()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">for _, domain := range c.Data().Domains() </span><span class="cov0" title="0">{
+                zone, err := c.getZoneId(domain)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov0" title="0">records, err := c.getRecords(zone, domain)
+                if err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                // Iterate over all records and update the A and AAAA record if necessary
+                <span class="cov0" title="0">var v4, v6 bool = false, false
+                for _, record := range records </span><span class="cov0" title="0">{
+                        slog.Debug("Received record",
+                                slog.String("domain", domain),
+                                slog.String("type", record.Type),
+                                slog.String("content", record.Content),
+                                slog.String("modified_on", record.ModifiedOn),
+                        )
+                        switch record.Type </span>{
+                        case "A":<span class="cov0" title="0">
+                                v4 = true
+                                if record.Content == c.Data().IPv4() </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                        case "AAAA":<span class="cov0" title="0">
+                                v6 = true
+                                if record.Content == c.Data().IPv6() </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                        default:<span class="cov0" title="0">
+                                continue</span>
+                        }
+                        <span class="cov0" title="0">err = c.updateRecord(zone, domain, record.Type, record.Id)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+
+                // Create A record if necessary
+                <span class="cov0" title="0">if !v4 &amp;&amp; c.Data().IPv4() != "" </span><span class="cov0" title="0">{
+                        err = c.updateRecord(zone, domain, "A", "")
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+                // Create AAAA record if necessary
+                <span class="cov0" title="0">if !v6 &amp;&amp; c.Data().IPv6() != "" </span><span class="cov0" title="0">{
+                        err = c.updateRecord(zone, domain, "AAAA", "")
+                        if err != nil </span><span class="cov0" title="0">{
+                                return err
+                        }</span>
+                }
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package client
+
+import "strings"
+
+// Example: foo.example.org -&gt; example.org
+func getBaseDomain(domain string) string <span class="cov8" title="1">{
+        s := strings.Split(domain, ".")
+        l := len(s)
+        // Should be at least 2 entries
+        if l &lt; 2 </span><span class="cov8" title="1">{
+                return ""
+        }</span>
+        <span class="cov8" title="1">return strings.Join(s[l-2:], ".")</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package config
+
+import (
+        "fmt"
+        "log/slog"
+        "os"
+        "strings"
+        "time"
+
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
+        "gopkg.in/yaml.v3"
+)
+
+const (
+        DEFAULT_LOG_LEVEL       = "info"
+        DEFAULT_SERVER_PORT     = 8080
+        DEFAULT_CLIENT_INTERVAL = time.Duration(5 * time.Minute)
+
+        MODE_SERVER = "server"
+        MODE_CLIENT = "client"
+        MODE_RELAY  = "relay"
+)
+
+var logLevel *slog.LevelVar
+
+// Initialize the logger
+func init() <span class="cov8" title="1">{
+        logLevel = &amp;slog.LevelVar{}
+        opts := slog.HandlerOptions{
+                Level: logLevel,
+        }
+        logger := slog.New(slog.NewTextHandler(os.Stdout, &amp;opts))
+        slog.SetDefault(logger)
+}</span>
+
+type Config struct {
+        LogLevel string       `yaml:"logLevel,omitempty"`
+        Server   ServerConfig `yaml:"server,omitempty"`
+        Client   ClientConfig `yaml:"client,omitempty"`
+}
+
+// Yaml configuration for dyndns server
+type ServerConfig struct {
+        Port    int       `yaml:"port"`
+        Domains []string  `yaml:"domains,omitempty"`
+        SSL     SSLConfig `yaml:"ssl,omitempty"`
+}
+
+type SSLConfig struct {
+        Enabled bool   `yaml:"enabled,omitempty"`
+        Cert    string `yaml:"cert,omitempty"`
+        Key     string `yaml:"key,omitempty"`
+}
+
+// Yaml configuration for dyndns client
+type ClientConfig struct {
+        Token    string        `yaml:"token"`
+        Proxy    bool          `yaml:"proxy,omitempty"`
+        Domains  []string      `yaml:"domains"`
+        Interval time.Duration `yaml:"interval,omitempty"`
+        Endpoint string        `yaml:"endpoint,omitempty"`
+}
+
+// Validate the server part of the config
+func (c *Config) validateServer() error <span class="cov8" title="1">{
+        if c.Server.SSL.Enabled &amp;&amp; (c.Server.SSL.Cert == "" || c.Server.SSL.Key == "") </span><span class="cov8" title="1">{
+                return ErrIncompleteSSLConfig{}
+        }</span>
+        <span class="cov8" title="1">slog.Info("Loaded server config",
+                slog.Int("port", c.Server.Port),
+                slog.String("domains", fmt.Sprintf("%v", c.Server.Domains)),
+                slog.Bool("ssl.enabled", c.Server.SSL.Enabled),
+                slog.String("ssl.cert", c.Server.SSL.Cert),
+                slog.String("ssl.key", c.Server.SSL.Key),
+        )
+        return nil</span>
+}
+
+// Validate the client part of the config
+func (c *Config) validateClient() error <span class="cov8" title="1">{
+        if c.Client.Token == "" </span><span class="cov8" title="1">{
+                return dyndns.ErrMissingToken{}
+        }</span>
+
+        <span class="cov8" title="1">if c.Client.Domains == nil || len(c.Client.Domains) &lt; 1 </span><span class="cov8" title="1">{
+                return dyndns.ErrNoDomain{}
+        }</span>
+
+        <span class="cov8" title="1">if c.Client.Interval &lt; time.Duration(30*time.Second) </span><span class="cov8" title="1">{
+                return &amp;ErrInvalidInterval{c.Client.Interval}
+        }</span>
+
+        <span class="cov8" title="1">slog.Info("Loaded client config",
+                slog.Bool("proxy", c.Client.Proxy),
+                slog.String("domains", fmt.Sprintf("%v", c.Client.Domains)),
+                slog.String("interval", c.Client.Interval.String()),
+                slog.String("endpoint", c.Client.Endpoint),
+        )
+
+        return nil</span>
+}
+
+// Returns a Config with default values set
+func DefaultConfig() Config <span class="cov8" title="1">{
+        return Config{
+                LogLevel: DEFAULT_LOG_LEVEL,
+                Server:   ServerConfig{Port: DEFAULT_SERVER_PORT},
+                Client: ClientConfig{
+                        Proxy:    true,
+                        Interval: DEFAULT_CLIENT_INTERVAL,
+                },
+        }
+}</span>
+
+// Loads config from file, returns error if config is invalid
+// Arguments:
+//
+//        path: Path to config file
+//        mode: Mode used, determines how the config will be validated and which values will be processed
+//        env: Determines if enviroment variables in the file will be expanded before decoding
+func LoadConfig(path string, mode string, env bool) (Config, error) <span class="cov8" title="1">{
+        c := DefaultConfig()
+
+        if path == "" &amp;&amp; mode == MODE_SERVER </span><span class="cov8" title="1">{
+                _ = setLogLevel(DEFAULT_LOG_LEVEL)
+                return c, nil
+        }</span>
+
+        <span class="cov8" title="1">f, err := os.ReadFile(path)
+        if err != nil </span><span class="cov8" title="1">{
+                return Config{}, err
+        }</span>
+
+        <span class="cov8" title="1">if env </span><span class="cov8" title="1">{
+                f = []byte(os.ExpandEnv(string(f)))
+        }</span>
+
+        <span class="cov8" title="1">err = yaml.Unmarshal(f, &amp;c)
+        if err != nil </span><span class="cov8" title="1">{
+                return Config{}, err
+        }</span>
+
+        <span class="cov8" title="1">err = setLogLevel(c.LogLevel)
+        if err != nil </span><span class="cov0" title="0">{
+                return Config{}, err
+        }</span>
+
+        <span class="cov8" title="1">switch mode </span>{
+        case MODE_SERVER:<span class="cov8" title="1">
+                err = c.validateServer()</span>
+        case MODE_CLIENT, MODE_RELAY:<span class="cov8" title="1">
+                err = c.validateClient()</span>
+        }
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
+                return Config{}, err
+        }</span>
+
+        <span class="cov8" title="1">if mode == MODE_RELAY &amp;&amp; c.Client.Endpoint == "" </span><span class="cov8" title="1">{
+                return Config{}, dyndns.ErrMissingEndpoint{}
+        }</span>
+
+        <span class="cov8" title="1">return c, nil</span>
+}
+
+// Parse a given string and set the resulting log level
+func setLogLevel(level string) error <span class="cov8" title="1">{
+        switch strings.ToLower(level) </span>{
+        case "debug":<span class="cov8" title="1">
+                logLevel.Set(slog.LevelDebug)</span>
+        case "info":<span class="cov8" title="1">
+                logLevel.Set(slog.LevelInfo)</span>
+        case "warn":<span class="cov8" title="1">
+                logLevel.Set(slog.LevelWarn)</span>
+        case "error":<span class="cov8" title="1">
+                logLevel.Set(slog.LevelError)</span>
+        default:<span class="cov8" title="1">
+                return &amp;ErrUnknownLogLevel{level}</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package config
+
+import "time"
+
+type ErrUnknownLogLevel struct {
+        Level string
+}
+
+func (e *ErrUnknownLogLevel) Error() string <span class="cov0" title="0">{
+        return "Unknown log level " + e.Level
+}</span>
+
+type ErrInvalidInterval struct {
+        Interval time.Duration
+}
+
+func (e *ErrInvalidInterval) Error() string <span class="cov0" title="0">{
+        return "Interval is to short, needs to be at least 30s, current " + e.Interval.String()
+}</span>
+
+type ErrIncompleteSSLConfig struct{}
+
+func (e ErrIncompleteSSLConfig) Error() string <span class="cov0" title="0">{
+        return "SSL is enabled but certificate and/or private key are missing"
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package dyndns
+
+import (
+        "log/slog"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+)
+
+type Client interface {
+        Data() *ClientData
+        Update() error
+}
+
+// ClientData is a struct that contains data needed for all Clients
+type ClientData struct {
+        proxy   bool
+        domains []string
+        ipv4    string
+        ipv6    string
+}
+
+func NewClientData(proxy bool) *ClientData <span class="cov8" title="1">{
+        return &amp;ClientData{proxy: proxy}
+}</span>
+
+func (d *ClientData) Proxy() bool <span class="cov8" title="1">{
+        return d.proxy
+}</span>
+
+func (d *ClientData) Domains() []string <span class="cov8" title="1">{
+        return d.domains
+}</span>
+
+func (d *ClientData) IPv4() string <span class="cov8" title="1">{
+        return d.ipv4
+}</span>
+
+func (d *ClientData) IPv6() string <span class="cov8" title="1">{
+        return d.ipv6
+}</span>
+
+// Set proxy value
+func (d *ClientData) SetProxy(proxy bool) <span class="cov8" title="1">{
+        d.proxy = proxy
+}</span>
+
+// Set domains to update, overrides previous domains
+func (d *ClientData) SetDomains(domains []string) <span class="cov8" title="1">{
+        d.domains = domains
+}</span>
+
+// Add a domain to the list of domains
+func (d *ClientData) AddDomain(domain string) <span class="cov8" title="1">{
+        if d.domains == nil </span><span class="cov8" title="1">{
+                d.domains = []string{domain}
+        }</span> else<span class="cov8" title="1"> {
+                d.domains = append(d.domains, domain)
+        }</span>
+}
+
+// Set IPv4 Address to use for creating entries
+// Returns an error if string is neither empty nor a valid IP Address
+func (d *ClientData) SetIPv4(val string) error <span class="cov8" title="1">{
+        if val != "" &amp;&amp; !ValidIPv4(val) </span><span class="cov0" title="0">{
+                return &amp;ErrInvalidIP{IP: val}
+        }</span>
+        <span class="cov8" title="1">d.ipv4 = val
+        return nil</span>
+}
+
+// Set IPv6 Address to use for creating entries
+// Returns an error if string is neither empty nor a valid IP Address
+func (d *ClientData) SetIPv6(val string) error <span class="cov8" title="1">{
+        if val != "" &amp;&amp; !ValidIPv6(val) </span><span class="cov0" title="0">{
+                return &amp;ErrInvalidIP{IP: val}
+        }</span>
+        <span class="cov8" title="1">d.ipv6 = val
+        return nil</span>
+}
+
+// Checks if data contains at least one IP and one domain
+// Returns error otherwise
+func (d *ClientData) CheckData() error <span class="cov8" title="1">{
+        if d.IPv4() == "" &amp;&amp; d.IPv6() == "" </span><span class="cov8" title="1">{
+                return ErrNoIP{}
+        }</span>
+        <span class="cov8" title="1">if d.Domains() == nil || len(d.Domains()) == 0 </span><span class="cov8" title="1">{
+                return ErrNoDomain{}
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// Fetch public IPs and run Update() if changed or last update has not succeeded
+func runUpdate(c Client, updated *bool) <span class="cov8" title="1">{
+        ipv4, err := GetPublicIPv4()
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("Failed to get public IPv4", "err", err)
+        }</span>
+        <span class="cov8" title="1">ipv6, err := GetPublicIPv6()
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("Failed to get public IPv6", "err", err)
+        }</span>
+
+        <span class="cov8" title="1">changed := ipv4 != c.Data().IPv4() || ipv6 != c.Data().IPv6()
+        if changed &amp;&amp; ipv4 != c.Data().IPv4() </span><span class="cov8" title="1">{
+                err = c.Data().SetIPv4(ipv4)
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to get public IPv4", "err", err)
+                        changed = false
+                }</span>
+        }
+        <span class="cov8" title="1">if changed &amp;&amp; ipv6 != c.Data().IPv6() </span><span class="cov8" title="1">{
+                err = c.Data().SetIPv6(ipv6)
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Failed to get public IPv6", "err", err)
+                        changed = false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if changed || !*updated </span><span class="cov8" title="1">{
+                *updated = false
+                slog.Info("Deteced changed IP",
+                        slog.String("ipv4", c.Data().IPv4()),
+                        slog.String("ipv6", c.Data().IPv6()),
+                )
+                err = c.Update()
+                if err != nil </span><span class="cov8" title="1">{
+                        slog.Error("Failed to Update() records", "err", err)
+                }</span> else<span class="cov8" title="1"> {
+                        slog.Info("Updated records", slog.String("IPv4", c.Data().IPv4()), slog.String("IPv6", c.Data().IPv6()))
+                        *updated = true
+                }</span>
+        } else<span class="cov8" title="1"> {
+                slog.Debug("No changed detected")
+        }</span>
+}
+
+// Fetch the public IP(s) and run Update() periodically.
+// Is executed as blocking and for forever.
+// Will not continue run of the loop if an error occurs.
+// Exits gracefully on SIGTERM
+func Run(c Client, interval time.Duration) <span class="cov0" title="0">{
+        quit := make(chan os.Signal, 1)
+        signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+        var updated bool
+        for </span><span class="cov0" title="0">{
+                runUpdate(c, &amp;updated)
+
+                var elapsedTime time.Duration = 0
+                for elapsedTime &lt; interval </span><span class="cov0" title="0">{
+                        timer := time.NewTimer(1 * time.Second)
+                        select </span>{
+                        case &lt;-timer.C:<span class="cov0" title="0">
+                                elapsedTime += time.Duration(1 * time.Second)</span>
+                        case &lt;-quit:<span class="cov0" title="0">
+                                timer.Stop()
+                                slog.Info("Received SIGTERM, shutting down client")
+                                return</span>
+                        }
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package dyndns
+
+import (
+        "fmt"
+        "io"
+)
+
+type ErrMissingToken struct{}
+
+func (e ErrMissingToken) Error() string <span class="cov0" title="0">{
+        return "No token provided for authenticating with the API."
+}</span>
+
+type ErrMissingEndpoint struct{}
+
+func (e ErrMissingEndpoint) Error() string <span class="cov0" title="0">{
+        return "No endpoint provided"
+}</span>
+
+type ErrInvalidIP struct {
+        IP string
+}
+
+func (e *ErrInvalidIP) Error() string <span class="cov0" title="0">{
+        return fmt.Sprintf("\"%s\" is not a valid ip address", e.IP)
+}</span>
+
+type ErrNoIP struct{}
+
+func (e ErrNoIP) Error() string <span class="cov0" title="0">{
+        return "Can't update dyndns entry, no IPs provided"
+}</span>
+
+type ErrNoDomain struct{}
+
+func (e ErrNoDomain) Error() string <span class="cov0" title="0">{
+        return "Can't update dyndns entry, no valid domain provided"
+}</span>
+
+// Shows the actual status code, as well as the response body.
+// Shows the error instead if it can't read the response body.
+type ErrHttpRequestFailed struct {
+        StatusCode int
+        Body       string
+}
+
+func NewErrHttpRequestFailed(status int, resBody io.ReadCloser) *ErrHttpRequestFailed <span class="cov0" title="0">{
+        var body string
+        b, err := io.ReadAll(resBody)
+        if err != nil </span><span class="cov0" title="0">{
+                body = err.Error()
+        }</span> else<span class="cov0" title="0"> {
+                body = string(b)
+        }</span>
+        <span class="cov0" title="0">return &amp;ErrHttpRequestFailed{
+                StatusCode: status,
+                Body:       body,
+        }</span>
+}
+
+func (e *ErrHttpRequestFailed) Error() string <span class="cov0" title="0">{
+        return fmt.Sprintf("HTTP Request returned with Status Code %d, expected 200. Response body: %s", e.StatusCode, e.Body)
+}</span>
+
+// Outputs the response received from cloudflare
+type ErrOperationFailed struct {
+        Result io.ReadCloser
+}
+
+func (e *ErrOperationFailed) Error() string <span class="cov0" title="0">{
+        var result string
+        bytes, err := io.ReadAll(e.Result)
+        if err != nil </span><span class="cov0" title="0">{
+                result = err.Error()
+        }</span> else<span class="cov0" title="0"> {
+                result = string(bytes)
+        }</span>
+        <span class="cov0" title="0">return "Remote api call returned without success, response: " + result</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package dyndns
+
+import "fmt"
+
+// This is a stub implementation of Client, it is only meant to be used for testing
+type testClient struct {
+        data *ClientData
+        // Variables used to control and check Update during tests
+        UpdateCount int
+        FailUpdate  bool
+}
+
+// Create a new testClient, fails if the token is empty
+func NewTestClient(token string, proxy bool) (Client, error) <span class="cov0" title="0">{
+        if token == "" </span><span class="cov0" title="0">{
+                return nil, ErrMissingToken{}
+        }</span>
+        <span class="cov0" title="0">return &amp;testClient{
+                data:       NewClientData(proxy),
+                FailUpdate: false,
+        }, nil</span>
+}
+
+// Give Access to ClientData
+func (c *testClient) Data() *ClientData <span class="cov8" title="1">{
+        return c.data
+}</span>
+
+// Stub implementation, does initial check regarding IP and domains
+func (c *testClient) Update() error <span class="cov8" title="1">{
+        err := c.Data().CheckData()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if c.FailUpdate </span><span class="cov8" title="1">{
+                return fmt.Errorf("I'm instructed to throw an error")
+        }</span>
+        <span class="cov8" title="1">c.UpdateCount++
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package dyndns
+
+import (
+        "io"
+        "net"
+        "net/http"
+        "strings"
+)
+
+// Validate if a string is a valid ip
+func validIP(ip string) bool <span class="cov8" title="1">{
+        return !(net.ParseIP(ip) == nil)
+}</span>
+
+// Validate if a string is an IPv4
+func ValidIPv4(ip string) bool <span class="cov8" title="1">{
+        return validIP(ip) &amp;&amp; strings.Contains(ip, ".")
+}</span>
+
+// Validate if a string is an IPv6
+func ValidIPv6(ip string) bool <span class="cov8" title="1">{
+        return validIP(ip) &amp;&amp; strings.Contains(ip, ":")
+}</span>
+
+// Check if host has an IPv6 interface
+func HasIPv6Support() bool <span class="cov8" title="1">{
+        conn, err := net.Dial("udp", "[2606:4700:4700::1111]:80")
+        if err != nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+        <span class="cov8" title="1">conn.Close()
+        return true</span>
+}
+
+// Use icanhazip.com to get the public ip
+func getPublicIP(version string) (string, error) <span class="cov8" title="1">{
+        res, err := http.Get("https://" + version + ".icanhazip.com")
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">if res.StatusCode != 200 </span><span class="cov0" title="0">{
+                return "", NewErrHttpRequestFailed(res.StatusCode, res.Body)
+        }</span>
+
+        <span class="cov8" title="1">b, err := io.ReadAll(res.Body)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov8" title="1">ip := strings.ReplaceAll(string(b), "\n", "")
+        if !validIP(ip) </span><span class="cov0" title="0">{
+                return "", &amp;ErrInvalidIP{ip}
+        }</span>
+
+        <span class="cov8" title="1">return ip, nil</span>
+}
+
+// Equal to getPublicIP("ipv4")
+func GetPublicIPv4() (string, error) <span class="cov8" title="1">{
+        return getPublicIP("ipv4")
+}</span>
+
+// Equal to getPublicIP("ipv6")
+func GetPublicIPv6() (string, error) <span class="cov8" title="1">{
+        if !HasIPv6Support() </span><span class="cov0" title="0">{
+                return "", nil
+        }</span>
+        <span class="cov8" title="1">return getPublicIP("ipv6")</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package relay
+
+import (
+        "bytes"
+        "encoding/json"
+        "net/http"
+        "time"
+
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/server"
+)
+
+type relay struct {
+        token    string
+        endpoint string
+        data     *dyndns.ClientData
+}
+
+// Create a new Relay
+func NewRelay(token string, proxy bool, endpoint string) (dyndns.Client, error) <span class="cov8" title="1">{
+        if token == "" </span><span class="cov8" title="1">{
+                return nil, dyndns.ErrMissingToken{}
+        }</span>
+        <span class="cov8" title="1">if endpoint == "" </span><span class="cov8" title="1">{
+                return nil, dyndns.ErrMissingEndpoint{}
+        }</span>
+        <span class="cov0" title="0">return &amp;relay{
+                token:    token,
+                endpoint: endpoint,
+                data:     dyndns.NewClientData(proxy),
+        }, nil</span>
+}
+
+func (r *relay) Endpoint() string <span class="cov8" title="1">{
+        return r.endpoint
+}</span>
+
+// Give Access to ClientData
+func (r *relay) Data() *dyndns.ClientData <span class="cov8" title="1">{
+        return r.data
+}</span>
+
+func (r *relay) Update() error <span class="cov8" title="1">{
+        err := r.Data().CheckData()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">params := server.RequestParams{
+                Token:   r.token,
+                Domains: r.Data().Domains(),
+                IPv4:    r.Data().IPv4(),
+                IPv6:    r.Data().IPv6(),
+                Proxy:   r.Data().Proxy(),
+        }
+        body, err := json.Marshal(params)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">req, err := http.NewRequest(http.MethodPost, r.endpoint, bytes.NewReader(body))
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">req.Header.Set("Content-Type", "application/json")
+
+        c := http.Client{
+                Timeout: 10 * time.Second,
+        }
+        res, err := c.Do(req)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer res.Body.Close()
+        if res.StatusCode != 200 </span><span class="cov0" title="0">{
+                return dyndns.NewErrHttpRequestFailed(res.StatusCode, res.Body)
+        }</span>
+
+        <span class="cov8" title="1">var result server.Response
+        err = json.NewDecoder(res.Body).Decode(&amp;result)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if !result.Success </span><span class="cov0" title="0">{
+                return &amp;dyndns.ErrOperationFailed{Result: res.Body}
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package server
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "log/slog"
+        "net/http"
+        "strconv"
+        "strings"
+
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/client"
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/config"
+        "github.com/heathcliff26/containers/apps/cloudflare-dyndns/pkg/dyndns"
+)
+
+type Server struct {
+        Addr         string
+        Domains      map[string]bool
+        SSL          config.SSLConfig
+        createClient func(string, bool) (dyndns.Client, error)
+}
+
+type RequestParams struct {
+        // To maintain compatibility with https://github.com/1rfsNet/Fritz-Box-Cloudflare-DynDNS, the cf_key and domain can be used as well for token and domains when doing GET
+        Token   string   `json:"token"`           // Token needed for accessing cloudflare api.
+        Domains []string `json:"domains"`         // The domain to update, parsed from comma (,) separated string, needs at least 1.
+        IPv4    string   `json:"ipv4,omitempty"`  // IPv4 Address, optional, when IPv6 set
+        IPv6    string   `json:"ipv6,omitempty"`  // IPv6 Address, optional, when IPv4 set
+        Proxy   bool     `json:"proxy,omitempty"` // Indicate if domain should be proxied, defaults to true
+}
+
+const (
+        MESSAGE_WRONG_METHOD           = "Wrong Method, expected GET or POST"
+        MESSAGE_WRONG_CONTENT_TYPE     = "Wrong Content-Type, expected application/json"
+        MESSAGE_REQUEST_PARSING_FAILED = "Failed to parse the request, received wrong or malformed parameters"
+        MESSAGE_UNAUTHORIZED           = "Failed to authenticate to cloudflare"
+        MESSAGE_DOMAINS_FORBIDDEN      = "At least one of the provided domains is not allowed to be handled by this server"
+        MESSAGE_INVALID_IP             = "Either no IP or an invalid IP has been provided"
+        MESSAGE_MISSING_DOMAIN         = "No domains have been provided"
+        MESSAGE_FAILED_UPDATE          = "Failed to update the records"
+        MESSAGE_SUCCESS                = "Updated dyndns records"
+)
+
+// Return a new Server, created from the provided config
+func NewServer(c config.ServerConfig) *Server <span class="cov0" title="0">{
+        return &amp;Server{
+                Addr:         ":" + strconv.Itoa(c.Port),
+                Domains:      newDomainMap(c.Domains),
+                SSL:          c.SSL,
+                createClient: client.NewCloudflareClient,
+        }
+}</span>
+
+func newDomainMap(domains []string) map[string]bool <span class="cov8" title="1">{
+        m := make(map[string]bool, len(domains))
+        for _, d := range domains </span><span class="cov8" title="1">{
+                m[d] = true
+        }</span>
+        <span class="cov8" title="1">return m</span>
+}
+
+// Ensures that all domains listed here are
+func (s *Server) verifyAllowedDomains(domains []string) bool <span class="cov8" title="1">{
+        if len(s.Domains) == 0 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+
+        <span class="cov8" title="1">for _, domain := range domains </span><span class="cov8" title="1">{
+                forbidden := true
+                d := strings.Split(domain, ".")
+                domain = ""
+                for i := len(d) - 1; i &gt;= 0; i-- </span><span class="cov8" title="1">{
+                        if domain == "" </span><span class="cov8" title="1">{
+                                domain = d[i]
+                        }</span> else<span class="cov8" title="1"> {
+                                domain = d[i] + "." + domain
+                        }</span>
+                        <span class="cov8" title="1">if s.Domains[domain] </span><span class="cov8" title="1">{
+                                forbidden = false
+                                break</span>
+                        }
+                }
+                <span class="cov8" title="1">if forbidden </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
+}
+
+// Main function of the server, used to server requests from clients
+func (s *Server) requestHandler(rw http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        if strings.Split(req.URL.String(), "?")[0] != "/" </span><span class="cov8" title="1">{
+                rw.WriteHeader(http.StatusNotFound)
+                return
+        }</span>
+        // Verify right method
+        <span class="cov8" title="1">if req.Method != http.MethodGet &amp;&amp; req.Method != http.MethodPost </span><span class="cov8" title="1">{
+                slog.Debug("Received request with wrong method type", "method", req.Method)
+                rw.WriteHeader(http.StatusMethodNotAllowed)
+                sendResponse(rw, MESSAGE_WRONG_METHOD, false)
+                return
+        }</span>
+        // Verify right Content-Type
+        <span class="cov8" title="1">if req.Method == http.MethodPost &amp;&amp; req.Header.Get("Content-Type") != "application/json" </span><span class="cov8" title="1">{
+                slog.Debug("Received request with wrong Content-Type", "Content-Type", req.Header.Get("Content-Type"))
+                rw.WriteHeader(http.StatusUnsupportedMediaType)
+                sendResponse(rw, MESSAGE_WRONG_CONTENT_TYPE, false)
+                return
+        }</span>
+
+        // Parse parameters
+        <span class="cov8" title="1">params := RequestParams{Proxy: true}
+        if req.Method == http.MethodPost </span><span class="cov8" title="1">{
+                err := json.NewDecoder(req.Body).Decode(&amp;params)
+                if err != nil </span><span class="cov8" title="1">{
+                        slog.Info("Failed to parse request from json", "err", err)
+                        rw.WriteHeader(http.StatusBadRequest)
+                        sendResponse(rw, MESSAGE_REQUEST_PARSING_FAILED, false)
+                        return
+                }</span>
+        } else<span class="cov8" title="1"> {
+                err := parseURLParams(req.URL, &amp;params)
+                if err != nil </span><span class="cov8" title="1">{
+                        slog.Info("Failed to parse request from url parameters", "err", err)
+                        rw.WriteHeader(http.StatusBadRequest)
+                        sendResponse(rw, MESSAGE_REQUEST_PARSING_FAILED, false)
+                        return
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !s.verifyAllowedDomains(params.Domains) </span><span class="cov8" title="1">{
+                slog.Info("Request contained domain(s) not on the whitelist")
+                rw.WriteHeader(http.StatusForbidden)
+                sendResponse(rw, MESSAGE_DOMAINS_FORBIDDEN, false)
+                return
+        }</span>
+
+        // Create client
+        <span class="cov8" title="1">c, err := s.createClient(params.Token, params.Proxy)
+        if err != nil </span><span class="cov8" title="1">{
+                slog.Info("Failed to create client", "err", err)
+                rw.WriteHeader(http.StatusUnauthorized)
+                sendResponse(rw, MESSAGE_UNAUTHORIZED, false)
+                return
+        }</span>
+        <span class="cov8" title="1">err = c.Data().SetIPv4(params.IPv4)
+        if err != nil </span><span class="cov8" title="1">{
+                slog.Info("Failed to set IPv4 for client", "err", err)
+                rw.WriteHeader(http.StatusBadRequest)
+                sendResponse(rw, MESSAGE_INVALID_IP, false)
+                return
+        }</span>
+        <span class="cov8" title="1">err = c.Data().SetIPv6(params.IPv6)
+        if err != nil </span><span class="cov8" title="1">{
+                slog.Info("Failed to set IPv6 for client", "err", err)
+                rw.WriteHeader(http.StatusBadRequest)
+                sendResponse(rw, MESSAGE_INVALID_IP, false)
+                return
+        }</span>
+        <span class="cov8" title="1">c.Data().SetDomains(params.Domains)
+
+        // Update records
+        err = c.Update()
+        if err != nil </span><span class="cov8" title="1">{
+                switch err.(type) </span>{
+                case dyndns.ErrNoIP:<span class="cov8" title="1">
+                        slog.Info("Received request with no IP")
+                        rw.WriteHeader(http.StatusBadRequest)
+                        sendResponse(rw, MESSAGE_INVALID_IP, false)
+                        return</span>
+                case dyndns.ErrNoDomain:<span class="cov8" title="1">
+                        slog.Info("Received request with no domains")
+                        rw.WriteHeader(http.StatusBadRequest)
+                        sendResponse(rw, MESSAGE_MISSING_DOMAIN, false)
+                        return</span>
+                default:<span class="cov0" title="0">
+                        slog.Info("Failed to update records", "err", err, slog.Group("req",
+                                slog.String("domains", fmt.Sprintf("%v", params.Domains)),
+                                slog.String("ipv4", params.IPv4),
+                                slog.String("ipv6", params.IPv6),
+                                slog.Bool("proxy", params.Proxy),
+                        ))
+                        rw.WriteHeader(http.StatusOK)
+                        sendResponse(rw, MESSAGE_FAILED_UPDATE, false)
+                        return</span>
+                }
+        }
+        <span class="cov8" title="1">slog.Info("Successfully update record with the following request", slog.Group("req",
+                slog.String("domains", fmt.Sprintf("%v", params.Domains)),
+                slog.String("ipv4", params.IPv4),
+                slog.String("ipv6", params.IPv6),
+                slog.Bool("proxy", params.Proxy),
+        ))
+        sendResponse(rw, MESSAGE_SUCCESS, true)</span>
+}
+
+// Starts the server and exits with error if that fails
+func (s *Server) Run() error <span class="cov0" title="0">{
+        http.HandleFunc("/", s.requestHandler)
+
+        var err error
+        if s.SSL.Enabled </span><span class="cov0" title="0">{
+                err = http.ListenAndServeTLS(s.Addr, s.SSL.Cert, s.SSL.Key, nil)
+        }</span> else<span class="cov0" title="0"> {
+                err = http.ListenAndServe(s.Addr, nil)
+        }</span>
+        // This just means the server was closed after running
+        <span class="cov0" title="0">if errors.Is(err, http.ErrServerClosed) </span><span class="cov0" title="0">{
+                slog.Info("Server closed, exiting")
+                return nil
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package server
+
+import (
+        "encoding/json"
+        "log/slog"
+        "net/http"
+        "net/url"
+        "strconv"
+        "strings"
+)
+
+type Response struct {
+        Message string `json:"msg"`
+        Success bool   `json:"success"`
+}
+
+// Send a response to the writer and handle impossible parse errors
+func sendResponse(rw http.ResponseWriter, msg string, success bool) <span class="cov8" title="1">{
+        res := Response{msg, success}
+
+        b, err := json.Marshal(res)
+        if err != nil </span><span class="cov0" title="0">{
+                if success </span><span class="cov0" title="0">{
+                        rw.WriteHeader(http.StatusInternalServerError)
+                }</span>
+                <span class="cov0" title="0">slog.Error("Failed to create Response", "err", err)
+                return</span>
+        }
+
+        <span class="cov8" title="1">_, err = rw.Write(b)
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("Failed to send response to client", "err", err)
+        }</span>
+}
+
+// Parse the url parameters into the struct RequestParams
+func parseURLParams(url *url.URL, result *RequestParams) error <span class="cov8" title="1">{
+        params := url.Query()
+        if params.Has("token") </span><span class="cov8" title="1">{
+                result.Token = params.Get("token")
+        }</span> else<span class="cov8" title="1"> {
+                // Compatibility for https://github.com/1rfsNet/Fritz-Box-Cloudflare-DynDNS
+                result.Token = params.Get("cf_key")
+        }</span>
+        <span class="cov8" title="1">var s string
+        if params.Has("domains") </span><span class="cov8" title="1">{
+                s = params.Get("domains")
+        }</span> else<span class="cov8" title="1"> {
+                // Compatibility for https://github.com/1rfsNet/Fritz-Box-Cloudflare-DynDNS
+                s = params.Get("domain")
+        }</span>
+        <span class="cov8" title="1">result.Domains = strings.Split(s, ",")
+        if params.Has("ipv4") </span><span class="cov8" title="1">{
+                result.IPv4 = params.Get("ipv4")
+        }</span>
+        <span class="cov8" title="1">if params.Has("ipv6") </span><span class="cov8" title="1">{
+                result.IPv6 = params.Get("ipv6")
+        }</span>
+        <span class="cov8" title="1">if params.Has("proxy") </span><span class="cov8" title="1">{
+                s = params.Get("proxy")
+                var err error
+                result.Proxy, err = strconv.ParseBool(s)
+                if err != nil </span><span class="cov8" title="1">{
+                        return err
+                }</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
