@@ -80,3 +80,18 @@ func TestIndexlessFilesystem(t *testing.T) {
 		})
 	}
 }
+
+func TestIndexedFilesystem(t *testing.T) {
+	fs := indexedFilesystem{fs: http.Dir("./testdata")}
+
+	assert := assert.New(t)
+
+	f, err := fs.Open("/test.html")
+	assert.Nil(err)
+	if assert.NotEmpty(f) {
+		f.Close()
+	}
+
+	_, err = fs.Open("/nothing.html")
+	assert.Error(err)
+}
