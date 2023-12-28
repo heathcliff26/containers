@@ -166,7 +166,7 @@ github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/speedte
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:19.50,23.2 1 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:26.176,37.2 1 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:40.51,42.2 1 0
-github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:45.42,47.2 1 1
+github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:45.42,47.2 1 0
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:50.51,52.2 1 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:55.49,57.2 1 1
 github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go:60.46,62.2 1 1
