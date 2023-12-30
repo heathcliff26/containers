@@ -2,6 +2,7 @@ go 1.21.5
 
 use (
 	./apps/cloudflare-dyndns
+	./apps/minecraft-exporter
 	./apps/simple-fileserver
 	./apps/speedtest-exporter
 )

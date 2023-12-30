@@ -1,0 +1,55 @@
+---
+name: Build minecraft-exporter
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/minecraft-exporter/Dockerfile"
+      - "apps/minecraft-exporter/go.mod"
+      - "apps/minecraft-exporter/go.sum"
+      - "apps/minecraft-exporter/**/*.go"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/minecraft-exporter/Dockerfile"
+      - "apps/minecraft-exporter/go.mod"
+      - "apps/minecraft-exporter/go.sum"
+      - "apps/minecraft-exporter/**/*.go"
+      - ".github/workflows/build-minecraft-exporter.yaml"
+      - ".golangci.yml"
+
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version: 'stable'
+          cache-dependency-path: apps/minecraft-exporter/go.sum
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@3a919529898de77ec3da873e3063ca4b10e7f5cc # v3.7.0
+        with:
+          version: latest
+          working-directory: apps/minecraft-exporter
+          args: --config=.golangci.yml
+          skip-cache: true
+
+  build:
+    uses: ./.github/workflows/build.yaml
+    needs: golangci
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: minecraft-exporter
+      dockerfile: Dockerfile
+      tag: rolling
+      dry-run: ${{ github.event_name == 'pull_request' }}
+    secrets: inherit
