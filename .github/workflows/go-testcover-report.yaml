@@ -57,8 +57,8 @@ jobs:
           commit_options: "--signoff"
           repository: "./gh-pages"
           commit_user_name: "bot-ahsoka[bot]"
-          commit_user_email: "noreply@heathcliff.eu"
-          commit_author: "bot-ahsoka <noreply@heathcliff.eu>"
+          commit_user_email: "<bot-ahsoka[bot]@users.noreply.github.com>"
+          commit_author: "bot-ahsoka[bot] <bot-ahsoka[bot]@users.noreply.github.com>"
           skip_dirty_check: false
           skip_fetch: true
           skip_checkout: true
