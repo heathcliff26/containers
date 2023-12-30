@@ -1,5 +1,6 @@
 # Ignore binaries
 apps/cloudflare-dyndns/bin
+apps/minecraft-exporter/bin
 apps/simple-fileserver/bin
 apps/speedtest-exporter/bin
 
