@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "username": "bot-ahsoka[bot]",
-  "gitAuthor": "bot-ahsoka <noreply@heathcliff.eu>",
+  "gitAuthor": "bot-ahsoka[bot] <bot-ahsoka[bot]@users.noreply.github.com>",
   "forkProcessing": "enabled"
 }
