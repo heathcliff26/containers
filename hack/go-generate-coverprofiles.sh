@@ -4,12 +4,13 @@ set -e
 
 script_dir="$(dirname "${BASH_SOURCE[0]}" | xargs realpath)/.."
 
-declare -a APPS=(cloudflare-dyndns simple-fileserver speedtest-exporter)
+# shellcheck source=common.sh
+source "${script_dir}/hack/common.sh"
 
 coverprofiles=""
 webviews=""
 
-for app in "${APPS[@]}"; do
+for app in "${GO_APPS[@]}"; do
     "${script_dir}/hack/go-coverprofile.sh" "${app}"
     coverprofiles+="    <br><a href="cover-${app}.out">${app}</a></br>"
     webviews+="    <br><a href="cover-${app}.html">${app}</a></br>"
