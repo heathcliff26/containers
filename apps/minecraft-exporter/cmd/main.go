@@ -12,7 +12,7 @@ import (
 	"github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/config"
 	"github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon"
 	"github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/save"
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote"
+	"github.com/heathcliff26/promremote/promremote"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
