@@ -20,6 +20,8 @@ github.com/hashicorp/go-version v1.6.0 h1:feTTfFNnjP967rlCxM/I9g701jU+RN74YKx2mO
 github.com/hashicorp/go-version v1.6.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231230061601-1d089c9ea31e h1:XY38Bhu3cSvs6pCFzzp7C/lereAZPbWtwQU8vRNp8Qo=
 github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231230061601-1d089c9ea31e/go.mod h1:Uru9w5gKJNPIgFbVrACxzXa4DnHsJTtq4eSe4E5ve50=
+github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231231170201-e8e2eed987e6 h1:ZKpvTm7fpx+a4gCLAYYHyBd7YTeC+6lQdg/xCIggUZ0=
+github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231231170201-e8e2eed987e6/go.mod h1:8ZnYARLIBneTDYQirR5ERNdcZ8d9WusSL6IyvFKrZ1k=
 github.com/jedib0t/go-pretty/v6 v6.4.9 h1:vZ6bjGg2eBSrJn365qlxGcaWu09Id+LHtrfDWlB2Usc=
 github.com/jedib0t/go-pretty/v6 v6.4.9/go.mod h1:Ndk3ase2CkQbXLLNf5QDHoYb6J9WtVfmHZu9n8rk2xs=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
