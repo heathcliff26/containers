@@ -65,19 +65,15 @@
 				
 				<option value="file4">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/config/errors.go (0.0%)</option>
 				
-				<option value="file5">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/client.go (70.0%)</option>
+				<option value="file5">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/mock-speedtest.go (0.0%)</option>
 				
-				<option value="file6">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote/errors.go (38.5%)</option>
+				<option value="file6">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/speedtest-cli.go (76.9%)</option>
 				
-				<option value="file7">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/mock-speedtest.go (0.0%)</option>
+				<option value="file7">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/speedtest-go.go (60.0%)</option>
 				
-				<option value="file8">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/speedtest-cli.go (76.9%)</option>
+				<option value="file8">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go (80.0%)</option>
 				
-				<option value="file9">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/speedtest-go.go (60.0%)</option>
-				
-				<option value="file10">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/types.go (80.0%)</option>
-				
-				<option value="file11">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/util.go (100.0%)</option>
+				<option value="file9">github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest/util.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -104,8 +100,8 @@ import (
 
         "github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/collector"
         "github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/config"
-        "github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote"
         "github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/speedtest"
+        "github.com/heathcliff26/promremote/promremote"
         "github.com/prometheus/client_golang/prometheus"
         "github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -313,7 +309,7 @@ import (
         "strings"
         "time"
 
-        "github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote"
+        "github.com/heathcliff26/promremote/promremote"
         "gopkg.in/yaml.v3"
 )
 
@@ -453,293 +449,7 @@ func (e *ErrInvalidInterval) Error() string <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package promremote
-
-import (
-        "bytes"
-        "fmt"
-        "log/slog"
-        "net/http"
-        "regexp"
-        "time"
-
-        "github.com/golang/snappy"
-        "github.com/prometheus/client_golang/prometheus"
-        dto "github.com/prometheus/client_model/go"
-        "github.com/prometheus/prometheus/model/timestamp"
-        "github.com/prometheus/prometheus/prompb"
-)
-
-type Client struct {
-        endpoint string
-        instance string
-        job      string
-        username string
-        password string
-        registry *prometheus.Registry
-}
-
-type MetricData struct {
-        Labels    map[string]string
-        Timestamp time.Time
-        Value     float64
-}
-
-func NewWriteClient(endpoint, instance, job string, reg *prometheus.Registry) (*Client, error) <span class="cov8" title="1">{
-        if endpoint == "" </span><span class="cov8" title="1">{
-                return nil, ErrMissingEndpoint{}
-        }</span>
-        <span class="cov8" title="1">if instance == "" </span><span class="cov8" title="1">{
-                return nil, ErrMissingInstance{}
-        }</span>
-        <span class="cov8" title="1">if job == "" </span><span class="cov8" title="1">{
-                return nil, ErrMissingJob{}
-        }</span>
-        <span class="cov8" title="1">if reg == nil </span><span class="cov8" title="1">{
-                return nil, ErrMissingRegistry{}
-        }</span>
-        <span class="cov8" title="1">return &amp;Client{
-                endpoint: endpoint,
-                instance: instance,
-                job:      job,
-                registry: reg,
-        }, nil</span>
-}
-
-func (c *Client) Endpoint() string <span class="cov8" title="1">{
-        if c == nil </span><span class="cov8" title="1">{
-                return ""
-        }</span>
-        <span class="cov8" title="1">return c.endpoint</span>
-}
-
-func (c *Client) Registry() *prometheus.Registry <span class="cov8" title="1">{
-        if c == nil </span><span class="cov8" title="1">{
-                return nil
-        }</span>
-        <span class="cov8" title="1">return c.registry</span>
-}
-
-// Set credentials needed for basic auth, return error if not provided
-func (c *Client) SetBasicAuth(username, password string) error <span class="cov8" title="1">{
-        if username == "" || password == "" </span><span class="cov8" title="1">{
-                return ErrMissingAuthCredentials{}
-        }</span>
-        <span class="cov8" title="1">c.username = username
-        c.password = password
-        return nil</span>
-}
-
-// Send TimeSeries to remote_write endpoint
-func (c *Client) post(ts []prompb.TimeSeries) error <span class="cov8" title="1">{
-        wr := prompb.WriteRequest{Timeseries: ts}
-        data, err := wr.Marshal()
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">body := snappy.Encode(nil, data)
-
-        req, err := http.NewRequest(http.MethodPost, c.Endpoint(), bytes.NewReader(body))
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">req.Header.Add("Content-Encoding", "snappy")
-        req.Header.Add("Content-Type", "application/x-protobuf")
-        req.Header.Set("X-Prometheus-Remote-Read-Version", "0.1.0")
-        if c.username != "" </span><span class="cov8" title="1">{
-                req.SetBasicAuth(c.username, c.password)
-        }</span>
-
-        <span class="cov8" title="1">httpClient := http.Client{
-                Timeout: time.Duration(10 * time.Second),
-        }
-        res, err := httpClient.Do(req)
-        if err != nil </span><span class="cov0" title="0">{
-                return err
-        }</span>
-        <span class="cov8" title="1">defer res.Body.Close()
-        if res.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
-                return NewErrRemoteWriteFailed(res.StatusCode, req.Body)
-        }</span>
-
-        <span class="cov8" title="1">return nil</span>
-}
-
-// Collect metrics from registry and convert them to TimeSeries
-func (c *Client) collect() ([]prompb.TimeSeries, error) <span class="cov8" title="1">{
-        ch := make(chan prometheus.Metric)
-        go func() </span><span class="cov8" title="1">{
-                c.registry.Collect(ch)
-                close(ch)
-        }</span>()
-
-        <span class="cov8" title="1">var res []prompb.TimeSeries
-        for metric := range ch </span><span class="cov8" title="1">{
-                // Extract name of metric
-                regex := regexp.MustCompile("fqName: \"([a-zA-Z_:][a-zA-Z0-9_:]*)\"")
-                fqName := regex.FindStringSubmatch(metric.Desc().String())
-                if len(fqName) &lt; 2 </span><span class="cov0" title="0">{
-                        return nil, &amp;ErrInvalidMetricDesc{Desc: metric.Desc().String()}
-                }</span>
-
-                // Convert metric to readable format
-                <span class="cov8" title="1">m := &amp;dto.Metric{}
-                err := metric.Write(m)
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, err
-                }</span>
-
-                // Extract lables
-                <span class="cov8" title="1">labels := make([]prompb.Label, len(m.Label)+3)
-                labels[0] = prompb.Label{
-                        Name:  "__name__",
-                        Value: fqName[1],
-                }
-                labels[1] = prompb.Label{
-                        Name:  "instance",
-                        Value: c.instance,
-                }
-                labels[2] = prompb.Label{
-                        Name:  "job",
-                        Value: c.job,
-                }
-                for i, l := range m.Label </span><span class="cov8" title="1">{
-                        labels[i+3] = prompb.Label{
-                                Name:  l.GetName(),
-                                Value: l.GetValue(),
-                        }
-                }</span>
-
-                <span class="cov8" title="1">ts := prompb.TimeSeries{
-                        Labels: labels,
-                }
-
-                // Extract value and timestamp
-                var value float64
-                if m.Counter != nil </span><span class="cov0" title="0">{
-                        value = m.Counter.GetValue()
-                }</span> else<span class="cov8" title="1"> if m.Gauge != nil </span><span class="cov8" title="1">{
-                        value = m.Gauge.GetValue()
-                }</span> else<span class="cov0" title="0"> if m.Untyped != nil </span><span class="cov0" title="0">{
-                        value = m.Counter.GetValue()
-                }</span> else<span class="cov0" title="0"> {
-                        return nil, fmt.Errorf("Unknown metric type")
-                }</span>
-                <span class="cov8" title="1">ts.Samples = []prompb.Sample{
-                        {
-                                Value:     value,
-                                Timestamp: timestamp.FromTime(time.Now()),
-                        },
-                }
-
-                res = append(res, ts)</span>
-        }
-        <span class="cov8" title="1">return res, nil</span>
-}
-
-// Collect metrics and send them to remote server in interval.
-// Does not block main thread execution
-func (c *Client) Run(interval time.Duration, quit chan bool) <span class="cov0" title="0">{
-        go func() </span><span class="cov0" title="0">{
-                for </span><span class="cov0" title="0">{
-                        ts, err := c.collect()
-                        if err != nil </span><span class="cov0" title="0">{
-                                slog.Error("Failed to collect metrics for remote_write", "err", err)
-                        }</span>
-                        <span class="cov0" title="0">err = c.post(ts)
-                        if err != nil </span><span class="cov0" title="0">{
-                                slog.Error("Failed to send metrics to remote endpoint", "err", err)
-                        }</span> else<span class="cov0" title="0"> {
-                                slog.Debug("Successfully send metrics via remote_write")
-                        }</span>
-
-                        <span class="cov0" title="0">var elapsedTime time.Duration = 0
-                        for elapsedTime &lt; interval </span><span class="cov0" title="0">{
-                                timer := time.NewTimer(1 * time.Second)
-                                select </span>{
-                                case &lt;-timer.C:<span class="cov0" title="0">
-                                        elapsedTime += time.Duration(1 * time.Second)</span>
-                                case &lt;-quit:<span class="cov0" title="0">
-                                        timer.Stop()
-                                        slog.Info("Received stop signal, shutting down remote_write client")
-                                        return</span>
-                                }
-                        }
-                }
-        }()
-}
-</pre>
-		
-		<pre class="file" id="file6" style="display: none">package promremote
-
-import (
-        "fmt"
-        "io"
-)
-
-type ErrMissingEndpoint struct{}
-
-func (e ErrMissingEndpoint) Error() string <span class="cov0" title="0">{
-        return "No endpoint for prometheus remote_write provided"
-}</span>
-
-type ErrMissingInstance struct{}
-
-func (e ErrMissingInstance) Error() string <span class="cov0" title="0">{
-        return "No instance name provided"
-}</span>
-
-type ErrMissingJob struct{}
-
-func (e ErrMissingJob) Error() string <span class="cov0" title="0">{
-        return "No job name provided"
-}</span>
-
-type ErrMissingRegistry struct{}
-
-func (e ErrMissingRegistry) Error() string <span class="cov0" title="0">{
-        return "No prometheus registry provided"
-}</span>
-
-type ErrRemoteWriteFailed struct {
-        StatusCode int
-        Body       string
-}
-
-func NewErrRemoteWriteFailed(status int, resBody io.ReadCloser) *ErrRemoteWriteFailed <span class="cov8" title="1">{
-        var body string
-        b, err := io.ReadAll(resBody)
-        if err != nil </span><span class="cov0" title="0">{
-                body = err.Error()
-        }</span> else<span class="cov8" title="1"> {
-                body = string(b)
-        }</span>
-        <span class="cov8" title="1">return &amp;ErrRemoteWriteFailed{
-                StatusCode: status,
-                Body:       body,
-        }</span>
-}
-
-func (e *ErrRemoteWriteFailed) Error() string <span class="cov0" title="0">{
-        return fmt.Sprintf("Prometheus remote_write returned with Status Code %d, expected 200. Response body: %s", e.StatusCode, e.Body)
-}</span>
-
-type ErrMissingAuthCredentials struct{}
-
-func (e ErrMissingAuthCredentials) Error() string <span class="cov0" title="0">{
-        return "Need both username and password, at least one of them is empty"
-}</span>
-
-type ErrInvalidMetricDesc struct {
-        Desc string
-}
-
-func (e *ErrInvalidMetricDesc) Error() string <span class="cov0" title="0">{
-        return "Received metric with invalid description: " + e.Desc
-}</span>
-</pre>
-		
-		<pre class="file" id="file7" style="display: none">package speedtest
+		<pre class="file" id="file5" style="display: none">package speedtest
 
 type MockSpeedtest struct {
         Callback func()
@@ -758,7 +468,7 @@ func (s *MockSpeedtest) Speedtest() *SpeedtestResult <span class="cov0" title="0
 }
 </pre>
 		
-		<pre class="file" id="file8" style="display: none">package speedtest
+		<pre class="file" id="file6" style="display: none">package speedtest
 
 import (
         "bytes"
@@ -837,7 +547,7 @@ func (s *SpeedtestCLI) Speedtest() *SpeedtestResult <span class="cov8" title="1"
 }
 </pre>
 		
-		<pre class="file" id="file9" style="display: none">package speedtest
+		<pre class="file" id="file7" style="display: none">package speedtest
 
 import (
         "log/slog"
@@ -902,7 +612,7 @@ func (s *SpeedtestGo) Speedtest() *SpeedtestResult <span class="cov8" title="1">
 }
 </pre>
 		
-		<pre class="file" id="file10" style="display: none">package speedtest
+		<pre class="file" id="file8" style="display: none">package speedtest
 
 type Speedtest interface {
         Speedtest() *SpeedtestResult
@@ -981,7 +691,7 @@ func (r *SpeedtestResult) Success() bool <span class="cov8" title="1">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file11" style="display: none">package speedtest
+		<pre class="file" id="file9" style="display: none">package speedtest
 
 // Convert unit bytes to megabits
 func convertBytesToMbits(bytes int64) float64 <span class="cov8" title="1">{
