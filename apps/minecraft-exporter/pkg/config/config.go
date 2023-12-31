@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/heathcliff26/containers/apps/speedtest-exporter/pkg/promremote"
+	"github.com/heathcliff26/promremote/promremote"
 	"gopkg.in/yaml.v3"
 )
 
