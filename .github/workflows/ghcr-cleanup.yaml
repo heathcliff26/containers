@@ -1,0 +1,34 @@
+---
+name: Prune ghcr.io
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "The name of the app"
+        type: string
+        required: true
+      keep:
+        description: "The number of versions to keep"
+        type: string
+        default: "50"
+        required: true
+      delete-tagged:
+        description: "Delete tagged versions"
+        type: boolean
+        default: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+      - uses: actions/delete-package-versions@0d39a63126868f5eefaa47169615edd3c0f61e20 # v4.1.1
+        with:
+          package-name: "${{ inputs.app }}"
+          package-type: container
+          min-versions-to-keep: "${{ inputs.keep }}"
+          ignore-versions: "(latest|rolling)"
+          delete-only-untagged-versions: ${{ ! inputs.delete-tagged }}
