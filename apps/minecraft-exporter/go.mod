@@ -5,7 +5,7 @@ go 1.21.5
 require (
 	github.com/Tnze/go-mc v1.20.1
 	github.com/hashicorp/go-version v1.6.0
-	github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231231170201-e8e2eed987e6
+	github.com/heathcliff26/containers/apps/speedtest-exporter v0.0.0-20231231170327-09e03e1ee5fa
 	github.com/jedib0t/go-pretty/v6 v6.4.9
 	github.com/prometheus/client_golang v1.18.0
 	github.com/stretchr/testify v1.8.4
