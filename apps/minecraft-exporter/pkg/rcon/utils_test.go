@@ -12,7 +12,9 @@ func TestParsePlayersOnline(t *testing.T) {
 		Players     []string
 	}{
 		{"1.12", "There are 0/10 players online: Foo1234, Bar5678", []string{"Foo1234", "Bar5678"}},
+		{"1.12-empty", "There are 0/10 players online:", []string{}},
 		{"1.20", "There are 0 of a max of 20 players online: Foo1234, Bar5678", []string{"Foo1234", "Bar5678"}},
+		{"1.20-empty", "There are 0 of a max of 20 players online: ", []string{}},
 	}
 
 	for _, tCase := range tMatrix {

@@ -13,7 +13,7 @@ import (
 // Parse the output of the list command
 func parsePlayersOnline(input string) []string {
 	s := strings.Split(input, "players online: ")
-	if len(s) < 2 {
+	if len(s) < 2 || s[1] == "" {
 		return []string{}
 	}
 
