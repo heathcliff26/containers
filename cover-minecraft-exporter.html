@@ -65,9 +65,9 @@
 				
 				<option value="file4">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/errors.go (0.0%)</option>
 				
-				<option value="file5">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/rcon.go (59.7%)</option>
+				<option value="file5">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/rcon.go (60.3%)</option>
 				
-				<option value="file6">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/utils.go (72.6%)</option>
+				<option value="file6">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/utils.go (73.8%)</option>
 				
 				<option value="file7">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/save/collector.go (0.0%)</option>
 				
@@ -578,7 +578,7 @@ func (c *RCONClient) cmd(cmd string) (string, error) <span class="cov8" title="1
                 }</span>
         }
 
-        <span class="cov8" title="1">slog.Debug("Running RCON command", "cmd", cmd)
+        <span class="cov8" title="1">slog.Debug("RCON: Running command", "cmd", cmd)
 
         timeout := time.After(time.Second)
         done := make(chan bool)
@@ -603,6 +603,7 @@ func (c *RCONClient) cmd(cmd string) (string, error) <span class="cov8" title="1
                         _ = c.CloseConn()
                         return
                 }</span>
+                <span class="cov8" title="1">slog.Debug("RCON: Received response", "cmd", cmd, "res", res)</span>
         }()
 
         <span class="cov8" title="1">select </span>{
@@ -697,7 +698,7 @@ import (
 // Parse the output of the list command
 func parsePlayersOnline(input string) []string <span class="cov8" title="1">{
         s := strings.Split(input, "players online: ")
-        if len(s) &lt; 2 </span><span class="cov0" title="0">{
+        if len(s) &lt; 2 || s[1] == "" </span><span class="cov8" title="1">{
                 return []string{}
         }</span>
 
