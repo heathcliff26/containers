@@ -54,7 +54,7 @@ func (c *RCONClient) cmd(cmd string) (string, error) {
 		}
 	}
 
-	slog.Debug("Running RCON command", "cmd", cmd)
+	slog.Debug("RCON: Running command", "cmd", cmd)
 
 	timeout := time.After(time.Second)
 	done := make(chan bool)
@@ -79,6 +79,7 @@ func (c *RCONClient) cmd(cmd string) (string, error) {
 			_ = c.CloseConn()
 			return
 		}
+		slog.Debug("RCON: Received response", "cmd", cmd, "res", res)
 	}()
 
 	select {
