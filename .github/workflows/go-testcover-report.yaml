@@ -10,7 +10,6 @@ on:
 
 jobs:
   generate-reports:
-    name: Generate reports
     runs-on: ubuntu-latest
     steps:
       - name: Generate Token

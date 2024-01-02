@@ -17,6 +17,8 @@ on:
       - "apps/default-webpage/*.html"
       - "apps/default-webpage/**/*.html"
       - ".github/workflows/build-default-webpage.yaml"
+  merge_group:
+    branches: ["main"]
 
 jobs:
   build-tiny:

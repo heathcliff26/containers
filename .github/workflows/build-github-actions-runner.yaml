@@ -13,6 +13,8 @@ on:
     paths:
       - "apps/github-actions-runner/Dockerfile"
       - ".github/workflows/build-github-actions-runner.yaml"
+  merge_group:
+    branches: ["main"]
 
 jobs:
   build:

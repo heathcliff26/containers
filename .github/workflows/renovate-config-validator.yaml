@@ -16,14 +16,15 @@ on:
       - .github/renovate.json5
       - .github/renovate/**.json5
       - .github/workflows/renovate-config-validator.yaml
+  merge_group:
+    branches: ["main"]
 
 env:
   RENOVATE_BOT_CONFIG_FILE: .github/renovate-bot.json5
   RENOVATE_REPO_CONFIG_FILE: .github/renovate.json5
 
 jobs:
-  renovate:
-    name: Validate config
+  validate-renovate-config:
     runs-on: ubuntu-latest
     steps:
       - name: Generate Token

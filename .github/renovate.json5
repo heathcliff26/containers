@@ -21,7 +21,6 @@
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prIgnoreNotification"],
   "ignorePaths": ["**/archive/**"],
-  "ignoreTests": true,
   "packageRules": [
     {
       "matchPackageNames": ["bitwarden/clients"],

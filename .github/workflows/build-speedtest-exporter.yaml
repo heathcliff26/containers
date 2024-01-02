@@ -22,10 +22,11 @@ on:
       - "apps/speedtest-exporter/**/*.go"
       - ".github/workflows/build-speedtest-exporter.yaml"
       - ".golangci.yml"
+  merge_group:
+    branches: ["main"]
 
 jobs:
-  golangci:
-    name: lint
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -45,7 +46,7 @@ jobs:
 
   build-slim:
     uses: ./.github/workflows/build.yaml
-    needs: golangci
+    needs: lint
     permissions:
       contents: read
       packages: write
@@ -59,7 +60,7 @@ jobs:
 
   build-cli:
     uses: ./.github/workflows/build.yaml
-    needs: golangci
+    needs: lint
     permissions:
       contents: read
       packages: write
