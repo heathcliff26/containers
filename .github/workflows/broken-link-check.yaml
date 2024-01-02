@@ -28,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
         with:
-          args: --verbose --no-progress --exclude-mail './**/*.md'
+          args: --verbose --no-progress --exclude-mail --exclude-path apps/cloudflare-dyndns/vendor --exclude-path apps/minecraft-exporter/vendor --exclude-path apps/simple-fileserver/vendor --exclude-path apps/speedtest-exporter/vendor './**/*.md'
 
       - name: Find Link Checker Issue
         id: broken-link-check-issue
