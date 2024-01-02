@@ -52,5 +52,5 @@ jobs:
       app: simple-fileserver
       dockerfile: Dockerfile
       tag: latest
-      dry-run: ${{ github.event_name == 'pull_request' }}
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     secrets: inherit

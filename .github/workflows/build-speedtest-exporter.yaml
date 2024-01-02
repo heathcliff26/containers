@@ -55,7 +55,7 @@ jobs:
       dockerfile: Dockerfile
       tag: slim
       tags: "type=raw,value=latest,enable={{is_default_branch}}"
-      dry-run: ${{ github.event_name == 'pull_request' }}
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     secrets: inherit
 
   build-cli:
@@ -69,5 +69,5 @@ jobs:
       dockerfile: Dockerfile.cli
       tag: cli
       tags: ""
-      dry-run: ${{ github.event_name == 'pull_request' }}
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     secrets: inherit
