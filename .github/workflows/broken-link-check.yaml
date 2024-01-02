@@ -29,6 +29,8 @@ jobs:
           GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
         with:
           args: --verbose --no-progress --exclude-mail --exclude-path apps/cloudflare-dyndns/vendor --exclude-path apps/minecraft-exporter/vendor --exclude-path apps/simple-fileserver/vendor --exclude-path apps/speedtest-exporter/vendor './**/*.md'
+          format: markdown
+          output: .lychee-out.md
 
       - name: Find Link Checker Issue
         id: broken-link-check-issue
@@ -43,6 +45,6 @@ jobs:
         with:
           title: Broken links detected 🔗
           issue-number: "${{ steps.broken-link-check-issue.outputs.issue-number }}"
-          content-filepath: ./lychee/out.md
+          content-filepath: .lychee-out.md
           token: "${{ steps.generate-token.outputs.token }}"
           labels: broken-links
