@@ -15,7 +15,8 @@
       "matchDatasources": ["github-tags"],
       "automerge": true,
       "automergeType": "branch",
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
     },
     {
       "description": "Auto merge GitHub Actions (Docker)",
@@ -23,7 +24,8 @@
       "matchFileNames": [".github/workflows/*.yaml", ".github/workflows/*.yml"],
       "automerge": true,
       "automergeType": "branch",
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
     },
     {
       "description": "Auto merge Bitwarden CLI",
