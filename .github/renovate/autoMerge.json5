@@ -16,7 +16,6 @@
       "automerge": true,
       "automergeType": "branch",
       "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0/",
     },
     {
       "description": "Auto merge GitHub Actions (Docker)",
@@ -25,7 +24,6 @@
       "automerge": true,
       "automergeType": "branch",
       "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0/",
     },
     {
       "description": "Auto merge Bitwarden CLI",
