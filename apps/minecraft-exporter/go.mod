@@ -1,6 +1,6 @@
 module github.com/heathcliff26/containers/apps/minecraft-exporter
 
-go 1.21.5
+go 1.21
 
 require (
 	github.com/Tnze/go-mc v1.20.1

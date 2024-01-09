@@ -1,6 +1,6 @@
 module github.com/heathcliff26/containers/apps/speedtest-exporter
 
-go 1.21.5
+go 1.21
 
 require (
 	github.com/heathcliff26/promremote v1.0.0
