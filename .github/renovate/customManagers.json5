@@ -22,6 +22,20 @@
         "uses: docker://(?<depName>.*?):(?<currentValue>.*)"
       ],
       "datasourceTemplate": "docker",
+    },
+    {
+      "customType": "regex",
+      "description": "Update golang in go.work file",
+      "fileMatch": [
+        "go.work",
+      ],
+      "datasource": "github-tags",
+      "depName": "golang/go",
+      "extractVersion": "^go(?<version>.*)$",
+      "matchStrings": [
+        "go (?<currentValue>.*)\n"
+      ],
+      "datasourceTemplate": "docker",
     }
   ]
 }
