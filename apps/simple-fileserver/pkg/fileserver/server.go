@@ -42,7 +42,7 @@ func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) 
 		if srw.Status == 0 {
 			srw.Status = http.StatusOK
 		}
-		log.Printf("Received Request: source=\"%s\", status=\"%d\", path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)
+		log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)
 	}
 }
 
