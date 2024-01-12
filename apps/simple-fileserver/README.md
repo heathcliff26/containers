@@ -19,10 +19,10 @@ $ podman run ghcr.io/heathcliff26/simple-fileserver:latest -h
 Usage of simple-fileserver:
   -cert string
         SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.
-  -debug
-        SFILESERVER_DEBUG: Enable debug output
   -key string
         SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.
+  -log
+        SFILESERVER_LOG: Enable logging requests
   -no-index
         SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead
   -port int
