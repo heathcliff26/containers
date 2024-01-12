@@ -14,7 +14,7 @@ type expectedResult struct {
 	port            int
 	sslKey, sslCert string
 	withoutIndex    bool
-	debug           bool
+	enableLogging   bool
 }
 
 func TestCmd(t *testing.T) {
@@ -29,21 +29,21 @@ func TestCmd(t *testing.T) {
 			Args: []string{"-webroot", "/foo/bar"},
 			Env:  nil,
 			result: expectedResult{
-				webroot:      "/foo/bar",
-				port:         defaultPort,
-				withoutIndex: false,
-				debug:        false,
+				webroot:       "/foo/bar",
+				port:          defaultPort,
+				withoutIndex:  false,
+				enableLogging: false,
 			},
 		},
 		{
 			Name: "Args",
-			Args: []string{"-webroot", "/foo/bar", "-port", "1234", "-no-index", "-debug"},
+			Args: []string{"-webroot", "/foo/bar", "-port", "1234", "-no-index", "-log"},
 			Env:  nil,
 			result: expectedResult{
-				webroot:      "/foo/bar",
-				port:         1234,
-				withoutIndex: true,
-				debug:        true,
+				webroot:       "/foo/bar",
+				port:          1234,
+				withoutIndex:  true,
+				enableLogging: true,
 			},
 		},
 		{
@@ -53,29 +53,29 @@ func TestCmd(t *testing.T) {
 				"SFILESERVER_WEBROOT":  "/foo/bar/baz",
 				"SFILESERVER_PORT":     "5678",
 				"SFILESERVER_NO_INDEX": "tRue",
-				"SFILESERVER_DEBUG":    "trUe",
+				"SFILESERVER_LOG":      "trUe",
 			},
 			result: expectedResult{
-				webroot:      "/foo/bar/baz",
-				port:         5678,
-				withoutIndex: true,
-				debug:        true,
+				webroot:       "/foo/bar/baz",
+				port:          5678,
+				withoutIndex:  true,
+				enableLogging: true,
 			},
 		},
 		{
 			Name: "ArgsOverrideEnv",
-			Args: []string{"-webroot", "/foo", "-port", "1234", "-no-index", "-debug"},
+			Args: []string{"-webroot", "/foo", "-port", "1234", "-no-index", "-log"},
 			Env: map[string]string{
 				"SFILESERVER_WEBROOT":  "/foo/bar/baz",
 				"SFILESERVER_PORT":     "5678",
 				"SFILESERVER_NO_INDEX": "false",
-				"SFILESERVER_DEBUG":    "false",
+				"SFILESERVER_LOG":      "false",
 			},
 			result: expectedResult{
-				webroot:      "/foo",
-				port:         1234,
-				withoutIndex: true,
-				debug:        true,
+				webroot:       "/foo",
+				port:          1234,
+				withoutIndex:  true,
+				enableLogging: true,
 			},
 		},
 		{
@@ -114,7 +114,7 @@ func TestCmd(t *testing.T) {
 				sslCert = ""
 				sslKey = ""
 				withoutIndex = false
-				debug = false
+				enableLogging = false
 			})
 			if tCase.Args != nil {
 				err := flag.CommandLine.Parse(tCase.Args)
@@ -135,7 +135,7 @@ func TestCmd(t *testing.T) {
 			assert.Equal(tCase.result.sslCert, sslCert)
 			assert.Equal(tCase.result.sslKey, sslKey)
 			assert.Equal(tCase.result.withoutIndex, withoutIndex)
-			assert.Equal(tCase.result.debug, debug)
+			assert.Equal(tCase.result.enableLogging, enableLogging)
 		})
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package fileserver
 
 import (
 	"net/http"
@@ -10,41 +10,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testMatrixGetFilesystem struct {
-	name         string
-	path         string
-	noIndex      bool
-	expectedType string
-}
-
-func TestGetFilesystem(t *testing.T) {
-
-	testMatrix := []testMatrixGetFilesystem{
+func TestCreateFilesystem(t *testing.T) {
+	testMatrix := []struct {
+		Name         string
+		Path         string
+		Index        bool
+		ExpectedType string
+	}{
 		{
-			name:         "withIndex",
-			path:         "foo",
-			noIndex:      false,
-			expectedType: "main.indexedFilesystem",
+			Name:         "withIndex",
+			Path:         "foo",
+			Index:        true,
+			ExpectedType: "fileserver.IndexedFilesystem",
 		},
 		{
-			name:         "withoutIndex",
-			path:         "foo",
-			noIndex:      true,
-			expectedType: "main.indexlessFilesystem",
+			Name:         "withoutIndex",
+			Path:         "foo",
+			Index:        false,
+			ExpectedType: "fileserver.IndexlessFilesystem",
 		},
 	}
 
 	for _, tCase := range testMatrix {
-		t.Run(tCase.name, func(t *testing.T) {
-			fs := getFilesystem(tCase.path, tCase.noIndex)
+		t.Run(tCase.Name, func(t *testing.T) {
+			fs := CreateFilesystem(tCase.Path, tCase.Index)
 
-			assert.Equal(t, tCase.expectedType, reflect.TypeOf(fs).String())
+			assert.Equal(t, tCase.ExpectedType, reflect.TypeOf(fs).String())
 		})
 	}
 }
 
 func TestIndexlessFilesystem(t *testing.T) {
-	fs := indexlessFilesystem{http.Dir("./testdata")}
+	fs := IndexlessFilesystem{http.Dir("./testdata")}
 
 	t.Run("DirWithoutIndexFile", func(t *testing.T) {
 		assert := assert.New(t)
@@ -82,7 +79,7 @@ func TestIndexlessFilesystem(t *testing.T) {
 }
 
 func TestIndexedFilesystem(t *testing.T) {
-	fs := indexedFilesystem{fs: http.Dir("./testdata")}
+	fs := IndexedFilesystem{fs: http.Dir("./testdata")}
 
 	assert := assert.New(t)
 

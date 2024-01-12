@@ -16,7 +16,7 @@ func init() {
 	flag.StringVar(&sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
 	flag.StringVar(&sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
 	flag.BoolVar(&withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
-	flag.BoolVar(&debug, "debug", false, "SFILESERVER_DEBUG: Enable debug output")
+	flag.BoolVar(&enableLogging, "log", false, "SFILESERVER_LOG: Enable logging requests")
 }
 
 func envBool(target *bool, name string) {
@@ -59,8 +59,8 @@ func parseEnv() {
 		envBool(&withoutIndex, "SFILESERVER_NO_INDEX")
 	}
 
-	if !debug {
-		envBool(&debug, "SFILESERVER_DEBUG")
+	if !enableLogging {
+		envBool(&enableLogging, "SFILESERVER_LOG")
 	}
 }
 
@@ -75,5 +75,5 @@ func parseFlags() {
 	if (sslCert != "" && sslKey == "") || (sslCert == "" && sslKey != "") {
 		log.Fatal("When using ssl need both -cert and -key to be set")
 	}
-	log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, debug=%t", webroot, port, sslCert, sslKey, withoutIndex, debug)
+	log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)
 }
