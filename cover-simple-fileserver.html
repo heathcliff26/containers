@@ -57,7 +57,13 @@
 				
 				<option value="file0">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/cmd.go (100.0%)</option>
 				
-				<option value="file1">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go (55.8%)</option>
+				<option value="file1">github.com/heathcliff26/containers/apps/simple-fileserver/cmd/main.go (0.0%)</option>
+				
+				<option value="file2">github.com/heathcliff26/containers/apps/simple-fileserver/pkg/fileserver/filesystem.go (87.0%)</option>
+				
+				<option value="file3">github.com/heathcliff26/containers/apps/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
+				
+				<option value="file4">github.com/heathcliff26/containers/apps/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -89,7 +95,7 @@ func init() <span class="cov8" title="1">{
         flag.StringVar(&amp;sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
         flag.StringVar(&amp;sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
         flag.BoolVar(&amp;withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
-        flag.BoolVar(&amp;debug, "debug", false, "SFILESERVER_DEBUG: Enable debug output")
+        flag.BoolVar(&amp;enableLogging, "log", false, "SFILESERVER_LOG: Enable logging requests")
 }</span>
 
 func envBool(target *bool, name string) <span class="cov8" title="1">{
@@ -132,8 +138,8 @@ func parseEnv() <span class="cov8" title="1">{
                 envBool(&amp;withoutIndex, "SFILESERVER_NO_INDEX")
         }</span>
 
-        <span class="cov8" title="1">if !debug </span><span class="cov8" title="1">{
-                envBool(&amp;debug, "SFILESERVER_DEBUG")
+        <span class="cov8" title="1">if !enableLogging </span><span class="cov8" title="1">{
+                envBool(&amp;enableLogging, "SFILESERVER_LOG")
         }</span>
 }
 
@@ -148,7 +154,7 @@ func parseFlags() <span class="cov8" title="1">{
         <span class="cov8" title="1">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov8" title="1">{
                 log.Fatal("When using ssl need both -cert and -key to be set")
         }</span>
-        <span class="cov8" title="1">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, debug=%t", webroot, port, sslCert, sslKey, withoutIndex, debug)</span>
+        <span class="cov8" title="1">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)</span>
 }
 </pre>
 		
@@ -156,32 +162,56 @@ func parseFlags() <span class="cov8" title="1">{
 
 import (
         "log"
-        "net/http"
         "strconv"
+
+        "github.com/heathcliff26/containers/apps/simple-fileserver/pkg/fileserver"
 )
 
 var (
-        webroot      string
-        port         int
-        sslCert      string
-        sslKey       string
-        withoutIndex bool
-        debug        bool
+        webroot       string
+        port          int
+        sslCert       string
+        sslKey        string
+        withoutIndex  bool
+        enableLogging bool
 )
 
-func debugf(msg string, args ...any) <span class="cov8" title="1">{
-        if debug </span><span class="cov0" title="0">{
-                log.Printf("DEBUG "+msg, args...)
+func main() <span class="cov0" title="0">{
+        parseFlags()
+
+        fs := fileserver.NewFileserver(webroot, !withoutIndex)
+        log.Printf("Serving content from %s", webroot)
+
+        fs.Handle("/")
+
+        if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov0" title="0">{
+                log.Print("Enabling ssl")
+                fs.UseSSL(sslCert, sslKey)
+        }</span>
+
+        <span class="cov0" title="0">fs.Log = enableLogging
+
+        log.Printf("Listening on :%d", port)
+        err := fs.ListenAndServe(":" + strconv.Itoa(port))
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
         }</span>
 }
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package fileserver
 
-type indexlessFilesystem struct {
+import (
+        "net/http"
+)
+
+type IndexlessFilesystem struct {
         fs http.FileSystem
 }
 
 // Implement Open() function of interface
 // Only returns without error when the path is either a file or a directory containing an index.html file
-func (ifs indexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
+func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
         f, err := ifs.fs.Open(path)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
@@ -189,7 +219,6 @@ func (ifs indexlessFilesystem) Open(path string) (http.File, error) <span class=
 
         <span class="cov8" title="1">s, err := f.Stat()
         if err != nil </span><span class="cov0" title="0">{
-                log.Printf("ERROR An unexpected error occured serving %s: %v", path, err)
                 return nil, err
         }</span>
 
@@ -199,28 +228,23 @@ func (ifs indexlessFilesystem) Open(path string) (http.File, error) <span class=
                 if err != nil </span><span class="cov8" title="1">{
                         closeErr := f.Close()
                         if closeErr != nil </span><span class="cov0" title="0">{
-                                debugf("Error closing file %s: %v", index, err)
                                 return nil, closeErr
                         }</span>
-                        <span class="cov8" title="1">debugf("Directory %s did not contain index.html, err=%v", path, err)
-                        return nil, err</span>
+                        <span class="cov8" title="1">return nil, err</span>
                 }
         }
 
         <span class="cov8" title="1">return f, nil</span>
 }
 
-type indexedFilesystem struct {
+type IndexedFilesystem struct {
         fs http.FileSystem
 }
 
 // Simple wrapper around http.Dir.Open to obtain debug information
-func (ifs indexedFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
-        debugf("Received request for %s", path)
-
+func (ifs IndexedFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
         f, err := ifs.fs.Open(path)
         if err != nil </span><span class="cov8" title="1">{
-                debugf("Could not open file %s: %v", path, err)
                 return nil, err
         }</span>
 
@@ -228,35 +252,108 @@ func (ifs indexedFilesystem) Open(path string) (http.File, error) <span class="c
 }
 
 // Return a filesystem with or without index enabled
-func getFilesystem(path string, noIndex bool) http.FileSystem <span class="cov8" title="1">{
+func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov8" title="1">{
         fs := http.Dir(path)
-        if noIndex </span><span class="cov8" title="1">{
-                return indexlessFilesystem{fs}
+        if index </span><span class="cov8" title="1">{
+                return IndexedFilesystem{fs}
         }</span> else<span class="cov8" title="1"> {
-                return indexedFilesystem{fs}
+                return IndexlessFilesystem{fs}
         }</span>
 }
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package fileserver
 
-func main() <span class="cov0" title="0">{
-        parseFlags()
+import (
+        "errors"
+        "log"
+        "net/http"
+)
 
-        fs := getFilesystem(webroot, withoutIndex)
-        fileServer := http.FileServer(fs)
-        http.Handle("/", fileServer)
+type SSLConfig struct {
+        Enabled          bool
+        Certificate, Key string
+}
 
-        log.Printf("Serving content from %s", webroot)
+type Fileserver struct {
+        SSL    SSLConfig
+        server http.Handler
+        Log    bool
+}
 
+func NewFileserver(webroot string, index bool) *Fileserver <span class="cov8" title="1">{
+        fs := CreateFilesystem(webroot, index)
+        server := http.FileServer(fs)
+        return &amp;Fileserver{
+                server: server,
+        }
+}</span>
+
+type StatusResponseWriter struct {
+        http.ResponseWriter
+        Status int
+}
+
+func (rw *StatusResponseWriter) WriteHeader(statusCode int) <span class="cov8" title="1">{
+        rw.Status = statusCode
+        rw.ResponseWriter.WriteHeader(statusCode)
+}</span>
+
+func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+        srw := &amp;StatusResponseWriter{ResponseWriter: res}
+        s.server.ServeHTTP(srw, req)
+        if s.Log </span><span class="cov8" title="1">{
+                if srw.Status == 0 </span><span class="cov0" title="0">{
+                        srw.Status = http.StatusOK
+                }</span>
+                <span class="cov8" title="1">log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)</span>
+        }
+}
+
+func (s *Fileserver) Handle(path string) <span class="cov0" title="0">{
+        http.HandleFunc("/", s.loggingWrapper)
+}</span>
+
+func (s *Fileserver) UseSSL(cert, key string) <span class="cov0" title="0">{
+        s.SSL = SSLConfig{
+                Enabled:     true,
+                Certificate: cert,
+                Key:         key,
+        }
+}</span>
+
+func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title="0">{
         var err error
-        if sslCert == "" &amp;&amp; sslKey == "" </span><span class="cov0" title="0">{
-                log.Printf("Listening on :%d", port)
-                err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
+        if s.SSL.Enabled </span><span class="cov0" title="0">{
+                err = http.ListenAndServeTLS(addr, s.SSL.Certificate, s.SSL.Key, nil)
+
         }</span> else<span class="cov0" title="0"> {
-                log.Printf("Listening with ssl on :%d", port)
-                err = http.ListenAndServeTLS(":"+strconv.Itoa(port), sslCert, sslKey, nil)
+                err = http.ListenAndServe(addr, nil)
         }</span>
-        <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
-                log.Fatal(err)
+
+        // This just means the server was closed after running
+        <span class="cov0" title="0">if errors.Is(err, http.ErrServerClosed) </span><span class="cov0" title="0">{
+                return nil
         }</span>
+        <span class="cov0" title="0">return err</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package fileserver
+
+import (
+        "net/http"
+)
+
+func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
+        IPAddress := req.Header.Get("x-real-ip")
+        if IPAddress == "" </span><span class="cov8" title="1">{
+                IPAddress = req.Header.Get("x-forwarded-for")
+        }</span>
+        <span class="cov8" title="1">if IPAddress == "" </span><span class="cov8" title="1">{
+                IPAddress = req.RemoteAddr
+        }</span>
+        <span class="cov8" title="1">return IPAddress</span>
 }
 </pre>
 		
