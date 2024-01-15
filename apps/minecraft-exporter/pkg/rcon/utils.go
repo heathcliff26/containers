@@ -11,12 +11,17 @@ import (
 
 // Parse the output of the list command
 func parsePlayersOnline(input string) []string {
-	s := strings.Split(input, "players online: ")
-	if len(s) < 2 || s[1] == "" {
+	s := strings.Split(input, "players online:")
+	if len(s) < 2 {
 		return []string{}
 	}
 
-	return strings.Split(s[1], ", ")
+	players := strings.TrimSpace(s[1])
+	if players == "" {
+		return []string{}
+	}
+
+	return strings.Split(players, ", ")
 }
 
 // Parse the TPS statistics returned from forge
