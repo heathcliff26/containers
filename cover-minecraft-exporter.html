@@ -67,7 +67,7 @@
 				
 				<option value="file5">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/rcon.go (60.3%)</option>
 				
-				<option value="file6">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/utils.go (73.8%)</option>
+				<option value="file6">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/rcon/utils.go (73.6%)</option>
 				
 				<option value="file7">github.com/heathcliff26/containers/apps/minecraft-exporter/pkg/save/collector.go (0.0%)</option>
 				
@@ -497,6 +497,8 @@ func (c *RCONCollector) Close() error <span class="cov0" title="0">{
 		
 		<pre class="file" id="file4" style="display: none">package rcon
 
+import "fmt"
+
 type ErrRCONMissingHost struct{}
 
 func (e ErrRCONMissingHost) Error() string <span class="cov0" title="0">{
@@ -519,6 +521,28 @@ type ErrRCONConnectionTimeout struct{}
 
 func (e ErrRCONConnectionTimeout) Error() string <span class="cov0" title="0">{
         return "Timed out waiting for a response"
+}</span>
+
+type ErrForgeTPS struct{}
+
+func (e ErrForgeTPS) Error() string <span class="cov0" title="0">{
+        return "Failed to retrieve the overall tps stats"
+}</span>
+
+type ErrPaperTPS struct {
+        Text  string
+        Count int
+}
+
+func NewErrPaperTPS(text string, count int) error <span class="cov0" title="0">{
+        return &amp;ErrPaperTPS{
+                Text:  text,
+                Count: count,
+        }
+}</span>
+
+func (e *ErrPaperTPS) Error() string <span class="cov0" title="0">{
+        return fmt.Sprintf("Expected at 3 values, got %d. Input: \"%s\"", e.Count, e.Text)
 }</span>
 </pre>
 		
@@ -686,7 +710,6 @@ func (c *RCONClient) Close() error <span class="cov0" title="0">{
 		<pre class="file" id="file6" style="display: none">package rcon
 
 import (
-        "fmt"
         "log/slog"
         "regexp"
         "strconv"
@@ -697,12 +720,17 @@ import (
 
 // Parse the output of the list command
 func parsePlayersOnline(input string) []string <span class="cov8" title="1">{
-        s := strings.Split(input, "players online: ")
-        if len(s) &lt; 2 || s[1] == "" </span><span class="cov8" title="1">{
+        s := strings.Split(input, "players online:")
+        if len(s) &lt; 2 </span><span class="cov0" title="0">{
                 return []string{}
         }</span>
 
-        <span class="cov8" title="1">return strings.Split(s[1], ", ")</span>
+        <span class="cov8" title="1">players := strings.TrimSpace(s[1])
+        if players == "" </span><span class="cov8" title="1">{
+                return []string{}
+        }</span>
+
+        <span class="cov8" title="1">return strings.Split(players, ", ")</span>
 }
 
 // Parse the TPS statistics returned from forge
@@ -732,7 +760,7 @@ func parseForgeTPS(input string) ([]TPSStat, TPSStat, error) <span class="cov8" 
         <span class="cov8" title="1">reg = regexp.MustCompile(`Overall\s?: Mean tick time: (.*) ms. Mean TPS: (.*)`)
         overallStat := reg.FindStringSubmatch(input)
         if overallStat == nil </span><span class="cov0" title="0">{
-                return nil, TPSStat{}, fmt.Errorf("Failed to retrieve the overall tps stats")
+                return nil, TPSStat{}, ErrForgeTPS{}
         }</span>
         <span class="cov8" title="1">ticktime, err := strconv.ParseFloat(overallStat[1], 64)
         if err != nil </span><span class="cov0" title="0">{
@@ -778,7 +806,7 @@ func parsePaperTPS(input string) ([]float64, error) <span class="cov8" title="1"
         <span class="cov8" title="1">input = strings.TrimPrefix(input, "TPS from last 1m, 5m, 15m: ")
         s := strings.Split(input, ", ")
         if len(s) != 3 </span><span class="cov0" title="0">{
-                return []float64{}, fmt.Errorf("Expected at 3 values, got %d. Input: \"%s\"", len(s), input)
+                return []float64{}, NewErrPaperTPS(input, len(s))
         }</span>
 
         <span class="cov8" title="1">tps := make([]float64, 3)
