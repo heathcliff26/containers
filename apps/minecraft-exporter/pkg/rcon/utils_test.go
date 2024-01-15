@@ -11,7 +11,7 @@ func TestParsePlayersOnline(t *testing.T) {
 		Name, Input string
 		Players     []string
 	}{
-		{"1.12", "There are 0/10 players online: Foo1234, Bar5678", []string{"Foo1234", "Bar5678"}},
+		{"1.12", "There are 2/10 players online:Foo1234, Bar5678", []string{"Foo1234", "Bar5678"}},
 		{"1.12-empty", "There are 0/10 players online:", []string{}},
 		{"1.20", "There are 0 of a max of 20 players online: Foo1234, Bar5678", []string{"Foo1234", "Bar5678"}},
 		{"1.20-empty", "There are 0 of a max of 20 players online: ", []string{}},
@@ -129,6 +129,7 @@ func TestParsePaperTPS(t *testing.T) {
 		TPS         []float64
 	}{
 		{Name: "1.20_raw",
+			//lint:ignore ST1018 I need this string
 			Input: "[0;33mTPS from last 1m, 5m, 15m: [0;1;32m20.0[0m, [0;1;32m20.0[0m, [0;1;32m20.0[0m[0m",
 			TPS:   []float64{20, 20, 20},
 		},
