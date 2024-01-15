@@ -1,7 +1,6 @@
 package rcon
 
 import (
-	"fmt"
 	"log/slog"
 	"regexp"
 	"strconv"
@@ -47,7 +46,7 @@ func parseForgeTPS(input string) ([]TPSStat, TPSStat, error) {
 	reg = regexp.MustCompile(`Overall\s?: Mean tick time: (.*) ms. Mean TPS: (.*)`)
 	overallStat := reg.FindStringSubmatch(input)
 	if overallStat == nil {
-		return nil, TPSStat{}, fmt.Errorf("Failed to retrieve the overall tps stats")
+		return nil, TPSStat{}, ErrForgeTPS{}
 	}
 	ticktime, err := strconv.ParseFloat(overallStat[1], 64)
 	if err != nil {
@@ -93,7 +92,7 @@ func parsePaperTPS(input string) ([]float64, error) {
 	input = strings.TrimPrefix(input, "TPS from last 1m, 5m, 15m: ")
 	s := strings.Split(input, ", ")
 	if len(s) != 3 {
-		return []float64{}, fmt.Errorf("Expected at 3 values, got %d. Input: \"%s\"", len(s), input)
+		return []float64{}, NewErrPaperTPS(input, len(s))
 	}
 
 	tps := make([]float64, 3)
