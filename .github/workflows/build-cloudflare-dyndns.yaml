@@ -43,7 +43,7 @@ jobs:
           skip-cache: true
 
   build:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     needs: lint
     permissions:
       contents: read
@@ -53,4 +53,5 @@ jobs:
       dockerfile: Dockerfile
       tag: slim
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/cloudflare-dyndns
     secrets: inherit

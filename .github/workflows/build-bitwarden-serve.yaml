@@ -41,7 +41,7 @@ jobs:
           echo "cli-version=${VERSION#cli-}" >> "$GITHUB_OUTPUT"
 
   build:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     needs: metadata
     permissions:
       contents: read
@@ -50,4 +50,5 @@ jobs:
       app: bitwarden-serve
       tag: "${{ needs.metadata.outputs.version }}"
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/bitwarden-serve
     secrets: inherit

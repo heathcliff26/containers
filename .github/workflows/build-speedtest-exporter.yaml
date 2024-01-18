@@ -45,7 +45,7 @@ jobs:
           skip-cache: true
 
   build-slim:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     needs: lint
     permissions:
       contents: read
@@ -56,10 +56,11 @@ jobs:
       tag: slim
       tags: "type=raw,value=latest,enable={{is_default_branch}}"
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/speedtest-exporter
     secrets: inherit
 
   build-cli:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     needs: lint
     permissions:
       contents: read
@@ -70,4 +71,5 @@ jobs:
       tag: cli
       tags: ""
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/speedtest-exporter
     secrets: inherit

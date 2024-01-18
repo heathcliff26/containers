@@ -22,7 +22,7 @@ on:
 
 jobs:
   build-tiny:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     permissions:
       contents: read
       packages: write
@@ -34,10 +34,11 @@ jobs:
         rolling"
         "type=raw,value=latest,enable={{is_default_branch}}
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/default-webpage
     secrets: inherit
 
   build-nginx:
-    uses: ./.github/workflows/build.yaml
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     permissions:
       contents: read
       packages: write
@@ -47,4 +48,5 @@ jobs:
       tag: nginx
       tags: ""
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/default-webpage
     secrets: inherit
