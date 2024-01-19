@@ -11,4 +11,4 @@ jobs:
     uses: heathcliff26/ci/.github/workflows/link-check.yaml@main
     secrets: inherit
     with:
-      exclude-paths: "apps/cloudflare-dyndns/vendor apps/minecraft-exporter/vendor apps/simple-fileserver/vendor apps/speedtest-exporter/vendor"
+      exclude-paths: "apps/cloudflare-dyndns/vendor apps/minecraft-exporter/vendor apps/simple-fileserver/vendor"
