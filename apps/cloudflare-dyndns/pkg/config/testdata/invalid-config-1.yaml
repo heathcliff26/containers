@@ -1,8 +1,0 @@
-# Fails because of no token
-client:
-  token: ""
-  proxy: true
-  domains:
-    - foo.example.org
-  interval: "5m"
-  endpoint: "https://dyndns.example.org"

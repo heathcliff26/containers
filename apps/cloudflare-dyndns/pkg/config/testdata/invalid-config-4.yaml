@@ -1,8 +1,0 @@
-# Fails in relay mode because of missing endpoint
-client:
-  token: "testtoken"
-  proxy: true
-  domains:
-    - foo.example.org
-  interval: "5m"
-  endpoint: ""

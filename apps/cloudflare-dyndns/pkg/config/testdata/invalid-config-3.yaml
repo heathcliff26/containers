@@ -1,8 +1,0 @@
-# Fails because of invalid interval format
-client:
-  token: "testtoken"
-  proxy: true
-  domains:
-    - foo.example.org
-  interval: "not a duration"
-  endpoint: "https://dyndns.example.org"
