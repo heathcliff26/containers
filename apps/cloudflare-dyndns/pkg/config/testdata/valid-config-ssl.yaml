@@ -1,6 +1,0 @@
-server:
-  port: 443
-  ssl:
-    enabled: true
-    cert: "server.crt"
-    key: "server.key"

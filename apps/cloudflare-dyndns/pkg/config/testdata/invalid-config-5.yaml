@@ -1,8 +1,0 @@
-# Fails because interval is to small
-client:
-  token: "testtoken"
-  proxy: true
-  domains:
-    - foo.example.org
-  interval: "29s"
-  endpoint: "https://dyndns.example.org"
