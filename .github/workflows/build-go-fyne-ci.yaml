@@ -8,10 +8,12 @@ on:
     branches: [main]
     paths:
       - "apps/go-fyne-ci/Dockerfile"
+      - "apps/go-fyne-ci/entrypoint.sh"
   pull_request:
     branches: [main]
     paths:
       - "apps/go-fyne-ci/Dockerfile"
+      - "apps/go-fyne-ci/entrypoint.sh"
       - ".github/workflows/build-go-fyne-ci.yaml"
   merge_group:
     branches: ["main"]
