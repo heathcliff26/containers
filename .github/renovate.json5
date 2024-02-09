@@ -9,7 +9,7 @@
     ":automergeDigest",
     ":automergeBranch",
     "github>heathcliff26/ci//renovate/automerge-container-digests.json5",
-    "github>heathcliff26/ci//renovate/automerge-gh-actions.json5",
+    "github>heathcliff26/ci//renovate/automerge-gh-actions-branch.json5",
     "github>heathcliff26/containers//.github/renovate/automerge.json5",
     "github>heathcliff26/ci//renovate/kubernetes/commitMessage.json5",
     "github>heathcliff26/ci//renovate/customManagers.json5",
