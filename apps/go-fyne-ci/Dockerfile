@@ -2,9 +2,110 @@ FROM docker.io/library/golang:1.22.0@sha256:ef61a20960397f4d44b0e729298bf02327ca
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v1.56.1
+# renovate: datasource=github-releases depName=ziglang/zig
+ARG ZIG_VERSION=0.11.0
+# renovate: datasource=github-releases depName=fyne-io/fyne
+ARG FYNE_VERSION=v2.4.3
+# renovate: datasource=github-releases depName=boxboat/fixuid
+ARG FIXUID_VERSION=0.6.0
 
-RUN apt-get update && apt-get install -y gcc libgl1-mesa-dev xorg-dev && apt-get clean
+# Install tools
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y -q --no-install-recommends \
+        unzip \
+        xz-utils \
+        zip \
+    ; \
+    apt-get clean; \
+    rm -r /var/lib/apt/lists/*;
 
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}
+# Add zig to path
+ENV PATH /usr/local/zig:$PATH
+
+# Install Zig
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    url=; \
+    sha256=; \
+    case "$arch" in \
+        'amd64') \
+            # dev release
+            # url="https://ziglang.org/builds/zig-linux-x86_64-${ZIG_VERSION}.tar.xz";\
+            # stable release
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz";\
+            ;; \
+        'arm64') \
+            # dev release
+            # url="https://ziglang.org/builds/zig-linux-aarch64-${ZIG_VERSION}.tar.xz";\
+            # stable release
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-linux-aarch64-${ZIG_VERSION}.tar.xz";\
+            ;; \
+        *) echo >&2 "error: unsupported architecture '$arch'"; exit 1 ;; \
+    esac; \
+    curl -sSL ${url} -o zig.tar.xz; \
+    tar -C /usr/local -Jxvf zig.tar.xz; \
+    mv /usr/local/zig-* /usr/local/zig; \
+    rm zig.tar.xz; \
+    zig version;
+
+# Install the fyne CLI tool
+RUN set -eux; \
+    go install -ldflags="-s" -v "fyne.io/fyne/v2/cmd/fyne@${FYNE_VERSION}"; \
+    mv /go/bin/fyne /usr/local/bin/fyne; \
+    fyne version; \
+    go clean -cache -modcache; \
+    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
+
+# Install the golangci-lint tool
+RUN set -eux; \
+    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
+    mv /go/bin/golangci-lint /usr/local/bin/golangci-lint; \
+    golangci-lint version; \
+    go clean -cache -modcache; \
+    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
+
+# Install fixuid see #41
+RUN arch="$(dpkg --print-architecture)"; \
+    addgroup --gid 1000 docker; \
+    adduser --uid 1000 --ingroup docker --home /home/docker --shell /bin/sh --disabled-password --gecos "" docker; \
+    curl -SsL https://github.com/boxboat/fixuid/releases/download/v${FIXUID_VERSION}/fixuid-${FIXUID_VERSION}-linux-${arch}.tar.gz | tar -C /usr/local/bin -xzf -; \
+    chown root:root /usr/local/bin/fixuid; \
+    chmod 4755 /usr/local/bin/fixuid; \
+    mkdir -p /etc/fixuid; \
+    printf "user: docker\ngroup: docker\n" > /etc/fixuid/config.yml
+
+# Install linux libraries
+RUN set -eux; \
+    dpkg --add-architecture arm64; \
+    dpkg --add-architecture amd64; \
+    apt-get update; \
+    apt-get install -y -q --no-install-recommends \
+        libgl-dev:amd64 \
+        libx11-dev:amd64 \
+        libxrandr-dev:amd64 \
+        libxxf86vm-dev:amd64 \
+        libxi-dev:amd64 \
+        libxcursor-dev:amd64 \
+        libxinerama-dev:amd64 \
+         # deps to support wayland
+        libxkbcommon-dev:amd64 \
+    ; \
+    apt-get install -y -q --no-install-recommends \
+        libgl-dev:arm64 \
+        libx11-dev:arm64 \
+        libxrandr-dev:arm64 \
+        libxxf86vm-dev:arm64 \
+        libxi-dev:arm64 \
+        libxcursor-dev:arm64 \
+        libxinerama-dev:arm64 \
+         # deps to support wayland
+        libxkbcommon-dev:arm64 \
+    ; \
+    # remove static libX11 to allow zig build against shared X11 lib
+    rm -rf /usr/lib/*/libX11.a; \
+    apt-get -qy autoremove; \
+    apt-get clean; \
+    rm -r /var/lib/apt/lists/*;
 
 WORKDIR /app
