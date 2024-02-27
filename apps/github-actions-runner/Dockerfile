@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.2-jammy@sha256:8f99c5e07e735db4a3dabe5893298214e2c1aa689886f18b8b258b088e33b3cb
 
 # renovate: datasource=github-releases depName=actions/runner extractVersion=^v(?<version>.*)$
-ARG RUNNER_VERSION=2.314.0
+ARG RUNNER_VERSION=2.314.1
 # renovate: datasource=github-releases depName=actions/runner-container-hooks extractVersion=^v(?<version>.*)$
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.5.1
 # renovate: datasource=github-tags depName=docker/cli extractVersion=^v(?<version>.*)$
