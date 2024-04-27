@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.4-jammy@sha256:21e2be9e4dfdccfde4b083ca4a6e8762e00483b33f7957a8284e1bc944f996da
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.4-jammy@sha256:6cca2c902187b023cee457fa63a01c27af02294b1a1f2be61e27d54b39ed8b91
 
 # renovate: datasource=github-releases depName=actions/runner extractVersion=^v(?<version>.*)$
 ARG RUNNER_VERSION=2.316.0
