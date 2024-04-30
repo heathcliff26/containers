@@ -1,0 +1,29 @@
+---
+name: Build keepalived
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/keepalived/Dockerfile"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/keepalived/Dockerfile"
+      - ".github/workflows/build-keepalived.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: keepalived
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/keepalived
+    secrets: inherit
