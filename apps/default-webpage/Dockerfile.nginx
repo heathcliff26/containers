@@ -1,4 +1,4 @@
-FROM docker.io/nginxinc/nginx-unprivileged:1.26.0@sha256:f8891d1d861abf0c8754016c025ff90232176d12235c28a4432477bc5f72d2e8
+FROM docker.io/nginxinc/nginx-unprivileged:1.26.0@sha256:981b35a475a9a1c85a3b3d374eb79477a1d1a440a50fbb925773c5f53910e163
 
 COPY --chown=nginx:nginx --chmod=644 index.html /usr/share/nginx/html/
 COPY --chown=nginx:nginx --chmod=644 kundenumfrage /usr/share/nginx/html/kundenumfrage
