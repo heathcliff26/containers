@@ -1,0 +1,31 @@
+---
+name: Build tang
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/tang/Dockerfile"
+      - "apps/tang/entrypoint.sh"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/tang/Dockerfile"
+      - "apps/tang/entrypoint.sh"
+      - ".github/workflows/build-tang.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: tang
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/tang
+    secrets: inherit
