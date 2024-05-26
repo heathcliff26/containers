@@ -13,6 +13,7 @@ ARG FIXUID_VERSION=0.6.0
 RUN set -eux; \
     apt-get update; \
     apt-get install -y -q --no-install-recommends \
+        make \
         unzip \
         xz-utils \
         zip \
