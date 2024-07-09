@@ -1,4 +1,4 @@
-FROM docker.io/library/node:lts-bookworm@sha256:e9df36b6e7e4c66e77ee132a63fd4d11740418fcad43e419b444e9165d34fd2b
+FROM docker.io/library/node:lts-bookworm@sha256:26aa76c4aaf39c2da2e679941ee1589243afb46173c861aa0d77d3a34fe2488c
 
 # renovate: datasource=github-releases depName=bitwarden/clients extractVersion=^cli-v(?<version>.*)$
 ENV BW_CLI_VERSION=2024.6.1
