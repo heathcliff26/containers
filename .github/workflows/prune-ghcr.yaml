@@ -17,18 +17,19 @@ on:
         description: "Delete tagged versions"
         type: boolean
         default: false
+      ignore-versions:
+        description: "Versions to ignore"
+        type: string
+        default: "(latest|rolling)"
+        required: false
 
 jobs:
   prune:
-    runs-on: ubuntu-latest
+    uses: heathcliff26/ci/.github/workflows/prune-ghcr.yaml@main
     permissions:
       packages: write
-
-    steps:
-      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
-        with:
-          package-name: "${{ inputs.app }}"
-          package-type: container
-          min-versions-to-keep: "${{ inputs.keep }}"
-          ignore-versions: "(latest|rolling)"
-          delete-only-untagged-versions: ${{ ! inputs.delete-tagged }}
+    with:
+      app: "${{ inputs.app }}"
+      keep: "${{ inputs.keep }}"
+      ignore-versions: "${{ inputs.ignore-versions }}"
+      delete-tagged: ${{ inputs.delete-tagged }}
