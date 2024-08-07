@@ -8,5 +8,10 @@
       "automerge": true,
       "automergeType": "branch"
     },
+    {
+      "description": "Do not automerge kubernetes",
+      "matchPackagePatterns": ["kubernetes/kubernetes"],
+      "automerge": false
+    },
   ]
 }

@@ -28,6 +28,12 @@
       "matchFileNames": ["(^|/)Dockerfile$", "(^|/)Dockerfile\\.[^/]*$"],
       "semanticCommitType": "fix",
       "versioning": "regex:^(?<compatibility>[a-z]+?)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
+    },
+    {
+      "matchPackageNames": ["kubernetes/kubernetes"],
+      "matchFileNames": ["(^|/)Dockerfile$", "(^|/)Dockerfile\\.[^/]*$"],
+      "semanticCommitType": "fix",
+      "versioning": "regex:^(?<compatibility>[A-Za-z]+?) v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
     }
   ]
 }
