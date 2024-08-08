@@ -2,7 +2,7 @@
 
 set -ex
 
-# First the (modified) steps from:
+# Enable the kubernetes repo and install the packages as described in:
 # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
 KUBERNETES_SHORT_VERSION="${KUBERNETES_VERSION%.*}"
@@ -22,7 +22,7 @@ rpm-ostree cleanup -m
 
 systemctl enable kubelet.service crio.service
 
-# Now the steps from:
+# Prepare the host as described in:
 # https://docs.fedoraproject.org/en-US/quick-docs/using-kubernetes/
 
 cat <<EOF | tee /etc/modules-load.d/k8s.conf
@@ -36,5 +36,10 @@ net.bridge.bridge-nf-call-ip6tables = 1
 net.ipv4.ip_forward                 = 1
 net.ipv6.conf.all.forwarding        = 1
 EOF
+
+# Ensure we have shell completion
+kubeadm completion bash > /etc/bash_completion.d/kubeadm
+kubectl completion bash > /etc/bash_completion.d/kubectl
+crictl completion bash > /etc/bash_completion.d/crictl
 
 ostree container commit
