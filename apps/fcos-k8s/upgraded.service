@@ -1,0 +1,23 @@
+[Unit]
+Description=kube-upgrade upgrade daemon
+Documentation=https://github.com/heathcliff26/kube-upgrade
+After=network.target
+# Wait for the boot to be marked as successful. In cluster contexts,
+# this prevents rolling out broken updates to all nodes in the fleet.
+Requires=boot-complete.target
+After=multi-user.target boot-complete.target
+# Make sure we don't inadvertently reboot the system before a machine-id is
+# created so that we don't cause ConditionFirstBoot=true units to run twice
+# See discussions in https://github.com/systemd/systemd/issues/4511.
+After=systemd-machine-id-commit.service
+
+[Service]
+User=root
+Group=root
+Type=notify
+ExecStart=/usr/libexec/upgraded
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
