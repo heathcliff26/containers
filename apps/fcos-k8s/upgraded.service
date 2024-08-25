@@ -14,7 +14,7 @@ After=systemd-machine-id-commit.service
 [Service]
 User=root
 Group=root
-Type=notify
+Type=exec
 ExecStart=/usr/libexec/upgraded
 Restart=on-failure
 RestartSec=10s
