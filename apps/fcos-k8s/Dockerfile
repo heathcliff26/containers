@@ -4,7 +4,7 @@ FROM quay.io/fedora/fedora-coreos:stable@sha256:bfc2db4d0e0b6a98a52a8d31aca82376
 ENV KUBERNETES_VERSION=1.31.0
 
 # renovate: datasource=github-releases depName=heathcliff26/kube-upgrade extractVersion=^(?<version>.*)$
-ENV KUBE_UPGRADE_VERSION=v0.2.0
+ENV KUBE_UPGRADE_VERSION=v0.2.1
 
 COPY k8s-install.sh upgraded.service  /var/kubernetes/
 
