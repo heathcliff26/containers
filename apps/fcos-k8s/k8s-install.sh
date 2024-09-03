@@ -18,8 +18,22 @@ gpgcheck=1
 gpgkey=https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_SHORT_VERSION}/rpm/repodata/repomd.xml.key
 EOF
 
+echo "Create cri-o.repo file"
+# This overwrites any existing configuration in /etc/yum.repos.d/cri-o.repo
+cat <<EOF | tee /etc/yum.repos.d/cri-o.repo
+[cri-o]
+name=CRI-O
+baseurl=https://pkgs.k8s.io/addons:/cri-o:/stable:/${CRIO_VERSION}/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/addons:/cri-o:/stable:/${CRIO_VERSION}/rpm/repodata/repomd.xml.key
+EOF
+
+echo "Uninstall conflicting packages"
+rpm-ostree uninstall moby-engine containerd conmon podman toolbox
+
 echo "Install packages"
-rpm-ostree install "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" cri-o
+rpm-ostree install "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" cri-o kubernetes-cni
 rpm-ostree cleanup -m
 
 echo "Enable kubelet and crio services"
