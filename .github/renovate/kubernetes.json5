@@ -2,12 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "description": "Update kubernetes patch releases",
-      "matchPackagePatterns": ["kubernetes/kubernetes"],
-      "separateMinorPatch": true,
-      "enabled": true,
-    },
-    {
       "description": "Do not update kubernetes major/minor releases",
       "matchPackagePatterns": ["kubernetes/kubernetes"],
       "matchUpdateTypes": ["major", "minor"],
