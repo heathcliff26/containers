@@ -5,8 +5,13 @@
       "description": "Do not update kubernetes major/minor releases",
       "matchPackagePatterns": ["kubernetes/kubernetes"],
       "matchUpdateTypes": ["major", "minor"],
-      "separateMinorPatch": true,
       "enabled": false,
+    },
+    {
+      "description": "Update kubernetes patch releases",
+      "matchPackagePatterns": ["kubernetes/kubernetes"],
+      "separateMinorPatch": true,
+      "enabled": true,
     },
   ]
 }
