@@ -2,10 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "description": "Do not update kubernetes minor releases",
+      "description": "Do not update kubernetes major/minor releases",
       "matchPackagePatterns": ["kubernetes/kubernetes"],
       "matchUpdateTypes": ["major", "minor"],
-      "enabled": false
+      "separateMinorPatch": true,
+      "enabled": false,
     },
   ]
 }
