@@ -19,7 +19,7 @@ gpgkey=https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_SHORT_VERSION}/rpm/repoda
 EOF
 
 echo "Install packages"
-rpm-ostree install "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" cri-o
+rpm-ostree install "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" "cri-o${CRIO_VERSION}"
 rpm-ostree cleanup -m
 
 echo "Enable kubelet and crio services"
