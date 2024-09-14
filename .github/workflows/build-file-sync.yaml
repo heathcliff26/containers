@@ -1,0 +1,31 @@
+---
+name: Build file-sync
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/file-sync/Dockerfile"
+      - "apps/file-sync/entrypoint.sh"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/file-sync/Dockerfile"
+      - "apps/file-sync/entrypoint.sh"
+      - ".github/workflows/build-file-sync.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: file-sync
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/file-sync
+    secrets: inherit
