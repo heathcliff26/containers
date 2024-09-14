@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-coreos:rawhide@sha256:653b3633698ae504c76547bbab6f94ed1f0537dc82252939f47538853320d3b3
+FROM quay.io/fedora/fedora-coreos:rawhide@sha256:209898e1f352cb842a964a3ff93a77df93536bb73ff58acd01deefbb3cb4fe0a
 
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
 ENV KUBERNETES_VERSION=1.31.1
