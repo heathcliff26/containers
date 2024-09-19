@@ -4,7 +4,7 @@ FROM quay.io/fedora/fedora-coreos:next@sha256:20688f8a5b738bd61d079e3f1c06a0c0ae
 ENV KUBERNETES_VERSION=1.31.1
 
 # renovate: datasource=github-releases depName=cri-o/cri-o extractVersion=^v(?<version>.*)$
-ENV CRIO_VERSION=1.30
+ENV CRIO_VERSION=1.31.0
 
 # renovate: datasource=github-releases depName=heathcliff26/kube-upgrade extractVersion=^(?<version>.*)$
 ENV KUBE_UPGRADE_VERSION=v0.3.0
