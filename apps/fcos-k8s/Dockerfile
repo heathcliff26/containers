@@ -7,7 +7,7 @@ ENV KUBERNETES_VERSION=1.31.1
 ENV CRIO_VERSION=1.31
 
 # renovate: datasource=github-releases depName=heathcliff26/kube-upgrade extractVersion=^(?<version>.*)$
-ENV KUBE_UPGRADE_VERSION=v0.3.1
+ENV KUBE_UPGRADE_VERSION=v0.3.2
 
 COPY k8s-install.sh upgraded.service  /var/kubernetes/
 
