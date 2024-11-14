@@ -3,8 +3,7 @@ FROM quay.io/fedora/fedora-coreos:stable@sha256:c34e95a37b9f62ed9391928d29b403de
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
 ENV KUBERNETES_VERSION=1.30.6
 
-# TODO: Switch to actual crio version once 41 hits stable
-ENV CRIO_VERSION=""
+ENV CRIO_VERSION=1.30
 
 # renovate: datasource=github-releases depName=heathcliff26/kube-upgrade extractVersion=^(?<version>.*)$
 ENV KUBE_UPGRADE_VERSION=v0.4.0
