@@ -24,7 +24,7 @@ echo ""
 for host in "${hosts[@]}"; do
     host="${host/$'\n'/}"
     echo "--- ${host} ---"
-    if [ "${skip_unavailable_hosts}" == "true" ] && ping -c1 -W1 -q "${host}" &>/dev/null; then
+    if [ "${skip_unavailable_hosts}" == "true" ] && ! ping -c1 -W1 -q "${host}" &>/dev/null; then
         echo "Host is down, skipping"
         continue
     fi

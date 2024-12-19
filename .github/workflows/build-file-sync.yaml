@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths:
       - "apps/file-sync/Dockerfile"
-      - "apps/file-sync/entrypoint.sh"
+      - "apps/file-sync/sync.sh"
   pull_request:
     branches: [main]
     paths:
