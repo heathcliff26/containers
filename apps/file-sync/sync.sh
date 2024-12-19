@@ -24,9 +24,13 @@ echo ""
 for host in "${hosts[@]}"; do
     host="${host/$'\n'/}"
     echo "--- ${host} ---"
-    if [ "${skip_unavailable_hosts}" == "true" ] && ! ping -c1 -W1 -q "${host#*@}" &>/dev/null; then
-        echo "Host is down, skipping"
-        continue
+    if ! nc -z "${host#*@}" 22; then
+        if [ "${skip_unavailable_hosts}" == "true" ]; then
+            echo "Host is down, skipping"
+            continue
+        fi
+        echo "Host is down, exiting"
+        exit 1
     fi
 
     echo "Syncing files"
