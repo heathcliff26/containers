@@ -10,6 +10,7 @@ readarray hosts < <(yq -r '.hosts[]' "${config_file}")
 post_hook="$(yq -r .post_hook "${config_file}")"
 ssh_key="$(yq -r .ssh_key "${config_file}")"
 target_dir="$(yq -r .target_dir "${config_file}")"
+skip_unavailable_hosts="$(yq -r .skip_unavailable_hosts "${config_file}")"
 
 yq -r .known_hosts "${config_file}" >> "${known_hosts_file}"
 
@@ -23,6 +24,10 @@ echo ""
 for host in "${hosts[@]}"; do
     host="${host/$'\n'/}"
     echo "--- ${host} ---"
+    if [ "${skip_unavailable_hosts}" == "true" ] && ping -c1 -W1 -q "${host}" &>/dev/null; then
+        echo "Host is down, skipping"
+        continue
+    fi
 
     echo "Syncing files"
 

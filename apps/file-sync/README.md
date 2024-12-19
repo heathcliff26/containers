@@ -10,6 +10,7 @@ known_hosts: |
   example.com ssh-ed25519 asdfghjkl
 post_hook: "echo posthook"
 ssh_key: /path/to/private_ssh.key
+skip_unavailable_hosts: false
 ```
 
 Example kubernetes pod:
