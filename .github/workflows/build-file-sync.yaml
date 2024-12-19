@@ -13,7 +13,7 @@ on:
     branches: [main]
     paths:
       - "apps/file-sync/Dockerfile"
-      - "apps/file-sync/entrypoint.sh"
+      - "apps/file-sync/sync.sh"
       - ".github/workflows/build-file-sync.yaml"
   merge_group:
     branches: ["main"]
