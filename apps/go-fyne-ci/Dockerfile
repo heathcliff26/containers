@@ -22,7 +22,7 @@ RUN set -eux; \
     rm -r /var/lib/apt/lists/*;
 
 # Add zig to path
-ENV PATH /usr/local/zig:$PATH
+ENV PATH=/usr/local/zig:$PATH
 
 # Install Zig
 RUN set -eux; \
