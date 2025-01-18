@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    uses: heathcliff26/ci/.github/workflows/build-container-multiarch.yaml@multiarch-container
     permissions:
       contents: read
       packages: write
