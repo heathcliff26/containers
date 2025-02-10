@@ -91,6 +91,8 @@ RUN set -eux; \
         libxinerama-dev:amd64 \
          # deps to support wayland
         libxkbcommon-dev:amd64 \
+        libdecor-0-dev:amd64 \
+        libegl-dev:amd64 \
     ; \
     apt-get install -y -q --no-install-recommends \
         libgl-dev:arm64 \
@@ -102,6 +104,8 @@ RUN set -eux; \
         libxinerama-dev:arm64 \
          # deps to support wayland
         libxkbcommon-dev:arm64 \
+        libdecor-0-dev:arm64 \
+        libegl-dev:arm64 \
     ; \
     # remove static libX11 to allow zig build against shared X11 lib
     rm -rf /usr/lib/*/libX11.a; \
