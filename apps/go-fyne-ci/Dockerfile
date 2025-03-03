@@ -1,7 +1,7 @@
 FROM docker.io/library/golang:1.24.0@sha256:3f7444391c51a11a039bf0359ee81cc64e663c17d787ad0e637a4de1a3f62a71
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.64.5
+ARG GOLANGCI_LINT_VERSION=v1.64.6
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.13.0
 # renovate: datasource=github-releases depName=fyne-io/fyne
