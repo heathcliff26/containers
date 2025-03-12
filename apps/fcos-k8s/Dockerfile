@@ -1,7 +1,7 @@
 FROM quay.io/fedora/fedora-coreos:stable@sha256:2f52e1f7ed20cd2e73f38bc17865dbf98cc7b7dc19e01a5aea40d894c48fc0e0
 
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
-ENV KUBERNETES_VERSION=1.32.2
+ENV KUBERNETES_VERSION=1.32.3
 
 # renovate: datasource=github-releases depName=cri-o/cri-o extractVersion=^v(?<version>.*)\.[0-9]+$
 ENV CRIO_VERSION=1.32
