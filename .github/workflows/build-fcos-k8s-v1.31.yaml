@@ -34,7 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Extract kubernetes and fcos version
+      - name: Extract kubernetes version
         id: version
         run: |
           set -ex
@@ -42,10 +42,6 @@ jobs:
           VERSION="$(echo "${VERSION_STRING}" | awk -F'=' '{print $2}' | tr -d '"')"
           echo "kubernetes-version=v${VERSION}" >> "$GITHUB_OUTPUT"
           echo "kubernetes-short-version=v${VERSION%.*}" >> "$GITHUB_OUTPUT"
-          CONTAINER_IMAGE="$(grep "FROM quay.io/fedora/fedora-coreos" apps/fcos-k8s/Dockerfile.v1.31 | awk -F' ' '{print $2}')"
-          podman run -t "${CONTAINER_IMAGE}" cat /etc/os-release > os-release
-          source os-release
-          echo "fcos-version=${OSTREE_VERSION}" >> "$GITHUB_OUTPUT"
 
   build:
     uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
@@ -57,8 +53,7 @@ jobs:
       app: fcos-k8s
       tag: "${{ needs.metadata.outputs.kubernetes-short-version }}"
       tags: |
-        ${{ needs.metadata.outputs.kubernetes-version }}"
-        "${{ needs.metadata.outputs.kubernetes-version }}-${{ needs.metadata.outputs.fcos-version }}
+        ${{ needs.metadata.outputs.kubernetes-version }}
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
       context: apps/fcos-k8s
       dockerfile: Dockerfile.v1.31
