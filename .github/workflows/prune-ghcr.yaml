@@ -13,10 +13,6 @@ on:
         type: string
         default: "50"
         required: true
-      delete-tagged:
-        description: "Delete tagged versions"
-        type: boolean
-        default: false
       ignore-versions:
         description: "Versions to ignore"
         type: string
@@ -32,4 +28,3 @@ jobs:
       app: "${{ inputs.app }}"
       keep: "${{ inputs.keep }}"
       ignore-versions: "${{ inputs.ignore-versions }}"
-      delete-tagged: ${{ inputs.delete-tagged }}
