@@ -1,7 +1,7 @@
 FROM docker.io/library/golang:1.24.1@sha256:52ff1b35ff8de185bf9fd26c70077190cd0bed1e9f16a2d498ce907e5c421268
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG GOLANGCI_LINT_VERSION=v1.64.8
+ARG GOLANGCI_LINT_VERSION=v2.0.2
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.14.0
 # renovate: datasource=github-releases depName=fyne-io/fyne
@@ -60,7 +60,7 @@ RUN set -eux; \
 
 # Install the golangci-lint tool
 RUN set -eux; \
-    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
+    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
     mv /go/bin/golangci-lint /usr/local/bin/golangci-lint; \
     golangci-lint version; \
     go clean -cache -modcache; \
