@@ -1,0 +1,60 @@
+---
+name: Build fcos-k8s v1.32
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/fcos-k8s/Dockerfile.v1.32"
+      - "apps/fcos-k8s/*.sh"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/fcos-k8s/Dockerfile.v1.32"
+      - "apps/fcos-k8s/*.sh"
+      - ".github/workflows/build-fcos-k8s-v1.32.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    permissions:
+      contents: read
+    outputs:
+      kubernetes-version: "${{ steps.version.outputs.kubernetes-version }}"
+      kubernetes-short-version: "${{ steps.version.outputs.kubernetes-short-version }}"
+      fcos-version: "${{ steps.version.outputs.fcos-version }}"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Extract kubernetes version
+        id: version
+        run: |
+          set -ex
+          VERSION_STRING="$(grep "ENV KUBERNETES_VERSION=" apps/fcos-k8s/Dockerfile.v1.32)"
+          VERSION="$(echo "${VERSION_STRING}" | awk -F'=' '{print $2}' | tr -d '"')"
+          echo "kubernetes-version=v${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "kubernetes-short-version=v${VERSION%.*}" >> "$GITHUB_OUTPUT"
+
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    needs: metadata
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: fcos-k8s
+      tag: "${{ needs.metadata.outputs.kubernetes-short-version }}"
+      tags: |
+        ${{ needs.metadata.outputs.kubernetes-version }}
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/fcos-k8s
+      dockerfile: Dockerfile.v1.32
+    secrets: inherit
