@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.24.3@sha256:e84f2e80dc8ab2cd38c6e028f6e569f6ae54c08ad4caee492a596275086a2fa5
+FROM docker.io/library/golang:1.24.3@sha256:baf611fd7d082c08acbf365005971f201017d34ca2e80e6f3415577f82c44af2
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v2.1.6
