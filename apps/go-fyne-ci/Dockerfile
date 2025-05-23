@@ -3,7 +3,7 @@ FROM docker.io/library/golang:1.24.3@sha256:4c0a1814a7c6c65ece28b3bfea14ee3cf83b
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v2.1.6
 # renovate: datasource=github-releases depName=ziglang/zig
-ARG ZIG_VERSION=0.14.0
+ARG ZIG_VERSION=0.14.1
 # renovate: datasource=github-releases depName=fyne-io/fyne
 ARG FYNE_VERSION=v2.6.1
 # renovate: datasource=github-releases depName=boxboat/fixuid
@@ -32,15 +32,15 @@ RUN set -eux; \
     case "$arch" in \
         'amd64') \
             # dev release
-            # url="https://ziglang.org/builds/zig-linux-x86_64-${ZIG_VERSION}.tar.xz";\
+            # url="https://ziglang.org/builds/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
             # stable release
-            url="https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz";\
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
             ;; \
         'arm64') \
             # dev release
-            # url="https://ziglang.org/builds/zig-linux-aarch64-${ZIG_VERSION}.tar.xz";\
+            # url="https://ziglang.org/builds/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
             # stable release
-            url="https://ziglang.org/download/${ZIG_VERSION}/zig-linux-aarch64-${ZIG_VERSION}.tar.xz";\
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
             ;; \
         *) echo >&2 "error: unsupported architecture '$arch'"; exit 1 ;; \
     esac; \
