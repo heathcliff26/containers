@@ -37,7 +37,9 @@ commands:
           name: Login to registries
           command: |
             echo "Logging in to Docker Hub"
-            echo "noop"
+            echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin docker.io
+            echo "Logging in to ghcr.io"
+            echo "${GHCR_TOKEN}" | docker login -u "${GHCR_USER}" --password-stdin ghcr.io
       - run:
           name: debug
           command: |
@@ -47,6 +49,35 @@ commands:
             echo "Dockerfile: << parameters.dockerfile >>"
             echo "Tag: << parameters.tag >>"
             echo "Latest: << parameters.latest >>"
+      - run:
+          name: Build and push images
+          command: |
+            tags="<< parameters.tag >>"
+            if [ "<< parameters.event.name >>" != "pull_request" ] && [ "<< parameters.latest >> " == "auto" ]; then
+              tags="${tags} latest"
+            elif [ "<< parameters.latest >>" == "true" ]; then
+              tags="${tags} latest"
+            fi
+
+            names=""
+            for tag in $tags; do
+              names="${names} ghcr.io/${GHCR_USER}/<< parameters.app >>:${tag} docker.io/${DOCKER_USER}/<< parameters.app >>:${tag}"
+            done
+
+            cd << parameters.context >>
+
+            for name in $names; do
+              TMP_IMAGES=""
+              for arch in amd64 arm64; do
+                echo "Building ${name} for ${arch}"
+                docker build --platform linux/${arch} \
+                  -f << parameters.dockerfile >> \
+                  -t "${name}-${arch}" \
+                  .
+                TMP_IMAGES="${TMP_IMAGES} ${name}-${arch}"
+              done
+              docker manifest create --amend "${name}" ${TMP_IMAGES}
+            done
 
 jobs:
   build-bitwarden-serve:
@@ -69,5 +100,7 @@ jobs:
 workflows:
   bitwarden-serve:
     when: << pipeline.parameters.build-bitwarden-serve >>
+    context:
+      - docker
     jobs:
       - build-bitwarden-serve
