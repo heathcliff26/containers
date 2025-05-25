@@ -53,7 +53,7 @@ commands:
           name: Build and push images
           command: |
             tags="<< parameters.tag >>"
-            if [ "<< parameters.event.name >>" != "pull_request" ] && [ "<< parameters.latest >> " == "auto" ]; then
+            if [ "<< pipeline.event.name >>" != "pull_request" ] && [ "<< parameters.latest >> " == "auto" ]; then
               tags="${tags} latest"
             elif [ "<< parameters.latest >>" == "true" ]; then
               tags="${tags} latest"
