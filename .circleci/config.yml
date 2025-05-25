@@ -2,11 +2,6 @@ version: 2.1
 
 setup: true
 
-parameters:
-  build-bitwarden-serve:
-    type: boolean
-    default: false
-
 orbs:
   path-filtering: circleci/path-filtering@2.0.0
 
