@@ -1,0 +1,67 @@
+version: 2.1
+
+commands:
+  build-image:
+    description: "Build a docker image"
+    parameters:
+      app:
+        description: The name of the app
+        type: string
+      context:
+        description: "The folder to build in"
+        type: string
+        default: "."
+      dockerfile:
+        description: "Use to override Dockerfile path"
+        type: string
+        default: "Dockerfile"
+      tag:
+        description: "Use to set tag, default: rolling"
+        type: string
+        default: "rolling"
+      latest:
+        description: "Use the latest tag, options: true, false, auto (auto will use latest if branch is main)"
+        type: string
+        default: "auto"
+      push:
+        description: "Check if image should be pushed to registry"
+        type: boolean
+        default: true
+    steps:
+      - run:
+          name: Login to registries
+          command: |
+            echo "Logging in to Docker Hub"
+            echo "noop"
+      - run:
+          name: debug
+          command: |
+            echo "Building ${CIRCLE_JOB} for ${CIRCLE_BRANCH}"
+            echo "App: << parameters.app >>"
+            echo "Context: << parameters.context >>"
+            echo "Dockerfile: << parameters.dockerfile >>"
+            echo "Tag: << parameters.tag >>"
+            echo "Latest: << parameters.latest >>"
+
+jobs:
+  build-bitwarden-serve:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - run:
+          name: Metadata
+          command: |
+            set -ex
+            VERSION_STRING="$(grep "ENV BW_CLI_VERSION=" apps/bitwarden-serve/Dockerfile)"
+            VERSION="$(echo "${VERSION_STRING}" | awk -F'=' '{print $2}' | tr -d '"')"
+            echo "export VERSION=${VERSION#cli-}" >> $BASH_ENV
+      - build-image:
+          app: bitwarden-serve
+          context: apps/bitwarden-serve
+          tag: ${VERSION}
+
+workflows:
+  build-bitwarden-serve:
+    when: << pipeline.parameters.build-bitwarden-serve >>
+    jobs:
+      - build-bitwarden-serve

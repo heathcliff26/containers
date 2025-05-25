@@ -1,0 +1,20 @@
+version: 2.1
+
+setup: true
+
+parameters:
+  build-bitwarden-serve:
+    type: boolean
+    default: false
+
+orbs:
+  path-filtering: circleci/path-filtering@2.0.0
+
+workflows:
+  setup:
+    jobs:
+      - path-filtering/filter:
+          config-path: .circleci/workflow-config.yml
+          mapping: |
+            apps/bitwarden-serve/Dockerfile build-bitwarden-serve true
+            apps/bitwarden-serve/*.sh build-bitwarden-serve true
