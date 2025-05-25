@@ -11,5 +11,4 @@ workflows:
       - path-filtering/filter:
           config-path: .circleci/workflow-config.yml
           mapping: |
-            apps/bitwarden-serve/Dockerfile build-bitwarden-serve true
-            apps/bitwarden-serve/*.sh build-bitwarden-serve true
+            apps/bitwarden-serve/.* build-bitwarden-serve true

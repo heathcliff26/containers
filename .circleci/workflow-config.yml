@@ -66,7 +66,7 @@ jobs:
           tag: ${VERSION}
 
 workflows:
-  build-bitwarden-serve:
+  bitwarden-serve:
     when: << pipeline.parameters.build-bitwarden-serve >>
     jobs:
       - build-bitwarden-serve
