@@ -53,6 +53,7 @@ jobs:
     docker:
       - image: cimg/base:current
     steps:
+      - checkout
       - run:
           name: Metadata
           command: |
