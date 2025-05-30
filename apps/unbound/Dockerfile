@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.21.3@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c
+FROM docker.io/library/alpine:3.22.0@sha256:a8bf99cad4d74d1ec021670fa473e6ff716e401b0542918ce68e94c3234910e1
 
 RUN apk add --no-cache unbound && \
 	rm -f /etc/unbound/unbound.conf
