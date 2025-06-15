@@ -11,3 +11,5 @@ jobs:
     uses: heathcliff26/ci/.github/workflows/link-check.yaml@main
     secrets: inherit
     permissions: {}
+    with:
+      exclude-links: "gitlab.alpinelinux.org/alpine/infra/docker/unbound"
