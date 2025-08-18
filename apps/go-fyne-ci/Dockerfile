@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.24.6
+FROM docker.io/library/golang:1.25.0
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v2.4.0
