@@ -5,7 +5,7 @@ ARG GOLANGCI_LINT_VERSION=v2.4.0
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.14.1
 # renovate: datasource=github-tags depName=fyne-io/tools
-ARG FYNE_VERSION=v1.6.1
+ARG FYNE_VERSION=v1.6.2
 # renovate: datasource=github-releases depName=boxboat/fixuid
 ARG FIXUID_VERSION=0.6.0
 
