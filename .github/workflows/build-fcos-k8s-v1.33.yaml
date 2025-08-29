@@ -1,5 +1,5 @@
 ---
-name: Build fcos-k8s v1.32
+name: Build fcos-k8s v1.33
 
 on:
   workflow_dispatch:
@@ -7,14 +7,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/fcos-k8s/Dockerfile.v1.32"
+      - "apps/fcos-k8s/Dockerfile.v1.33"
       - "apps/fcos-k8s/*.sh"
   pull_request:
     branches: [main]
     paths:
-      - "apps/fcos-k8s/Dockerfile.v1.32"
+      - "apps/fcos-k8s/Dockerfile.v1.33"
       - "apps/fcos-k8s/*.sh"
-      - ".github/workflows/build-fcos-k8s-v1.32.yaml"
+      - ".github/workflows/build-fcos-k8s-v1.33.yaml"
   merge_group:
     branches: ["main"]
 
@@ -36,7 +36,7 @@ jobs:
         id: version
         run: |
           set -ex
-          VERSION_STRING="$(grep "ENV KUBERNETES_VERSION=" apps/fcos-k8s/Dockerfile.v1.32)"
+          VERSION_STRING="$(grep "ENV KUBERNETES_VERSION=" apps/fcos-k8s/Dockerfile.v1.33)"
           VERSION="$(echo "${VERSION_STRING}" | awk -F'=' '{print $2}' | tr -d '"')"
           echo "kubernetes-version=v${VERSION}" >> "$GITHUB_OUTPUT"
           echo "kubernetes-short-version=v${VERSION%.*}" >> "$GITHUB_OUTPUT"
@@ -54,5 +54,5 @@ jobs:
         ${{ needs.metadata.outputs.kubernetes-version }}
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
       context: apps/fcos-k8s
-      dockerfile: Dockerfile.v1.32
+      dockerfile: Dockerfile.v1.33
     secrets: inherit
