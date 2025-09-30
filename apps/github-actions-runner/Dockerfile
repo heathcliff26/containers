@@ -1,5 +1,11 @@
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.20-jammy@sha256:0a23a297ca71424ee1136fdf3482d5bb709ae6d2cf02f173fa0174db024e168f
 
+LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
+        org.opencontainers.image.description="Self-hosted github actions runner" \
+        org.opencontainers.image.source="https://github.com/heathcliff26/containers/tree/main/apps/github-actions-runner" \
+        org.opencontainers.image.licenses="Apache-2.0" \
+        org.opencontainers.image.title="github-actions-runner"
+
 # renovate: datasource=github-releases depName=actions/runner extractVersion=^v(?<version>.*)$
 ARG RUNNER_VERSION=2.328.0
 # renovate: datasource=github-releases depName=actions/runner-container-hooks extractVersion=^v(?<version>.*)$

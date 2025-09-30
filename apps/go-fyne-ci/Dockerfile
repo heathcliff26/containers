@@ -1,5 +1,11 @@
 FROM docker.io/library/golang:1.25.1
 
+LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
+        org.opencontainers.image.description="Builder and CI image for fyne projects. Can be used as image for fyne-cross." \
+        org.opencontainers.image.source="https://github.com/heathcliff26/containers/tree/main/apps/go-fyne-ci" \
+        org.opencontainers.image.licenses="Apache-2.0" \
+        org.opencontainers.image.title="go-fyne-ci"
+
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v2.5.0
 # renovate: datasource=github-releases depName=ziglang/zig
