@@ -1,5 +1,13 @@
 FROM quay.io/fedora/fedora-coreos:stable@sha256:462992ca4ab25dd40094bd2ce40027f76ec2568c41d636e47cd4caef48ab30b7
 
+LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
+        org.opencontainers.image.description="Fedora CoreOS with Kubernetes and CRI-O" \
+        org.opencontainers.image.source="https://github.com/heathcliff26/containers/tree/main/apps/fcos-k8s" \
+        org.opencontainers.image.licenses="Apache-2.0" \
+        org.opencontainers.image.title="fcos-k8s"
+
+LABEL quay.expires-after=2y
+
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
 ENV KUBERNETES_VERSION=1.31.13
 
