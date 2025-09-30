@@ -21,7 +21,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build-tiny:
+  build:
     uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     permissions:
       contents: read
@@ -29,24 +29,7 @@ jobs:
     with:
       app: default-webpage
       dockerfile: Dockerfile
-      tag: slim
-      tags: |
-        rolling"
-        "type=raw,value=latest,enable={{is_default_branch}}
-      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
-      context: apps/default-webpage
-    secrets: inherit
-
-  build-nginx:
-    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
-    permissions:
-      contents: read
-      packages: write
-    with:
-      app: default-webpage
-      dockerfile: Dockerfile.nginx
-      tag: nginx
-      tags: ""
+      tag: rolling
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
       context: apps/default-webpage
     secrets: inherit
