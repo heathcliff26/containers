@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.20-jammy@sha256:0a23a297ca71424ee1136fdf3482d5bb709ae6d2cf02f173fa0174db024e168f
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.20-jammy@sha256:e82ffd5b27e1952ff5d0cce1c0cfb522e004655cd065105b9539d8022d2a2e4e
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Self-hosted github actions runner" \
