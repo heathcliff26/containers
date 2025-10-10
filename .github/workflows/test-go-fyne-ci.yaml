@@ -1,0 +1,25 @@
+---
+name: Test go-fyne-ci
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/go-fyne-ci/Dockerfile"
+      - "apps/go-fyne-ci/test.sh"
+      - ".github/workflows/test-go-fyne-ci.yaml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Run test script
+        run: apps/go-fyne-ci/test.sh
