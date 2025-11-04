@@ -7,7 +7,7 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.title="go-fyne-ci"
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG GOLANGCI_LINT_VERSION=v2.6.0
+ARG GOLANGCI_LINT_VERSION=v2.6.1
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.15.1
 # renovate: datasource=github-tags depName=fyne-io/fyne
