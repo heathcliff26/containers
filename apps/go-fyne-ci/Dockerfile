@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.25.3
+FROM docker.io/library/golang:1.25.4
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Builder and CI image for fyne projects. Can be used as image for fyne-cross." \
