@@ -1,4 +1,4 @@
-FROM docker.io/library/node:lts-bookworm@sha256:69698ef3aab175793435b78d835d317a9f594559666213c96f7f6c694f9d52b7
+FROM docker.io/library/node:lts-bookworm@sha256:e5bbac0e9b8a6e3b96a86a82bbbcf4c533a879694fd613ed616bae5116f6f243
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Bitwarden cli installed via node" \
