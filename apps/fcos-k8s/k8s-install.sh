@@ -58,16 +58,9 @@ case "${arch}" in
         ;;
 esac
 
-upgraded_url="https://github.com/heathcliff26/kube-upgrade/releases/download/${KUBE_UPGRADE_VERSION}/upgraded-${arch}"
-echo "Install upgraded ${KUBE_UPGRADE_VERSION} from ${upgraded_url}"
-curl -SL -o /usr/libexec/upgraded "${upgraded_url}"
-chmod 755 /usr/libexec/upgraded
-/usr/libexec/upgraded version
-
-echo "Install and enable upgraded.service"
-cp /var/kubernetes/upgraded.service /etc/systemd/system/
-systemctl enable upgraded.service
-mkdir /etc/kube-upgraded
+echo "Install and enable migration-remove-upgraded.service"
+cp /var/kubernetes/migration-remove-upgraded.service /usr/lib/systemd/system/
+systemctl enable migration-remove-upgraded.service
 
 echo "Commit changes"
 ostree container commit

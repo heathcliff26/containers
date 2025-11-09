@@ -1,0 +1,14 @@
+[Unit]
+Description=Remove kube-upgrade upgrade daemon for kube-upgrade v0.6.0+
+Documentation=https://github.com/heathcliff26/kube-upgrade
+Before=systemd-user-sessions.service
+After=network-online.target
+ConditionPathExists=/etc/systemd/system/upgraded.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "systemctl disable --now upgraded.service && rm -rf /etc/systemd/system/upgraded.service /etc/kube-upgraded && systemctl daemon-reload"
+
+[Install]
+WantedBy=multi-user.target
