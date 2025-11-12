@@ -9,7 +9,7 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 LABEL quay.expires-after=2y
 
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
-ENV KUBERNETES_VERSION=1.34.1
+ENV KUBERNETES_VERSION=1.34.2
 
 # renovate: datasource=github-releases depName=cri-o/cri-o extractVersion=^v(?<version>.*)\.[0-9]+$
 ENV CRIO_VERSION=1.34
