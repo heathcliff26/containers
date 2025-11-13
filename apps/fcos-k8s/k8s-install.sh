@@ -62,5 +62,8 @@ echo "Install and enable migration-remove-upgraded.service"
 cp /var/kubernetes/migration-remove-upgraded.service /usr/lib/systemd/system/
 systemctl enable migration-remove-upgraded.service
 
+echo "Disable systemd-resolved"
+printf "%s\n%s\n" '[Resolve]' 'DNSStubListener=no' | tee /etc/systemd/resolved.conf
+
 echo "Commit changes"
 ostree container commit
