@@ -13,5 +13,12 @@
       "matchPackagePatterns": ["kubernetes/kubernetes"],
       "automerge": false
     },
+    {
+      "description": "Auto merge frequent flyer packages on patch updates",
+      "matchPackagePatterns": ["golangci/golangci-lint", "docker/cli", "ghcr.io/heathcliff26/simple-fileserver"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    },
   ]
 }
