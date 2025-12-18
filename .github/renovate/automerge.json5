@@ -6,19 +6,34 @@
       "matchPackagePatterns": ["bitwarden/clients"],
       "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
-      "automergeType": "branch"
+      "automergeType": "branch",
     },
     {
-      "description": "Do not automerge kubernetes",
+      "description": "Do not automerge kubernetes minor updates",
       "matchPackagePatterns": ["kubernetes/kubernetes"],
-      "automerge": false
+      "automerge": false,
+    },
+    {
+      "description": "Automerge kubernetes patch updates as PRs",
+      "matchPackagePatterns": ["kubernetes/kubernetes"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
     },
     {
       "description": "Auto merge frequent flyer packages on patch updates",
       "matchPackagePatterns": ["golangci/golangci-lint", "docker/cli", "ghcr.io/heathcliff26/simple-fileserver"],
       "matchUpdateTypes": ["patch"],
       "automerge": true,
-      "automergeType": "branch"
+      "automergeType": "branch",
+    },
+    {
+      "description": "Auto merge alpine base images",
+      "matchPackagePatterns": ["docker.io/library/alpine"],
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["digest", "patch", "minor"],
+      "automerge": true,
+      "automergeType": "branch",
     },
   ]
 }
