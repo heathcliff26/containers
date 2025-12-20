@@ -26,7 +26,6 @@ jobs:
     outputs:
       kubernetes-version: "${{ steps.version.outputs.kubernetes-version }}"
       kubernetes-short-version: "${{ steps.version.outputs.kubernetes-short-version }}"
-      fcos-version: "${{ steps.version.outputs.fcos-version }}"
 
     steps:
       - name: Checkout repository
