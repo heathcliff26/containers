@@ -12,7 +12,7 @@ LABEL quay.expires-after=2y
 ENV KUBERNETES_VERSION=1.35.0
 
 # renovate: datasource=github-releases depName=cri-o/cri-o extractVersion=^v(?<version>.*)\.[0-9]+$
-ENV CRIO_VERSION=1.34
+ENV CRIO_VERSION=1.35
 
 COPY k8s-install.sh migration-remove-upgraded.service /var/kubernetes/
 
