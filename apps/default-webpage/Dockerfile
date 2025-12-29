@@ -1,4 +1,4 @@
-FROM ghcr.io/heathcliff26/simple-fileserver:v1.2.15@sha256:0fc0815ca030b50f3bc75f886cdd1e71336af79db7e77633d7c72a12f95bee18
+FROM ghcr.io/heathcliff26/simple-fileserver:v1.2.16@sha256:b7431efce1b2eb3478f732df2f793e1cede5d6d284c1e33bd1bc8b63ac3456f2
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Placeholder webpage served with simple-fileserver" \
