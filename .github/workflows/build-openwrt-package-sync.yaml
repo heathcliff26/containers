@@ -1,0 +1,29 @@
+---
+name: Build openwrt-package-sync
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/openwrt-package-sync/Dockerfile"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/openwrt-package-sync/Dockerfile"
+      - ".github/workflows/build-openwrt-package-sync.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: openwrt-package-sync
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/openwrt-package-sync
+    secrets: inherit
