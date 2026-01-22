@@ -7,6 +7,6 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.title="openwrt-package-sync"
 
 RUN echo "@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-        apk add --no-cache opkg-utils@testing curl jq cosign@testing
+        apk add --no-cache opkg-utils@testing curl jq cosign@testing signify@testing
 
 USER 1001
