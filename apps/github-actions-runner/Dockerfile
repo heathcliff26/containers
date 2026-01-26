@@ -11,7 +11,7 @@ ARG RUNNER_VERSION=2.331.0
 # renovate: datasource=github-releases depName=actions/runner-container-hooks extractVersion=^v(?<version>.*)$
 ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.0
 # renovate: datasource=github-tags depName=docker/cli extractVersion=^v(?<version>.*)$
-ARG DOCKER_VERSION=29.1.5
+ARG DOCKER_VERSION=29.2.0
 
 ARG TARGETPLATFORM
 ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
