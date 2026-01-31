@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime-deps:8.0.23-jammy@sha256:0cbf1316cc6d710262c555236f10d4eb33fc59b35e18b1c462100096329396fe
+FROM ghcr.io/actions/actions-runner:2.331.0@sha256:dced476aa42703ebd9aafc295ce52f160989c4528e831fc3be2aef83a1b3f6da
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Self-hosted github actions runner" \
@@ -6,72 +6,25 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.licenses="Apache-2.0" \
         org.opencontainers.image.title="github-actions-runner"
 
-# renovate: datasource=github-releases depName=actions/runner extractVersion=^v(?<version>.*)$
-ARG RUNNER_VERSION=2.331.0
-# renovate: datasource=github-releases depName=actions/runner-container-hooks extractVersion=^v(?<version>.*)$
-ARG RUNNER_CONTAINER_HOOKS_VERSION=0.8.0
-# renovate: datasource=github-tags depName=docker/cli extractVersion=^v(?<version>.*)$
-ARG DOCKER_VERSION=29.2.0
+ARG TARGETARCH
+# renovate: datasource=github-tags depName=mikefarah/yq extractVersion=^(?<version>.*)$
+ARG YQ_VERSION=v4.52.1
+# renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
+ARG FLUX_VERSION=2.7.5
 
-ARG TARGETPLATFORM
-ENV TARGETPLATFORM=${TARGETPLATFORM:-linux/amd64}
+USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV LANG=en_US.UTF-8
-ENV RUNNER_MANUALLY_TRAP_SIG=1
-ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
-
-RUN \
-    # Prerequisites
-    set -eux \
+# Install Prerequisites
+RUN set -eux \
     && apt-get -qq update \
-    && apt-get install -y \
-        bash \
+    && apt-get -qq install -y --no-install-recommends --no-install-suggests \
         ca-certificates \
-        curl \
-        git \
+        gcc \
         jo \
-        jq \
-        locales \
+        make \
         moreutils \
-        sudo \
-        tzdata \
-        unrar \
-        unzip \
         wget \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-    && \
-    case "${TARGETPLATFORM}" in \
-        'linux/amd64') export ARCH='x64' && export DOCKER_ARCH='x86_64' ;; \
-        'linux/arm64') export ARCH='arm64' && export DOCKER_ARCH='aarch64' ;; \
-    esac \
-    && \
-    # Prepare user
-    adduser --disabled-password --gecos "" --uid 1001 runner \
-    && groupadd docker --gid 123 \
-    && usermod -aG sudo runner \
-    && usermod -aG docker runner \
-    && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers \
-    && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers \
-    && \
-    # Install Runner
-    cd /home/runner \
-    && \
-    curl -fsSL -o runner.tar.gz "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz" \
-        && tar xzf ./runner.tar.gz \
-        && rm runner.tar.gz \
-    && \
-    curl -fsSL -o runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip \
-        && unzip ./runner-container-hooks.zip -d ./k8s \
-        && rm runner-container-hooks.zip \
-    && \
-    # Install Docker
-    curl -fsSL -o docker.tgz https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz \
-        && tar zxvf docker.tgz \
-        && rm -rf docker.tgz \
-        && chown -R runner:docker . \
-        && install -o root -g root -m 755 docker/* /usr/bin/ \
-        && rm -rf docker \
+        zstd \
     && \
     # Cleanup
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
@@ -84,6 +37,16 @@ RUN \
         /var/cache/apt/* \
         /var/tmp/*
 
-WORKDIR /home/runner
+
+# Install yq
+RUN curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${TARGETARCH}" \
+        && chmod +x /usr/local/bin/yq
+
+# Install flux
+RUN curl -fsSL -o /tmp/flux.tar.gz "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" \
+        && tar -xzf /tmp/flux.tar.gz -C /usr/local/bin flux \
+        && rm -rf /tmp/flux.tar.gz
+
 USER runner
+
 CMD ["/home/runner/run.sh"]
