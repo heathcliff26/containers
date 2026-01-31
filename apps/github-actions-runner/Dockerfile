@@ -43,7 +43,7 @@ RUN curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/do
         && chmod +x /usr/local/bin/yq
 
 # Install flux
-RUN curl -fsSL -o /tmp/flux.tar.gz "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz" \
+RUN curl -fsSL -o /tmp/flux.tar.gz "https://github.com/fluxcd/flux2/releases/download/v${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_${TARGETARCH}.tar.gz" \
         && tar -xzf /tmp/flux.tar.gz -C /usr/local/bin flux \
         && rm -rf /tmp/flux.tar.gz
 
