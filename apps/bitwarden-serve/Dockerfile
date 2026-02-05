@@ -7,7 +7,7 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.title="bitwarden-serve"
 
 # renovate: datasource=github-releases depName=bitwarden/clients extractVersion=^cli-v(?<version>.*)$
-ENV BW_CLI_VERSION=2025.12.1
+ENV BW_CLI_VERSION=2026.1.0
 
 RUN npm install -g @bitwarden/cli@${BW_CLI_VERSION#cli-v}
 
