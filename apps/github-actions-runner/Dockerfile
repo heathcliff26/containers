@@ -7,7 +7,7 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.title="github-actions-runner"
 
 ARG TARGETARCH
-# renovate: datasource=github-tags depName=mikefarah/yq extractVersion=^(?<version>.*)$
+# renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^(?<version>.*)$
 ARG YQ_VERSION=v4.52.2
 # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
 ARG FLUX_VERSION=2.7.5
