@@ -1,4 +1,4 @@
-FROM docker.io/library/ubuntu:24.04@sha256:25f37267ed09741eb764578a14df49a0c0bede9755fc8fc18a51b101985b924c
+FROM docker.io/library/ubuntu:24.04@sha256:d1e2e92c075e5ca139d51a140fff46f84315c0fdce203eab2807c7e495eff4f9
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Running tang server in a lightweight ubuntu container" \
