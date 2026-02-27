@@ -10,7 +10,7 @@ ARG TARGETARCH
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^(?<version>.*)$
 ARG YQ_VERSION=v4.52.4
 # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
-ARG FLUX_VERSION=2.8.0
+ARG FLUX_VERSION=2.8.1
 
 USER root
 
