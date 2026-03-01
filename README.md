@@ -1,7 +1,6 @@
 [![bitwarden-serve](https://github.com/heathcliff26/containers/actions/workflows/build-bitwarden-serve.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-bitwarden-serve.yaml)
 [![default-webpage](https://github.com/heathcliff26/containers/actions/workflows/build-default-webpage.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-default-webpage.yaml)
 [![fcos-k8s](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s.yaml)
-[![fcos-k8s v1.32](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.32.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.32.yaml)
 [![fcos-k8s v1.33](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.33.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.33.yaml)
 [![fcos-k8s v1.34](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.34.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.34.yaml)
 [![file-sync](https://github.com/heathcliff26/containers/actions/workflows/build-file-sync.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-file-sync.yaml)
