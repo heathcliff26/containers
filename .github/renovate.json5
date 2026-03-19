@@ -15,6 +15,7 @@
     "github>heathcliff26/ci//renovate/customManagers.json5",
     "github>heathcliff26/ci//renovate/labels.json5",
     "github>heathcliff26/ci//renovate/semanticCommits.json5",
+    "github>heathcliff26/ci//renovate/kubernetes/kubernetes.json5",
     "github>heathcliff26/containers//.github/renovate/automerge.json5",
     "github>heathcliff26/containers//.github/renovate/kubernetes.json5",
     "github>heathcliff26/containers//.github/renovate/ignore-versions.json5",
