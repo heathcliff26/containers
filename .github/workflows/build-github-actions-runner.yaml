@@ -17,13 +17,34 @@ on:
     branches: ["main"]
 
 jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: "${{ steps.version.outputs.version }}"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Extract actions-runner version
+        id: version
+        run: |
+          set -ex
+          VERSION_STRING="$(grep "FROM ghcr.io/actions/actions-runner" apps/github-actions-runner/Dockerfile)"
+          VERSION="$(echo "${VERSION_STRING}" | awk '{print $2}' | awk -F'@' '{print $1}' | awk -F':' '{print $2}')"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
   build:
     uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    needs: metadata
     permissions:
       contents: read
       packages: write
     with:
       app: github-actions-runner
+      tag: "${{ needs.metadata.outputs.version }}"
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
       context: apps/github-actions-runner
     secrets: inherit
