@@ -21,8 +21,6 @@ on:
 jobs:
   metadata:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     permissions:
       contents: read
     outputs:
