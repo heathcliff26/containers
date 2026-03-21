@@ -13,6 +13,6 @@ RUN npm install -g @bitwarden/cli@${BW_CLI_VERSION#cli-v}
 
 COPY entrypoint.sh /
 
-USER 1000
+USER nobody:nogroup
 
 CMD ["/entrypoint.sh"]
