@@ -8,5 +8,5 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 
 ENV SFILESERVER_NO_INDEX="true"
 
-COPY --chown=1001:1001 --chmod=644 index.html /webroot/
-COPY --chown=1001:1001 --chmod=644 kundenumfrage /webroot/kundenumfrage
+COPY --chown=65534:65534 --chmod=644 index.html /webroot/
+COPY --chown=65534:65534 --chmod=644 kundenumfrage /webroot/kundenumfrage
