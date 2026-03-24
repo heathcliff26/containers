@@ -37,7 +37,7 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
   build:
-    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@42ac7a8dcdf67ef1e18a0082966072cce75a0fe4 # main
     needs: metadata
     permissions:
       contents: read

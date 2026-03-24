@@ -21,6 +21,6 @@ on:
 
 jobs:
   validate-renovate-config:
-    uses: heathcliff26/ci/.github/workflows/renovate-config-validator.yaml@main
+    uses: heathcliff26/ci/.github/workflows/renovate-config-validator.yaml@42ac7a8dcdf67ef1e18a0082966072cce75a0fe4 # main
     permissions:
       contents: read

@@ -21,7 +21,7 @@ on:
 
 jobs:
   prune:
-    uses: heathcliff26/ci/.github/workflows/prune-ghcr.yaml@main
+    uses: heathcliff26/ci/.github/workflows/prune-ghcr.yaml@42ac7a8dcdf67ef1e18a0082966072cce75a0fe4 # main
     permissions:
       packages: write
     with:
