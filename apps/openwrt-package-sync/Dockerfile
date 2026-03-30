@@ -6,7 +6,6 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.licenses="Apache-2.0" \
         org.opencontainers.image.title="openwrt-package-sync"
 
-RUN echo "@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-        apk add --no-cache opkg-utils@testing curl jq cosign@testing signify@testing
+RUN apk add --no-cache curl jq cosign abuild bash
 
 USER nobody:nobody
