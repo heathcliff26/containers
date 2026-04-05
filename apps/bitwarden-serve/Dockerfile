@@ -15,14 +15,14 @@ WORKDIR /fetch
 
 RUN set -ex; \
     if [ "${TARGETARCH}" = "amd64" ]; then \
-        PLATFORM_TUPLE="linux"; \
+        export PLATFORM_TUPLE="linux"; \
     elif [ "${TARGETARCH}" = "arm64" ]; then \
-        PLATFORM_TUPLE="linux-arm64"; \
+        export PLATFORM_TUPLE="linux-arm64"; \
     else \
         echo "Unsupported architecture: ${TARGETARCH}"; \
         exit 1; \
     fi; \
-    curl -SL -o bw.zip "https://github.com/bitwarden/clients/releases/download/${BW_CLI_VERSION}/bw-${PLATFORM_TUPLE}-${BW_CLI_VERSION#cli-v}.zip"
+    curl -SL -o bw.zip "https://github.com/bitwarden/clients/releases/download/cli-v${BW_CLI_VERSION}/bw-${PLATFORM_TUPLE}-${BW_CLI_VERSION#cli-v}.zip"
 
 RUN unzip bw.zip
 
