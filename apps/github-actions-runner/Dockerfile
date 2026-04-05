@@ -25,6 +25,7 @@ RUN set -eux \
         moreutils \
         wget \
         zstd \
+        gettext-base \
     && \
     # Cleanup
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
