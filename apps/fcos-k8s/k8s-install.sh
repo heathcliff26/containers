@@ -60,9 +60,11 @@ case "${arch}" in
         ;;
 esac
 
-echo "Install and enable migration-remove-upgraded.service"
-cp /var/kubernetes/migration-remove-upgraded.service /usr/lib/systemd/system/
-systemctl enable migration-remove-upgraded.service
+if [ -f "/var/kubernetes/migration-remove-upgraded.service" ]; then
+    echo "Install and enable migration-remove-upgraded.service"
+    cp /var/kubernetes/migration-remove-upgraded.service /usr/lib/systemd/system/
+    systemctl enable migration-remove-upgraded.service
+fi
 
 echo "Disable systemd-resolved"
 printf "%s\n%s\n" '[Resolve]' 'DNSStubListener=no' | tee /etc/systemd/resolved.conf
