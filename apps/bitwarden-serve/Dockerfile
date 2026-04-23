@@ -4,7 +4,7 @@
 FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:24.04 AS fetch-stage
 
 # renovate: datasource=github-releases depName=bitwarden/clients extractVersion=^cli-v(?<version>.*)$
-ENV BW_CLI_VERSION=2026.3.0
+ENV BW_CLI_VERSION=2026.4.1
 
 RUN apt-get update && \
     apt-get install -y curl unzip
