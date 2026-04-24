@@ -1,7 +1,7 @@
 ###############################################################################
 # BEGIN fetch-stage
 # Fetch the binary
-FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:24.04 AS fetch-stage
+FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:26.04 AS fetch-stage
 
 # renovate: datasource=github-releases depName=bitwarden/clients extractVersion=^cli-v(?<version>.*)$
 ENV BW_CLI_VERSION=2026.4.1
@@ -35,7 +35,7 @@ RUN chmod +x bw
 ###############################################################################
 # BEGIN final-stage
 # Create final docker image
-FROM docker.io/library/ubuntu:24.04@sha256:c4a8d5503dfb2a3eb8ab5f807da5bc69a85730fb49b5cfca2330194ebcc41c7b AS final-stage
+FROM docker.io/library/ubuntu:26.04@sha256:5e275723f82c67e387ba9e3c24baa0abdcb268917f276a0561c97bef9450d0b4 AS final-stage
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Bitwarden cli in an ubuntu image" \
