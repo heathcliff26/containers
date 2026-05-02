@@ -1,7 +1,7 @@
 FROM docker.io/library/golang:1.26.2
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
-        org.opencontainers.image.description="Builder and CI image for fyne projects. Can be used as image for fyne-cross." \
+        org.opencontainers.image.description="Builder and CI image for fyne projects." \
         org.opencontainers.image.source="https://github.com/heathcliff26/containers/tree/main/apps/go-fyne-ci" \
         org.opencontainers.image.licenses="Apache-2.0" \
         org.opencontainers.image.title="go-fyne-ci"
@@ -12,8 +12,8 @@ ARG GOLANGCI_LINT_VERSION=v2.12.1
 ARG ZIG_VERSION=0.15.1
 # renovate: datasource=github-tags depName=fyne-io/fyne
 ARG FYNE_VERSION=v2.7.0
-# renovate: datasource=github-releases depName=boxboat/fixuid
-ARG FIXUID_VERSION=0.6.0
+# renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
+ARG GORELEASER_VERSION=v2.15.4
 
 # Install tools
 RUN set -eux; \
@@ -64,6 +64,8 @@ RUN set -eux; \
     go clean -cache -modcache; \
     mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
 
+COPY fyne-wrapper.sh /usr/local/bin/fyne-wrapper.sh
+
 # Install the golangci-lint tool
 RUN set -eux; \
     go install -ldflags="-s" -v "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
@@ -72,15 +74,18 @@ RUN set -eux; \
     go clean -cache -modcache; \
     mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
 
-# Install fixuid see #41
-RUN arch="$(dpkg --print-architecture)"; \
-    addgroup --gid 1000 docker; \
-    adduser --uid 1000 --ingroup docker --home /home/docker --shell /bin/sh --disabled-password --gecos "" docker; \
-    curl -SsL https://github.com/boxboat/fixuid/releases/download/v${FIXUID_VERSION}/fixuid-${FIXUID_VERSION}-linux-${arch}.tar.gz | tar -C /usr/local/bin -xzf -; \
-    chown root:root /usr/local/bin/fixuid; \
-    chmod 4755 /usr/local/bin/fixuid; \
-    mkdir -p /etc/fixuid; \
-    printf "user: docker\ngroup: docker\n" > /etc/fixuid/config.yml
+# Install the gorelease tool
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+        amd64) arch="x86_64" ;; \
+        arm64) arch="arm64" ;; \
+        *) echo "error: unsupported architecture '$arch'"; exit 1 ;; \
+    esac; \
+    curl -SL -o goreleaser.tar.gz "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_Linux_${arch}.tar.gz"; \
+    tar -xzf goreleaser.tar.gz -C "/usr/local/bin" goreleaser; \
+    rm goreleaser.tar.gz; \
+    goreleaser --version;
 
 # Install linux libraries
 RUN set -eux; \
