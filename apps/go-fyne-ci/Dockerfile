@@ -11,7 +11,7 @@ ARG GOLANGCI_LINT_VERSION=v2.12.2
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.15.1
 # renovate: datasource=github-tags depName=fyne-io/fyne
-ARG FYNE_VERSION=v2.7.3
+ARG FYNE_VERSION=v2.7.4
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
 ARG GORELEASER_VERSION=v2.15.4
 
