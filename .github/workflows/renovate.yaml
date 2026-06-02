@@ -23,7 +23,7 @@ on:
 
 jobs:
   renovate:
-    uses: heathcliff26/ci/.github/workflows/renovate.yaml@main
+    uses: heathcliff26/ci/.github/workflows/renovate.yaml@2ca59152f717b61345534a04d61d49c0e5e69dbe # main
     permissions: {}
     with:
       dry-run: ${{ github.event.inputs.dry-run || false }}

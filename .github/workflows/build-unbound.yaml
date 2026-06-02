@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@2ca59152f717b61345534a04d61d49c0e5e69dbe # main
     permissions:
       contents: read
       packages: write
