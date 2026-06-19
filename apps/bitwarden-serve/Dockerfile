@@ -35,7 +35,7 @@ RUN chmod +x bw
 ###############################################################################
 # BEGIN final-stage
 # Create final docker image
-FROM docker.io/library/ubuntu:26.04@sha256:f3d28607ddd78734bb7f71f117f3c6706c666b8b76cbff7c9ff6e5718d46ff64 AS final-stage
+FROM docker.io/library/ubuntu:26.04@sha256:e153663f92c94118ff22a5dc397b59b351ffd695480566debb5850e017e5937a AS final-stage
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Bitwarden cli in an ubuntu image" \
