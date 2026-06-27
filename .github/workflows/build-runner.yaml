@@ -1,0 +1,45 @@
+---
+name: Build runner
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+    paths:
+      - "apps/runner/*"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/runner/*"
+      - ".github/workflows/build-runner.yaml"
+  merge_group:
+    branches: ["main"]
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: "${{ steps.version.outputs.version }}"
+
+    steps:
+      - name: Extract actions-runner version
+        id: version
+        run: |
+          set -ex
+          echo "version=$(date +%Y%m%d%H%M)" >> "$GITHUB_OUTPUT"
+
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    needs: metadata
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: runner
+      tag: "${{ needs.metadata.outputs.version }}"
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/runner
+    secrets: inherit
