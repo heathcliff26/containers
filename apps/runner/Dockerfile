@@ -60,7 +60,16 @@ RUN set -eux \
         /var/cache/apt/* \
         /var/tmp/*
 
+#
+# BEGIN: PODMAN IN CONTAINER SETUP
+#
 VOLUME /var/lib/containers
+
+COPY storage.conf /etc/containers/storage.conf
+RUN mkdir -p /var/lib/shared-images
+#
+# END: PODMAN IN CONTAINER SETUP
+#
 
 # Install yq
 RUN curl -fsSL -o /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${TARGETARCH}" \
