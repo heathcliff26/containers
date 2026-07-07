@@ -22,7 +22,7 @@ ARG TARGETARCH
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^(?<version>.*)$
 ENV YQ_VERSION=v4.53.3
 # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
-ENV FLUX_VERSION=2.9.0
+ENV FLUX_VERSION=2.9.1
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^(?<version>.*)$
 ENV KUBERNETES_VERSION=v1.36.2
 
