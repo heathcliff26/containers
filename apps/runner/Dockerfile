@@ -1,7 +1,7 @@
 ###############################################################################
 # BEGIN cosign-bin
 # Compile the binary
-FROM ghcr.io/sigstore/cosign/cosign:v2.6.4 AS cosign-bin
+FROM ghcr.io/sigstore/cosign/cosign:v3.1.2 AS cosign-bin
 
 #
 # END cosign-bin
