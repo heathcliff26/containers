@@ -104,6 +104,11 @@ RUN set -eux; \
         libxkbcommon-dev:amd64 \
         libdecor-0-dev:amd64 \
         libegl-dev:amd64 \
+        # New 2.8.0 wayland deps
+        libgl1-mesa-dev:amd64 \
+        xorg-dev:amd64 \
+        libwayland-dev:amd64 \
+        libxkbcommon-dev:amd64 \
     ; \
     apt-get install -y -q --no-install-recommends \
         libgl-dev:arm64 \
@@ -117,6 +122,11 @@ RUN set -eux; \
         libxkbcommon-dev:arm64 \
         libdecor-0-dev:arm64 \
         libegl-dev:arm64 \
+        # New 2.8.0 wayland deps
+        libgl1-mesa-dev:arm64 \
+        #xorg-dev:arm64 \
+        libwayland-dev:arm64 \
+        libxkbcommon-dev:arm64 \
     ; \
     # remove static libX11 to allow zig build against shared X11 lib
     rm -rf /usr/lib/*/libX11.a; \
