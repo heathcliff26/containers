@@ -24,7 +24,7 @@ ENV YQ_VERSION=v4.53.4
 # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
 ENV FLUX_VERSION=2.9.4
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^(?<version>.*)$
-ENV KUBERNETES_VERSION=v1.36.3
+ENV KUBERNETES_VERSION=v1.36.4
 
 USER root
 
