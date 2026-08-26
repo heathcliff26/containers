@@ -100,7 +100,9 @@ RUN set -eux; \
         libxi-dev:amd64 \
         libxcursor-dev:amd64 \
         libxinerama-dev:amd64 \
-         # deps to support wayland
+        # deps to support wayland
+        libgles2-mesa-dev:amd64 \
+        libwayland-dev:amd64 \
         libxkbcommon-dev:amd64 \
         libdecor-0-dev:amd64 \
         libegl-dev:amd64 \
@@ -113,7 +115,9 @@ RUN set -eux; \
         libxi-dev:arm64 \
         libxcursor-dev:arm64 \
         libxinerama-dev:arm64 \
-         # deps to support wayland
+        # deps to support wayland
+        libgles2-mesa-dev:arm64 \
+        libwayland-dev:arm64 \
         libxkbcommon-dev:arm64 \
         libdecor-0-dev:arm64 \
         libegl-dev:arm64 \
