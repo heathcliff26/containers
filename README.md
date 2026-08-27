@@ -3,6 +3,7 @@
 [![fcos-k8s](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s.yaml)
 [![fcos-k8s v1.34](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.34.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.34.yaml)
 [![fcos-k8s v1.35](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.35.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.35.yaml)
+[![fcos-k8s v1.36](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.36.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-fcos-k8s-v1.36.yaml)
 [![file-sync](https://github.com/heathcliff26/containers/actions/workflows/build-file-sync.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-file-sync.yaml)
 [![runner](https://github.com/heathcliff26/containers/actions/workflows/build-runner.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-runner.yaml)
 [![go-fyne-ci](https://github.com/heathcliff26/containers/actions/workflows/build-go-fyne-ci.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-go-fyne-ci.yaml)
