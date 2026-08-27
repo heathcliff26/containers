@@ -9,9 +9,9 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 LABEL quay.expires-after=2y
 
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^v(?<version>.*)$
-ENV KUBERNETES_VERSION=1.35.8
+ENV KUBERNETES_VERSION=1.36.4
 
-ENV CRIO_VERSION=1.35
+ENV CRIO_VERSION=1.36
 
 COPY k8s-install.sh /var/kubernetes/
 
