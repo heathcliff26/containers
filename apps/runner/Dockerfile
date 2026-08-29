@@ -35,6 +35,7 @@ RUN set -eux \
         ca-certificates \
         curl \
         gcc \
+        jq \
         make \
         moreutils \
         wget \
