@@ -10,8 +10,8 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 ARG GOLANGCI_LINT_VERSION=v2.13.2
 # renovate: datasource=github-releases depName=ziglang/zig
 ARG ZIG_VERSION=0.15.1
-# renovate: datasource=github-tags depName=fyne-io/fyne
-ARG FYNE_VERSION=v2.8.1
+# renovate: datasource=github-tags depName=fyne-io/tools
+ARG FYNE_TOOLS_VERSION=v1.7.2
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
 ARG GORELEASER_VERSION=v2.18.2
 
@@ -58,7 +58,7 @@ RUN set -eux; \
 
 # Install the fyne CLI tool
 RUN set -eux; \
-    go install -ldflags="-s" -v "fyne.io/fyne/v2/cmd/fyne@${FYNE_VERSION}"; \
+    go install -ldflags="-s" -v "fyne.io/tools/cmd/fyne@${FYNE_TOOLS_VERSION}"; \
     mv /go/bin/fyne /usr/local/bin/fyne; \
     fyne version || echo "Ignore error here"; \
     go clean -cache -modcache; \
