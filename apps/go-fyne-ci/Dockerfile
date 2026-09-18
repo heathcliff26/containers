@@ -23,6 +23,9 @@ RUN set -eux; \
         unzip \
         xz-utils \
         zip \
+        jq \
+        yq \
+        gettext \
     ; \
     apt-get clean; \
     rm -r /var/lib/apt/lists/*;
