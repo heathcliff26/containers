@@ -10,7 +10,7 @@ FROM ghcr.io/sigstore/cosign/cosign:v3.1.3 AS cosign-bin
 ###############################################################################
 # BEGIN runner-image
 # Build the runner image
-FROM docker.io/library/debian:13.7@sha256:a792639161fbe8a4249347e72ea43d0fa6039c97413097e3aa225406173ec1ec
+FROM docker.io/library/debian:13.7@sha256:9cc080028c43b27d2074d63a5f9caf7166d731494965616c1a6d2827a004585c
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Basic CI image used for tekton pipeline tasks" \
