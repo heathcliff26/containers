@@ -18,7 +18,6 @@ ENV CMDLINE_TOOLS_VERSION=16111833
 ENV CMDLINE_TOOLS_CHECKSUM=e025545c62a8e64c7559119566a569fb1dec5f60
 
 ENV ANDROID_HOME=/usr/local/android_sdk
-ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 
 RUN curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_TOOLS_VERSION}_latest.zip -o /tmp/cmdlinetools.zip; \
     echo "${CMDLINE_TOOLS_CHECKSUM}  /tmp/cmdlinetools.zip" | sha1sum -c -; \
@@ -31,6 +30,8 @@ RUN curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-${
 ENV BUILD_TOOLS_VERSION=36.0.0
 ENV NDK_BUNDLE_VERSION=22.1.7171670
 ENV PLATFORM_TOOLS_VERSION=37.0.1
+
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION
 
 RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools;${BUILD_TOOLS_VERSION}" "platforms;android-37" "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
     find ${ANDROID_HOME}/ndk-bundle -mindepth 1 -maxdepth 1 \
