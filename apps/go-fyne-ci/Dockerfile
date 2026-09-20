@@ -6,6 +6,8 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.licenses="Apache-2.0" \
         org.opencontainers.image.title="go-fyne-ci"
 
+LABEL quay.expires-after=2y
+
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 ARG GOLANGCI_LINT_VERSION=v2.13.2
 # renovate: datasource=github-releases depName=ziglang/zig

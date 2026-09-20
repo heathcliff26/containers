@@ -1,0 +1,57 @@
+ARG BASE_IMAGE=ghcr.io/heathcliff26/go-fyne-ci:latest
+
+FROM ${BASE_IMAGE}
+
+# Install Java
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y -q --no-install-recommends \
+        openjdk-25-jdk \
+        p7zip-full \
+    ; \
+    apt-get clean; \
+    rm -r /var/lib/apt/lists/*;
+
+
+# Versions can be upgraded from https://dl.google.com/android/repository/repository2-1.xml
+ENV CMDLINE_TOOLS_VERSION=16111833
+ENV CMDLINE_TOOLS_CHECKSUM=e025545c62a8e64c7559119566a569fb1dec5f60
+
+ENV BUILD_TOOLS_VERSION=36.0.0
+ENV NDK_BUNDLE_VERSION=22.1.7171670
+ENV PLATFORM_TOOLS_VERSION=37.0.1
+
+ENV ANDROID_HOME=/usr/local/android_sdk
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+
+RUN curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_TOOLS_VERSION}_latest.zip -o /tmp/cmdlinetools.zip; \
+    echo "${CMDLINE_TOOLS_CHECKSUM}  /tmp/cmdlinetools.zip" | sha1sum -c -; \
+    mkdir /tmp/cmdlinetools; \
+    unzip -q /tmp/cmdlinetools.zip -d /tmp/cmdlinetools; \
+    mkdir -p ${ANDROID_HOME}/cmdline-tools; \
+    mv /tmp/cmdlinetools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest; \
+    rm -rf /tmp/cmdlinetools.zip /tmp/cmdlinetools;
+
+RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools@${BUILD_TOOLS_VERSION}" "platforms;android-37" "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
+    find ${ANDROID_HOME}/ndk-bundle -mindepth 1 -maxdepth 1 \
+        ! -name source.properties \
+        ! -name toolchains \
+        -exec rm -rf {} +; \
+    mv ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64 /tmp/ndk-bundle-llvm; \
+    rm -rf ${ANDROID_HOME}/ndk-bundle/toolchains /root/.android; \
+    mkdir -p ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt; \
+    mv /tmp/ndk-bundle-llvm ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64; \
+    rm -rf \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/share/doc \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/share/man; \
+    rm -f \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang-check \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang-format \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang-tidy \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clangd \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-cov \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-cxxfilt \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-dwarfdump \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-link \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-profdata \
+        ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-symbolizer;
