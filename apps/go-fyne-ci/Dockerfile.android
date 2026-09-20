@@ -17,10 +17,6 @@ RUN set -eux; \
 ENV CMDLINE_TOOLS_VERSION=16111833
 ENV CMDLINE_TOOLS_CHECKSUM=e025545c62a8e64c7559119566a569fb1dec5f60
 
-ENV BUILD_TOOLS_VERSION=36.0.0
-ENV NDK_BUNDLE_VERSION=22.1.7171670
-ENV PLATFORM_TOOLS_VERSION=37.0.1
-
 ENV ANDROID_HOME=/usr/local/android_sdk
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 
@@ -32,7 +28,11 @@ RUN curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-${
     mv /tmp/cmdlinetools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest; \
     rm -rf /tmp/cmdlinetools.zip /tmp/cmdlinetools;
 
-RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools@${BUILD_TOOLS_VERSION}" "platforms;android-37" "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
+ENV BUILD_TOOLS_VERSION=36.0.0
+ENV NDK_BUNDLE_VERSION=22.1.7171670
+ENV PLATFORM_TOOLS_VERSION=37.0.1
+
+RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools;${BUILD_TOOLS_VERSION}" "platforms;android-37" "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
     find ${ANDROID_HOME}/ndk-bundle -mindepth 1 -maxdepth 1 \
         ! -name source.properties \
         ! -name toolchains \
@@ -55,3 +55,12 @@ RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools@
         ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-link \
         ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-profdata \
         ${ANDROID_HOME}/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-symbolizer;
+
+# renovate: datasource=github-releases depName=google/bundletool
+ENV BUNDLETOOL_VERSION=1.18.3
+
+RUN set -xe; \
+    curl -sSL https://github.com/google/bundletool/releases/download/$BUNDLETOOL_VERSION/bundletool-all-$BUNDLETOOL_VERSION.jar > $ANDROID_HOME/bundletool.jar; \
+    echo '#!/bin/bash' > /usr/local/bin/bundletool; \
+    echo 'java -jar $ANDROID_HOME/bundletool.jar "$@"' >> /usr/local/bin/bundletool; \
+    chmod +x /usr/local/bin/bundletool; \
