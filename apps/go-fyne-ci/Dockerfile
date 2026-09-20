@@ -8,15 +8,6 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 
 LABEL quay.expires-after=2y
 
-# renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG GOLANGCI_LINT_VERSION=v2.13.2
-# renovate: datasource=github-releases depName=ziglang/zig
-ARG ZIG_VERSION=0.15.1
-# renovate: datasource=github-tags depName=fyne-io/tools
-ARG FYNE_TOOLS_VERSION=v1.7.2
-# renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
-ARG GORELEASER_VERSION=v2.18.2
-
 # Install tools
 RUN set -eux; \
     apt-get update; \
@@ -31,66 +22,6 @@ RUN set -eux; \
     ; \
     apt-get clean; \
     rm -r /var/lib/apt/lists/*;
-
-# Add zig to path
-ENV PATH=/usr/local/zig:$PATH
-
-# Install Zig
-RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    url=; \
-    sha256=; \
-    case "$arch" in \
-        'amd64') \
-            # dev release
-            # url="https://ziglang.org/builds/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
-            # stable release
-            url="https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
-            ;; \
-        'arm64') \
-            # dev release
-            # url="https://ziglang.org/builds/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
-            # stable release
-            url="https://ziglang.org/download/${ZIG_VERSION}/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
-            ;; \
-        *) echo >&2 "error: unsupported architecture '$arch'"; exit 1 ;; \
-    esac; \
-    curl -sSL ${url} -o zig.tar.xz; \
-    tar -C /usr/local -Jxvf zig.tar.xz; \
-    mv /usr/local/zig-* /usr/local/zig; \
-    rm zig.tar.xz; \
-    zig version;
-
-# Install the fyne CLI tool
-RUN set -eux; \
-    go install -ldflags="-s" -v "fyne.io/tools/cmd/fyne@${FYNE_TOOLS_VERSION}"; \
-    mv /go/bin/fyne /usr/local/bin/fyne; \
-    fyne version || echo "Ignore error here"; \
-    go clean -cache -modcache; \
-    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
-
-COPY fyne-wrapper.sh /usr/local/bin/fyne-wrapper.sh
-
-# Install the golangci-lint tool
-RUN set -eux; \
-    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
-    mv /go/bin/golangci-lint /usr/local/bin/golangci-lint; \
-    golangci-lint version; \
-    go clean -cache -modcache; \
-    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
-
-# Install the gorelease tool
-RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    case "$arch" in \
-        amd64) arch="x86_64" ;; \
-        arm64) arch="arm64" ;; \
-        *) echo "error: unsupported architecture '$arch'"; exit 1 ;; \
-    esac; \
-    curl -SL -o goreleaser.tar.gz "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_Linux_${arch}.tar.gz"; \
-    tar -xzf goreleaser.tar.gz -C "/usr/local/bin" goreleaser; \
-    rm goreleaser.tar.gz; \
-    goreleaser --version;
 
 # Install linux libraries
 RUN set -eux; \
@@ -132,5 +63,77 @@ RUN set -eux; \
     apt-get -qy autoremove; \
     apt-get clean; \
     rm -r /var/lib/apt/lists/*;
+
+# Add zig to path
+ENV PATH=/usr/local/zig:$PATH
+
+# renovate: datasource=github-releases depName=ziglang/zig
+ARG ZIG_VERSION=0.15.1
+
+# Install Zig
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    url=; \
+    sha256=; \
+    case "$arch" in \
+        'amd64') \
+            # dev release
+            # url="https://ziglang.org/builds/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
+            # stable release
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz";\
+            ;; \
+        'arm64') \
+            # dev release
+            # url="https://ziglang.org/builds/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
+            # stable release
+            url="https://ziglang.org/download/${ZIG_VERSION}/zig-aarch64-linux-${ZIG_VERSION}.tar.xz";\
+            ;; \
+        *) echo >&2 "error: unsupported architecture '$arch'"; exit 1 ;; \
+    esac; \
+    curl -sSL ${url} -o zig.tar.xz; \
+    tar -C /usr/local -Jxvf zig.tar.xz; \
+    mv /usr/local/zig-* /usr/local/zig; \
+    rm zig.tar.xz; \
+    zig version;
+
+# renovate: datasource=github-tags depName=fyne-io/tools
+ARG FYNE_TOOLS_VERSION=v1.7.2
+
+# Install the fyne CLI tool
+RUN set -eux; \
+    go install -ldflags="-s" -v "fyne.io/tools/cmd/fyne@${FYNE_TOOLS_VERSION}"; \
+    mv /go/bin/fyne /usr/local/bin/fyne; \
+    fyne version || echo "Ignore error here"; \
+    go clean -cache -modcache; \
+    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
+
+COPY fyne-wrapper.sh /usr/local/bin/fyne-wrapper.sh
+
+# renovate: datasource=github-releases depName=golangci/golangci-lint
+ARG GOLANGCI_LINT_VERSION=v2.13.2
+
+# Install the golangci-lint tool
+RUN set -eux; \
+    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
+    mv /go/bin/golangci-lint /usr/local/bin/golangci-lint; \
+    golangci-lint version; \
+    go clean -cache -modcache; \
+    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
+
+# renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
+ARG GORELEASER_VERSION=v2.18.2
+
+# Install the gorelease tool
+RUN set -eux; \
+    arch="$(dpkg --print-architecture)"; \
+    case "$arch" in \
+        amd64) arch="x86_64" ;; \
+        arm64) arch="arm64" ;; \
+        *) echo "error: unsupported architecture '$arch'"; exit 1 ;; \
+    esac; \
+    curl -SL -o goreleaser.tar.gz "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_Linux_${arch}.tar.gz"; \
+    tar -xzf goreleaser.tar.gz -C "/usr/local/bin" goreleaser; \
+    rm goreleaser.tar.gz; \
+    goreleaser --version;
 
 WORKDIR /app
