@@ -28,12 +28,16 @@ RUN curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-${
     rm -rf /tmp/cmdlinetools.zip /tmp/cmdlinetools;
 
 ENV BUILD_TOOLS_VERSION=36.0.0
-ENV NDK_BUNDLE_VERSION=22.1.7171670
 ENV PLATFORM_TOOLS_VERSION=37.0.1
 
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION
 
-RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "build-tools;${BUILD_TOOLS_VERSION}" "platforms;android-37" "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
+RUN android sdk install "platform-tools@${PLATFORM_TOOLS_VERSION}" "platforms/android-37.0" "build-tools;${BUILD_TOOLS_VERSION}"; \
+    rm -rf /root/.android
+
+ENV NDK_BUNDLE_VERSION=22.1.7171670
+
+RUN android sdk install "ndk-bundle@${NDK_BUNDLE_VERSION}"; \
     find ${ANDROID_HOME}/ndk-bundle -mindepth 1 -maxdepth 1 \
         ! -name source.properties \
         ! -name toolchains \
