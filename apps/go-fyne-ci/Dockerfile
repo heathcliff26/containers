@@ -110,7 +110,7 @@ RUN set -eux; \
 COPY fyne-wrapper.sh /usr/local/bin/fyne-wrapper.sh
 
 # renovate: datasource=github-releases depName=golangci/golangci-lint
-ARG GOLANGCI_LINT_VERSION=v2.13.2
+ARG GOLANGCI_LINT_VERSION=v2.14.0
 
 # Install the golangci-lint tool
 RUN set -eux; \
