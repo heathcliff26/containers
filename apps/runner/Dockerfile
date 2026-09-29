@@ -20,7 +20,7 @@ LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
 
 ARG TARGETARCH
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^(?<version>.*)$
-ENV YQ_VERSION=v4.53.6
+ENV YQ_VERSION=v4.54.1
 # renovate: datasource=github-releases depName=fluxcd/flux2 extractVersion=^v(?<version>.*)$
 ENV FLUX_VERSION=2.9.5
 # renovate: datasource=github-tags depName=kubernetes/kubernetes extractVersion=^(?<version>.*)$
