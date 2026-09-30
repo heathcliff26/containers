@@ -97,7 +97,7 @@ RUN set -eux; \
     zig version;
 
 # renovate: datasource=github-tags depName=fyne-io/tools
-ARG FYNE_TOOLS_VERSION=v1.7.2
+ARG FYNE_TOOLS_VERSION=v1.7.3
 
 # Install the fyne CLI tool
 RUN set -eux; \
