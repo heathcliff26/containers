@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-coreos:stable@sha256:fc025291309d4a3c096ab072414966bccdcdc05d5cf40e81ab4b39326bf7d113
+FROM quay.io/fedora/fedora-coreos:stable@sha256:7e5e34e601b19fb89f636a610aee387866a1a3e064b5459e526124ceb78b28b0
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Fedora CoreOS with Kubernetes and CRI-O" \
