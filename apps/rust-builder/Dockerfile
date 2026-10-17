@@ -26,6 +26,11 @@ RUN set -e; \
     rustup target add x86_64-unknown-linux-gnu x86_64-unknown-linux-musl; \
     rustup target add aarch64-unknown-linux-gnu aarch64-unknown-linux-musl;
 
+# Installing rust components
+RUN set -e; \
+    rustup component add clippy; \
+    rustup component add rustfmt;
+
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
 ENV GORELEASER_VERSION=v2.18.3
 
