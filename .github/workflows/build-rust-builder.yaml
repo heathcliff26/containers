@@ -7,11 +7,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/rust-builder/*"
+      - "apps/rust-builder/Dockerfile"
+      - "apps/rust-builder/Dockerfile.*"
   pull_request:
     branches: [main]
     paths:
-      - "apps/rust-builder/*"
+      - "apps/rust-builder/Dockerfile"
+      - "apps/rust-builder/Dockerfile.*"
       - ".github/workflows/build-rust-builder.yaml"
   merge_group:
     branches: ["main"]
@@ -35,7 +37,7 @@ jobs:
 
           echo "version=$(date +%Y%m%d%H%M)" >> "$GITHUB_OUTPUT"
 
-  build:
+  build-base:
     uses: heathcliff26/ci/.github/workflows/build-amd64-container.yaml@main
     needs: metadata
     permissions:
@@ -46,4 +48,26 @@ jobs:
       tag: "${{ needs.metadata.outputs.version }}"
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
       context: apps/rust-builder
+      cache-from: type=gha
+      cache-to: type=gha,mode=max
+    secrets: inherit
+
+  build-qt:
+    uses: heathcliff26/ci/.github/workflows/build-amd64-container.yaml@main
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
+    needs:
+      - metadata
+      - build-base
+    permissions:
+      contents: read
+      packages: write
+    with:
+      app: rust-qt-builder
+      tag: "${{ needs.metadata.outputs.version }}"
+      build-args: "BASE_IMAGE=ghcr.io/heathcliff26/rust-builder:${{ needs.metadata.outputs.version }}"
+      dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      context: apps/rust-builder
+      dockerfile: Dockerfile.qt
+      cache-from: type=gha
+      cache-to: type=gha,mode=max
     secrets: inherit
