@@ -37,37 +37,15 @@ jobs:
 
           echo "version=$(date +%Y%m%d%H%M)" >> "$GITHUB_OUTPUT"
 
-  build-base:
-    uses: heathcliff26/ci/.github/workflows/build-amd64-container.yaml@main
+  build:
+    uses: heathcliff26/ci/.github/workflows/build-containers.yaml@main
     needs: metadata
     permissions:
       contents: read
       packages: write
     with:
-      app: go-fyne-ci
-      tag: "${{ needs.metadata.outputs.version }}"
+      images: |
+        name=go-fyne-ci,tags=${{ needs.metadata.outputs.version }} latest,context=apps/go-fyne-ci
+        name=go-fyne-ci,tags=${{ needs.metadata.outputs.version }}-android latest-android,context=apps/go-fyne-ci,containerfile=Dockerfile.android,buildargs=BASE_IMAGE=ghcr.io/heathcliff26/go-fyne-ci:${{ needs.metadata.outputs.version }}
       dry-run: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
-      context: apps/go-fyne-ci
-      cache-from: type=gha
-      cache-to: type=gha,mode=max
-    secrets: inherit
-
-  build-android:
-    uses: heathcliff26/ci/.github/workflows/build-amd64-container.yaml@main
-    if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
-    needs:
-      - metadata
-      - build-base
-    permissions:
-      contents: read
-      packages: write
-    with:
-      app: go-fyne-ci
-      tag: "${{ needs.metadata.outputs.version }}-android"
-      tags: "type=raw,value=latest-android,enable={{is_default_branch}}"
-      build-args: "BASE_IMAGE=ghcr.io/heathcliff26/go-fyne-ci:${{ needs.metadata.outputs.version }}"
-      context: apps/go-fyne-ci
-      dockerfile: Dockerfile.android
-      cache-from: type=gha
-      cache-to: type=gha,mode=max
     secrets: inherit
