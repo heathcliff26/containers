@@ -32,7 +32,7 @@ RUN set -e; \
     rustup component add rustfmt;
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
-ENV GORELEASER_VERSION=v2.18.3
+ENV GORELEASER_VERSION=v2.19.0
 
 # Installing goreleaser
 RUN set -e; \
