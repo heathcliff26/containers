@@ -90,7 +90,7 @@ RUN set -eux; \
             ;; \
         *) echo >&2 "error: unsupported architecture '$arch'"; exit 1 ;; \
     esac; \
-    curl -sSL ${url} -o zig.tar.xz; \
+    curl -fsSL ${url} -o zig.tar.xz; \
     tar -C /usr/local -Jxvf zig.tar.xz; \
     mv /usr/local/zig-* /usr/local/zig; \
     rm zig.tar.xz; \
@@ -114,11 +114,12 @@ ARG GOLANGCI_LINT_VERSION=v2.15.0
 
 # Install the golangci-lint tool
 RUN set -eux; \
-    go install -ldflags="-s" -v "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"; \
-    mv /go/bin/golangci-lint /usr/local/bin/golangci-lint; \
-    golangci-lint version; \
-    go clean -cache -modcache; \
-    mkdir -p "$GOPATH/pkg/mod" && chmod -R 777 "$GOPATH"
+    arch="$(dpkg --print-architecture)"; \
+    curl -fsSL -o golangci-lint.tar.gz "https://github.com/golangci/golangci-lint/releases/download/${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION##v}-linux-${arch}.tar.gz"; \
+    tar -xzf golangci-lint.tar.gz -C "/tmp"; \
+    mv "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION##v}-linux-${arch}/golangci-lint" "/usr/local/bin/golangci-lint"; \
+    rm -rf golangci-lint.tar.gz "/tmp/golangci-lint-${GOLANGCI_LINT_VERSION##v}-linux-${arch}"; \
+    golangci-lint version;
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
 ARG GORELEASER_VERSION=v2.19.0
@@ -131,7 +132,7 @@ RUN set -eux; \
         arm64) arch="arm64" ;; \
         *) echo "error: unsupported architecture '$arch'"; exit 1 ;; \
     esac; \
-    curl -SL -o goreleaser.tar.gz "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_Linux_${arch}.tar.gz"; \
+    curl -fsSL -o goreleaser.tar.gz "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_Linux_${arch}.tar.gz"; \
     tar -xzf goreleaser.tar.gz -C "/usr/local/bin" goreleaser; \
     rm goreleaser.tar.gz; \
     goreleaser --version;
