@@ -7,7 +7,6 @@
 [![runner](https://github.com/heathcliff26/containers/actions/workflows/build-runner.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-runner.yaml)
 [![go-fyne-ci](https://github.com/heathcliff26/containers/actions/workflows/build-go-fyne-ci.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-go-fyne-ci.yaml)
 [![keepalived](https://github.com/heathcliff26/containers/actions/workflows/build-keepalived.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-keepalived.yaml)
-[![openwrt-package-sync](https://github.com/heathcliff26/containers/actions/workflows/build-openwrt-package-sync.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-openwrt-package-sync.yaml)
 [![rust-builder](https://github.com/heathcliff26/containers/actions/workflows/build-rust-builder.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-rust-builder.yaml)
 [![squid](https://github.com/heathcliff26/containers/actions/workflows/build-squid.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-squid.yaml)
 [![unbound](https://github.com/heathcliff26/containers/actions/workflows/build-unbound.yaml/badge.svg)](https://github.com/heathcliff26/containers/actions/workflows/build-unbound.yaml)
