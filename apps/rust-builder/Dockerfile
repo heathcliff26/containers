@@ -43,7 +43,7 @@ RUN set -e; \
 
 
 # renovate: datasource=github-releases depName=dyne/musl extractVersion=^(?<version>.*)$
-ENV DYNE_MUSL_VERSION=2.2.0
+ENV DYNE_MUSL_VERSION=v2.2.1
 
 # Installing musl cross compile toolchain
 RUN set -e; \
