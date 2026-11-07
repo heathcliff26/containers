@@ -11,9 +11,9 @@ RUN set -e; \
     dpkg --add-architecture arm64; \
     apt-get update; \
     apt-get install -y --no-install-recommends --no-install-suggests \
+        jq \
         musl-tools \
-        upx; \
-    apt-get install -y --no-install-recommends --no-install-suggests \
+        upx \
         gcc-aarch64-linux-gnu \
         g++-aarch64-linux-gnu \
         libssl-dev:arm64; \
