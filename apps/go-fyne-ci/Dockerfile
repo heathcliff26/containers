@@ -122,7 +122,7 @@ RUN set -eux; \
     golangci-lint version;
 
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^(?<version>.*)$
-ARG GORELEASER_VERSION=v2.20.1
+ARG GORELEASER_VERSION=v2.20.2
 
 # Install the gorelease tool
 RUN set -eux; \
