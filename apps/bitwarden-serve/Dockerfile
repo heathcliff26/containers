@@ -22,7 +22,7 @@ RUN set -ex; \
         echo "Unsupported architecture: ${TARGETARCH}"; \
         exit 1; \
     fi; \
-    curl -SL -o bw.zip "https://github.com/bitwarden/clients/releases/download/cli-v${BW_CLI_VERSION}/bw-${PLATFORM_TUPLE}-${BW_CLI_VERSION#cli-v}.zip"
+    curl -fsSL -o bw.zip "https://github.com/bitwarden/clients/releases/download/cli-v${BW_CLI_VERSION}/bw-oss-${PLATFORM_TUPLE}-${BW_CLI_VERSION#cli-v}.zip"
 
 RUN unzip bw.zip
 
