@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -7,7 +7,7 @@ if [ "${BW_HOST}" != "" ]; then
 fi
 
 # shellcheck disable=SC2155
-export BW_SESSION=$(bw login "${BW_USER}" --passwordenv BW_PASSWORD --raw)
+export BW_SESSION="$(bw login "${BW_USER}" --passwordenv BW_PASSWORD --raw)"
 
 bw unlock --check
 

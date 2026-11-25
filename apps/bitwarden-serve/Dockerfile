@@ -1,13 +1,12 @@
 ###############################################################################
 # BEGIN fetch-stage
 # Fetch the binary
-FROM --platform=$BUILDPLATFORM docker.io/library/ubuntu:26.04 AS fetch-stage
+FROM --platform=$BUILDPLATFORM docker.io/library/alpine:3.24.4 AS fetch-stage
 
 # renovate: datasource=github-releases depName=bitwarden/clients extractVersion=^cli-v(?<version>.*)$
 ENV BW_CLI_VERSION=2026.11.1
 
-RUN apt-get update && \
-    apt-get install -y curl unzip
+RUN apk add --no-cache curl unzip
 
 ARG TARGETARCH
 
@@ -35,7 +34,7 @@ RUN chmod +x bw
 ###############################################################################
 # BEGIN final-stage
 # Create final docker image
-FROM docker.io/library/ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db AS final-stage
+FROM docker.io/library/alpine:3.24.4@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf AS final-stage
 
 LABEL   org.opencontainers.image.authors="heathcliff@heathcliff.eu" \
         org.opencontainers.image.description="Bitwarden cli in an ubuntu image" \
