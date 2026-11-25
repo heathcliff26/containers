@@ -19,8 +19,8 @@ gpgkey=https://pkgs.k8s.io/core:/stable:/v${KUBERNETES_SHORT_VERSION}/rpm/repoda
 EOF
 
 echo "Install packages"
-rpm-ostree install "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" "cri-o${CRIO_VERSION}" "cri-tools${CRIO_VERSION}"
-rpm-ostree cleanup -m
+dnf install -y "kubelet-${KUBERNETES_VERSION}" "kubeadm-${KUBERNETES_VERSION}" "kubectl-${KUBERNETES_VERSION}" "cri-o${CRIO_VERSION}" "cri-tools${CRIO_VERSION}"
+dnf clean all
 
 echo "Enable kubelet and crio services"
 systemctl enable kubelet.service crio.service
@@ -63,5 +63,8 @@ esac
 echo "Disable systemd-resolved"
 printf "%s\n%s\n" '[Resolve]' 'DNSStubListener=no' | tee /etc/systemd/resolved.conf
 
-echo "Commit changes"
-ostree container commit
+echo "Cleaning up temporary files"
+rm -rf /run/dnf /var/log /var/cache /var/tmp /var/lib/dnf
+
+echo "Run linter"
+bootc container lint
