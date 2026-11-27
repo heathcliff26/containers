@@ -1,39 +1,65 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "packageRules": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  packageRules: [
     {
-      "description": "Auto merge Bitwarden CLI",
-      "matchPackagePatterns": ["bitwarden/clients"],
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "automerge": true,
-      "automergeType": "branch",
+      description: 'Auto merge Bitwarden CLI',
+      matchUpdateTypes: [
+        'major',
+        'minor',
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      matchPackageNames: [
+        '/bitwarden/clients/',
+      ],
     },
     {
-      "description": "Do not automerge kubernetes minor updates",
-      "matchPackagePatterns": ["kubernetes/kubernetes"],
-      "automerge": false,
+      description: 'Do not automerge kubernetes minor updates',
+      automerge: false,
+      matchPackageNames: [
+        '/kubernetes/kubernetes/',
+      ],
     },
     {
-      "description": "Automerge kubernetes patch updates as PRs",
-      "matchPackagePatterns": ["kubernetes/kubernetes"],
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
-      "automergeType": "pr",
+      description: 'Automerge kubernetes patch updates as PRs',
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'pr',
+      matchPackageNames: [
+        '/kubernetes/kubernetes/',
+      ],
     },
     {
-      "description": "Auto merge frequent flyer packages on patch updates",
-      "matchPackagePatterns": ["golangci/golangci-lint", "docker/cli", "ghcr.io/heathcliff26/simple-fileserver"],
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
-      "automergeType": "branch",
+      description: 'Auto merge frequent flyer packages on patch updates',
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      matchPackageNames: [
+        '/golangci/golangci-lint/',
+        '/docker/cli/',
+        '/ghcr.io/heathcliff26/simple-fileserver/',
+      ],
     },
     {
-      "description": "Auto merge alpine base images",
-      "matchPackagePatterns": ["docker.io/library/alpine"],
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["digest", "patch", "minor"],
-      "automerge": true,
-      "automergeType": "branch",
+      description: 'Auto merge alpine base images',
+      matchDatasources: [
+        'docker',
+      ],
+      matchUpdateTypes: [
+        'digest',
+        'patch',
+        'minor',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      matchPackageNames: [
+        '/docker.io/library/alpine/',
+      ],
     },
-  ]
+  ],
 }

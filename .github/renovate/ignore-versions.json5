@@ -1,10 +1,12 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "packageRules": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  packageRules: [
     {
-      "description": "Skip wrongly pushed versions of fyne tools",
-      "matchPackagePatterns": ["fyne-io/tools"],
-      "allowedVersions": "<1.26.1",
+      description: 'Skip wrongly pushed versions of fyne tools',
+      allowedVersions: '<1.26.1',
+      matchPackageNames: [
+        '/fyne-io/tools/',
+      ],
     },
-  ]
+  ],
 }

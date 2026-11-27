@@ -1,10 +1,14 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "packageRules": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  packageRules: [
     {
-      "description": "Dyne musl releases to many updates, so schedule it to once a month",
-      "matchPackagePatterns": ["dyne/musl"],
-      "schedule": ["* * 11 * *"],
+      description: 'Dyne musl releases to many updates, so schedule it to once a month',
+      schedule: [
+        '* * 11 * *',
+      ],
+      matchPackageNames: [
+        '/dyne/musl/',
+      ],
     },
-  ]
+  ],
 }

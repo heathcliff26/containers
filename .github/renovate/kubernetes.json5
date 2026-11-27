@@ -1,11 +1,16 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "packageRules": [
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  packageRules: [
     {
-      "description": "Do not update kubernetes major/minor releases",
-      "matchPackagePatterns": ["kubernetes/kubernetes"],
-      "matchUpdateTypes": ["major", "minor"],
-      "enabled": false,
+      description: 'Do not update kubernetes major/minor releases',
+      matchUpdateTypes: [
+        'major',
+        'minor',
+      ],
+      enabled: false,
+      matchPackageNames: [
+        '/kubernetes/kubernetes/',
+      ],
     },
-  ]
+  ],
 }
