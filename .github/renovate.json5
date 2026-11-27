@@ -22,6 +22,7 @@
     'github>heathcliff26/containers//.github/renovate/schedule.json5',
   ],
   assigneesFromCodeOwners: true,
+  configMigration: true,
   dependencyDashboard: {
     title: 'Renovate Dashboard 🤖',
   },
