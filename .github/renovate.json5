@@ -1,36 +1,47 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    "docker:enableMajor",
-    ":disableRateLimiting",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    ":automergeDigest",
-    ":automergeBranch",
-    "helpers:pinGitHubActionDigests",
-    "github>heathcliff26/ci//renovate/automerge-container-digests.json5",
-    "github>heathcliff26/ci//renovate/automerge-gh-actions-branch.json5",
-    "github>heathcliff26/ci//renovate/commitMessage.json5",
-    "github>heathcliff26/ci//renovate/customManagers.json5",
-    "github>heathcliff26/ci//renovate/labels.json5",
-    "github>heathcliff26/ci//renovate/semanticCommits.json5",
-    "github>heathcliff26/ci//renovate/kubernetes/kubernetes.json5",
-    "github>heathcliff26/containers//.github/renovate/automerge.json5",
-    "github>heathcliff26/containers//.github/renovate/kubernetes.json5",
-    "github>heathcliff26/containers//.github/renovate/ignore-versions.json5",
-    "github>heathcliff26/containers//.github/renovate/schedule.json5",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'docker:enableMajor',
+    ':disableRateLimiting',
+    ':dependencyDashboard',
+    ':semanticCommits',
+    ':automergeDigest',
+    ':automergeBranch',
+    'helpers:pinGitHubActionDigests',
+    'github>heathcliff26/ci//renovate/automerge-container-digests.json5',
+    'github>heathcliff26/ci//renovate/automerge-gh-actions-branch.json5',
+    'github>heathcliff26/ci//renovate/commitMessage.json5',
+    'github>heathcliff26/ci//renovate/customManagers.json5',
+    'github>heathcliff26/ci//renovate/labels.json5',
+    'github>heathcliff26/ci//renovate/semanticCommits.json5',
+    'github>heathcliff26/ci//renovate/kubernetes/kubernetes.json5',
+    'github>heathcliff26/containers//.github/renovate/automerge.json5',
+    'github>heathcliff26/containers//.github/renovate/kubernetes.json5',
+    'github>heathcliff26/containers//.github/renovate/ignore-versions.json5',
+    'github>heathcliff26/containers//.github/renovate/schedule.json5',
   ],
-  "assigneesFromCodeOwners": true,
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "ignorePaths": ["**/archive/**"],
-  "packageRules": [
+  assigneesFromCodeOwners: true,
+  dependencyDashboard: {
+    title: 'Renovate Dashboard 🤖',
+  },
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  ignorePaths: [
+    '**/archive/**',
+  ],
+  packageRules: [
     {
-      "matchPackageNames": ["bitwarden/clients"],
-      "matchFileNames": ["(^|/)Dockerfile$", "(^|/)Dockerfile\\.[^/]*$"],
-      "semanticCommitType": "fix",
-      "versioning": "regex:^(?<compatibility>[a-z]+?)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
-    }
-  ]
+      matchPackageNames: [
+        'bitwarden/clients',
+      ],
+      matchFileNames: [
+        '(^|/)Dockerfile$',
+        '(^|/)Dockerfile\\.[^/]*$',
+      ],
+      semanticCommitType: 'fix',
+      versioning: 'regex:^(?<compatibility>[a-z]+?)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$',
+    },
+  ],
 }
